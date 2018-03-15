@@ -47,6 +47,8 @@ func PostPack(w http.ResponseWriter, r *http.Request) {
 	logger.Infof("Pack registered: PackId=%s", pack.Id)
 	w.Header().Set("Location", httputil.UriBuilder(r).Path(flytepath.PacksPath, pack.Id).Build())
 	w.WriteHeader(http.StatusCreated)
+
+	httputil.WriteResponse(w, r, toPackResponse(r, *pack))
 }
 
 func GetPacks(w http.ResponseWriter, r *http.Request) {

@@ -42,8 +42,9 @@ func TestPostPack_ShouldCreatePackForValidRequest(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/v1/packs", strings.NewReader(packRequest))
+	req := httptest.NewRequest(http.MethodPost, "/v1/packs", strings.NewReader(slackPackJson))
 	httputil.SetProtocolAndHostIn(req)
+	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	PostPack(w, req)
 
@@ -54,12 +55,11 @@ func TestPostPack_ShouldCreatePackForValidRequest(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "http://example.com/v1/packs/Slack", location.String())
 
-	var expectedPack Pack
-	err = json.Unmarshal([]byte(packRequest), &expectedPack)
+	body, err := ioutil.ReadAll(resp.Body)
 	require.NoError(t, err)
-	expectedPack.generateId()
-	assert.Equal(t, expectedPack, actualPack)
+	assert.Equal(t, slackPackResponse, string(body))
 }
+
 
 func TestPostPack_ShouldReturn400ForInvalidRequest(t *testing.T) {
 
@@ -90,7 +90,7 @@ func TestPostPack_ShouldReturn500_WhenRepoFails(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/v1/packs", strings.NewReader(packRequest))
+	req := httptest.NewRequest(http.MethodPost, "/v1/packs", strings.NewReader(slackPackJson))
 	w := httptest.NewRecorder()
 	PostPack(w, req)
 
@@ -309,26 +309,6 @@ func TestDeletePack_Should500_WhenRepoFails(t *testing.T) {
 }
 
 // --- requests/responses ---
-
-var packRequest = `
-{
-    "name": "Slack",
-    "commands": [
-        {
-            "name": "SendMessage",
-            "events": ["MessageSent", "SendMessageFailed"]
-        }
-    ],
-    "events": [
-        {
-            "name": "MessageSent"
-        },
-        {
-            "name": "SendMessageFailed"
-        }
-    ]
-}
-`
 
 var slackPackJson = `
 {
