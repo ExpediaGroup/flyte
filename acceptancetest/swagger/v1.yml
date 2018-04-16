@@ -1,0 +1,24 @@
+swagger: '2.0'
+info:
+  title: flyte-api
+  description: Automation API
+  contact:
+    name: FLYTE Team
+    url: http://github.com/HotelsDotCom/FLYTE
+  version: '1'
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /:
+    get:
+      tags:
+        - info
+      summary: root endpoint
+      operationId: root
+      responses:
+        '200':
+          description: list of links
+          schema:
+            $ref: '#/definitions/links'

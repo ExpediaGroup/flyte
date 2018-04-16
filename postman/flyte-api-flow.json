@@ -1,0 +1,391 @@
+{
+	"info": {
+		"_postman_id": "bc1bf441-ec48-4dba-97dd-4977ff46a49b",
+		"name": "flyte-api-flow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "add pack: jira",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Jira\",\n    \"commands\": [\n        {\n            \"name\": \"UpdateTicket\",\n            \"events\": [\"TicketUpdated\"]\n        }\n    ],\n    \"events\": [\n        {\n            \"name\": \"TicketCreated\"\n        },\n        {\n            \"name\": \"TicketUpdated\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add pack: hipchat",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Hipchat\",\n    \"labels\": {\n        \"env\": \"staging\",\n        \"network\" : \"lab\"\n    },\n    \"commands\": [\n        {\n            \"name\": \"SendMessage\",\n            \"events\": [\"MessageReceived\"]\n        }\n    ],\n    \"events\": [\n        {\n            \"name\": \"MessageReceived\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add pack: argo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Argo\",\n    \"labels\": {\n        \"env\": \"staging\",\n        \"network\" : \"lab\",\n        \"x\" : \"y\"\n    },\n    \"commands\": [\n        {\n            \"name\": \"PutArtifact\",\n            \"events\": [\"ArtifactUpdated\"]\n        }\n    ],\n    \"events\": [\n        {\n            \"name\": \"ArtifactUpdated\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add pack: bamboo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Bamboo\",\n    \"commands\": [\n        {\n            \"name\": \"CreatePlan\",\n            \"events\": [\"PlanCreated\"]\n        }\n    ],\n    \"events\": [\n        {\n            \"name\": \"PlanCreated\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add flow def: pob flow",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"pob_flow1\",\n    \"description\": \"simplified version of pipeline onboarding flow\",\n    \"steps\": [\n        {\n            \"id\": \"hipchat_start\",\n            \"event\": {\n                \"packName\": \"Hipchat\",\n                \"name\": \"MessageReceived\"\n            },\n            \"criteria\": \"{{ Event.Payload.roomId == 'pobRoom'}}\",\n            \"context\": {\n                \"roomId\": \"{{ Event.Payload.roomId}}\",\n                \"foo\": \"bar\",\n                \"env\" : \"{{Event.Pack.Labels.env}}\"\n            },\n            \"command\": {\n                \"packName\": \"Argo\",\n                \"packLabels\" : {\n                \t\"env\" : \"{{Context.env}}\"\n                },\n                \"name\": \"PutArtifact\",\n                \"input\": {\n                    \"id\": \"pobFlow1ArtifactId\",\n                    \"name\": \"foo-app\"\n                }\n            }\n        },\n        {\n            \"id\": \"jira_start\",\n            \"event\": {\n                \"packName\": \"Jira\",\n                \"name\": \"TicketCreated\"\n            },\n            \"criteria\": \"{{ 'pob' == 'pob' }}\",\n            \"context\": {\n                \"ticketId\": \"ticket1234\",\n                \"foo\": \"bar\"\n            },\n            \"command\": {\n                \"packName\": \"Argo\",\n                \"name\": \"PutArtifact\",\n                \"input\": {\n                    \"id\": \"pobFlow1ArtifactId\",\n                    \"name\": \"foo-app\"\n                }\n            }\n        },\n        {\n            \"id\": \"argo_to_bamboo\",\n            \"dependsOn\": [\n                \"hipchat_start\",\n                \"jira_start\"\n            ],\n            \"event\": {\n                \"packName\": \"Argo\",\n                \"packLabels\" : {\n                \t\"env\" : \"{{Context.env}}\"\n                },\n                \"name\": \"ArtifactCreated\"\n            },\n            \"command\": {\n                \"packName\": \"Bamboo\",\n                \"name\": \"CreatePlan\",\n                \"input\": {\n                    \"name\": \"foo-app\",\n                    \"foo\": \"{{ Context.foo}}\"\n                }\n            }\n        },\n        {\n            \"id\" : \"bamboo_to_hipchat\",\n            \"dependsOn\" : [\"hipchat_start\"],\n            \"event\": {\n                    \"packName\": \"Bamboo\",\n                    \"name\": \"PlanCreated\"\n            },\n            \"command\": {\n                \"packName\": \"Hipchat\",\n                \"packLabels\": {\n                    \"env\" : \"{{Context.env}}\"\n                },\n                \"name\": \"SendMessage\",\n                \"input\": {\n                    \"roomId\" : \"pobRoom\",\n                     \"message\" : \"Created plan: {{ Event.Payload.name}}\"\n                }\n            }\n        },\n        {\n            \"id\": \"bamboo_to_jira\",\n            \"dependsOn\": [\n                \"jira_start\"\n            ],\n            \"event\": {\n                \"packName\": \"Bamboo\",\n                \"name\": \"PlanCreated\"\n            },\n            \"command\": {\n                \"packName\": \"Jira\",\n                \"name\": \"UpdateTicket\",\n                \"input\": {\n                    \"ticketId\": \"ticket1234\",\n                    \"comment\": \"Pipeline created\"\n                }\n            }\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/flows",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"flows"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send event: hipchat msg received",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event\": \"MessageReceived\",\n    \"payload\": {\"roomId\": \"pobRoom\"}\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs/Hipchat.env.staging.network.lab/events",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs",
+						"Hipchat.env.staging.network.lab",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "take action: argo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs/Argo.env.staging.network.lab.x.y/actions/take",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs",
+						"Argo.env.staging.network.lab.x.y",
+						"actions",
+						"take"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send action event: argo artifact updated",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event\": \"ArtifactCreated\",\n    \"payload\": \"blah blah\"\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs/Argo.env.staging.network.lab.x.y/actions/59566f83fe7ff9d19ae301cb/result",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs",
+						"Argo.env.staging.network.lab.x.y",
+						"actions",
+						"59566f83fe7ff9d19ae301cb",
+						"result"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "take action: bamboo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs/Bamboo/actions/take",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs",
+						"Bamboo",
+						"actions",
+						"take"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send action event: bamboo plan created",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event\": \"PlanCreated\",\n    \"payload\": {\n    \t\"name\" : \"foo-bamboo-plan\"\n    }\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs/Bamboo/actions/5956701bfe7ff9d19ae301cc/result",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs",
+						"Bamboo",
+						"actions",
+						"5956701bfe7ff9d19ae301cc",
+						"result"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "take action: hipchat",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs/Hipchat.env.staging.network.lab/actions/take",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs",
+						"Hipchat.env.staging.network.lab",
+						"actions",
+						"take"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send action event: hipchat message sent",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event\": \"MessageSent\",\n    \"payload\": \"\"\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs/Hipchat.env.staging.network.lab/actions/59567075fe7ff9d19ae301cd/result",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs",
+						"Hipchat.env.staging.network.lab",
+						"actions",
+						"59567075fe7ff9d19ae301cd",
+						"result"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "audit flows",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/v1/audit/flows",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"audit",
+						"flows"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add pack: slack",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Slack\",\n    \"commands\": [\n        {\n            \"name\": \"SendMessage\",\n            \"events\": [\"MessageReceived\", \"SendMessageFailed\"]\n        },\n        {\n        \t\"name\": \"SendRichMessage\",\n        \t\"events\": [\"RichMessageSent\", \"SendRichMessageFailed\"]\n        },\n        {\n        \t\"name\": \"Broadcast\",\n        \t\"events\": [\"BroadcastSent\", \"BroadcastFailed\"]\n        },\n        {\n        \t\"name\": \"JoinChannel\",\n        \t\"events\": [\"ChannelJoined\", \"JoinChannelFailed\"]\n        },\n        {\n        \t\"name\": \"LeaveChannel\",\n        \t\"events\": [\"ChannelLeft\", \"LeaveChannelFailed\"]\n        }\n    ],\n    \"events\": [\n    \t{\n    \t\t\"name\":\"RichMessageSent\"\n    \t},\n    \t{\n    \t\t\"name\":\"BroadcastFailed\"\n    \t},\n    \t{\n    \t\t\"name\":\"ChannelLeft\"\n    \t},\n    \t{\n    \t\t\"name\":\"LeaveChannelFailed\"\n    \t},\n    \t{\n    \t\t\"name\":\"MessageSent\"\n    \t},\n    \t{\n    \t\t\"name\":\"SendMessageFailed\"\n    \t},\n    \t{\n    \t\t\"name\":\"ChannelJoined\"\n    \t},\n    \t{\n    \t\t\"name\":\"JoinChannelFailed\"\n    \t},\n    \t{\n    \t\t\"name\":\"ReceivedMessage\"\n    \t},\n    \t{\n    \t\t\"name\":\"SendRichMessageFailed\"\n    \t},\n    \t{\n    \t\t\"name\":\"BroadcastSent\"\n    \t}\n\t]\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

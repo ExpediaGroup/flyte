@@ -1,0 +1,670 @@
+swagger: '2.0'
+info:
+  title: flyte-api
+  description: Self service platform automation API
+  contact:
+    name: FLYTE Team
+    url: https://github.com/HotelsDotCom/flyte
+  version: '1'
+consumes:
+  - application/json
+  - application/x-yaml
+produces:
+  - application/json
+  - application/x-yaml
+paths:
+  /:
+    get:
+      tags:
+        - info
+      summary: root endpoint
+      operationId: root
+      responses:
+        '200':
+          description: list of links
+          schema:
+            $ref: '#/definitions/links'
+  /health:
+      get:
+        tags:
+          - info
+        summary: health check
+        operationId: health
+        responses:
+          '200':
+            description: healthy instance (empty response body)
+          '500':
+            description: UN-healthy instance (empty response body)
+  /v1:
+    get:
+      tags:
+        - info
+      summary: v1 root
+      operationId: v1
+      responses:
+        '200':
+          description: list of links
+          schema:
+            $ref: '#/definitions/links'
+
+  /v1/packs:
+    get:
+      tags:
+        - pack
+      summary: list of available packs
+      operationId: listPacks
+      responses:
+        '200':
+          description: list of available packs
+          schema:
+            $ref: '#/definitions/packs'
+    post:
+      tags:
+        - pack
+      description: pack registration resource
+      summary: register pack
+      operationId: registerPack
+      parameters:
+        - $ref: '#/parameters/pack'
+      responses:
+        '201':
+          description: pack successfully registered
+          headers:
+            Location:
+              description: location of registered pack
+              type: string
+  '/v1/packs/{packId}':
+    get:
+      tags:
+        - pack
+      summary: pack
+      operationId: pack
+      parameters:
+        - $ref: '#/parameters/packId'
+      responses:
+        '200':
+          description: registered pack
+          schema:
+            $ref: '#/definitions/pack'
+  '/v1/packs/{packId}/events':
+    post:
+      tags:
+        - event
+      summary: event
+      operationId: event
+      parameters:
+        - $ref: '#/parameters/packId'
+        - $ref: '#/parameters/event'
+      responses:
+        '202':
+          description: event received
+  '/v1/packs/{packId}/actions/take':
+    post:
+      tags:
+        - action
+      summary: take action
+      operationId: takeAction
+      parameters:
+        - $ref: '#/parameters/packId'
+        - $ref: '#/parameters/commandName'
+      responses:
+        '200':
+          description: action to be processed
+          schema:
+            $ref: '#/definitions/action'
+  '/v1/packs/{packId}/actions/{actionId}/result':
+    post:
+      tags:
+        - action
+      summary: action result
+      operationId: actionResult
+      parameters:
+        - $ref: '#/parameters/packId'
+        - $ref: '#/parameters/actionId'
+        - $ref: '#/parameters/event'
+      responses:
+        '200':
+          description: action result received
+  '/v1/flows':
+    get:
+      tags:
+        - flow
+      summary: list of flows
+      operationId: listFlows
+      responses:
+        '200':
+          description: list of flows
+          schema:
+            $ref: '#/definitions/flows'
+    post:
+      tags:
+        - flow
+      description: resource for adding flows
+      summary: add flow
+      operationId: addFlow
+      parameters:
+        - $ref: '#/parameters/flow'
+      responses:
+        '201':
+          description: flow successfully added
+          headers:
+            Location:
+              description: location of registered flow
+              type: string
+  '/v1/flows/{flowName}':
+    get:
+      tags:
+        - flow
+      summary: get flow
+      operationId: flow
+      parameters:
+        - $ref: '#/parameters/flowName'
+      responses:
+        '200':
+          description: flow
+          schema:
+            $ref: '#/definitions/flow'
+    delete:
+      tags:
+        - flow
+      summary: delete flow
+      operationId: removeFlow
+      parameters:
+        - $ref: '#/parameters/flowName'
+      responses:
+        '204':
+          description: flow deleted
+  '/v1/datastore':
+    get:
+      tags:
+        - datastore
+      summary: datastore keys/items
+      operationId: listDatastoreItems
+      responses:
+        '200':
+          description: datastore
+          schema:
+            $ref: '#/definitions/datastoreItems'
+    post:
+      tags:
+        - datastore
+      summary: add item to datastore
+      operationId: addDatastoreItem
+      parameters:
+        - $ref: '#/parameters/datastoreItem'
+      responses:
+        '201':
+          description: datastore item added
+  '/v1/datastore/{datastoreItemId}':
+    get:
+      tags:
+        - datastore
+      summary: datastore keys/items
+      operationId: datastoreItem
+      parameters:
+        - $ref: '#/parameters/datastoreItemId'
+      responses:
+        '200':
+          description: datastore item
+          schema:
+            $ref: '#/definitions/datastoreItem'
+  '/v1/audit/flows':
+    get:
+      tags:
+        - flowAudit
+      summary: find and list flow executions
+      operationId: findFlows
+      parameters:
+        - $ref: '#/parameters/flowNameFilter'
+        - $ref: '#/parameters/stepId'
+        - $ref: '#/parameters/actionName'
+        - $ref: '#/parameters/actionPackName'
+        - $ref: '#/parameters/actionPackLabels'
+        - $ref: '#/parameters/start'
+      responses:
+        '200':
+          description: find and list flow executions
+          schema:
+            $ref: '#/definitions/flowExecutions'
+  '/v1/audit/flows/{correlationId}':
+    get:
+      tags:
+        - flowAudit
+      summary: flow execution
+      operationId: flowExecution
+      parameters:
+        - $ref: '#/parameters/correlationId'
+      responses:
+        '200':
+          description: flow execution
+          schema:
+            $ref: '#/definitions/flowAudit'
+
+definitions:
+  links:
+    type: array
+    items:
+      $ref: '#/definitions/link'
+  link:
+    type: object
+    properties:
+      href:
+        type: string
+      rel:
+        type: string
+    additionalProperties:
+      type: string
+  packs:
+    type: object
+    properties:
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+      packs:
+        type: array
+        items:
+          $ref: '#/definitions/packInfo'
+  packInfo:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+          type: string
+      labels:
+        type: object
+        additionalProperties:
+          type: string
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  pack:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+          type: string
+      labels:
+        type: object
+        additionalProperties:
+          type: string
+      commands:
+        type: array
+        items:
+          $ref: '#/definitions/commandInfo'
+      events:
+        type: array
+        items:
+          $ref: '#/definitions/eventInfo'
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  commandInfo:
+    type: object
+    properties:
+      name:
+        type: string
+      events:
+        type: array
+        items:
+          type: string
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  eventInfo:
+    type: object
+    properties:
+      name:
+        type: string
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  action:
+    type: object
+    properties:
+      command:
+        type: string
+      input:
+        type: object
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  flows:
+    type: object
+    properties:
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+      flows:
+        type: array
+        items:
+          $ref: '#/definitions/flowInfo'
+  flowInfo:
+    type: object
+    properties:
+      name:
+          type: string
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  flow:
+    type: object
+    properties:
+      uuid:
+        type: string
+      name:
+          type: string
+      description:
+          type: string
+      steps:
+        type: array
+        items:
+          $ref: '#/definitions/step'
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  step:
+    type: object
+    properties:
+      id:
+        type: string
+      event:
+        $ref: '#/definitions/eventDef'
+      dependsOn:
+        type: array
+        items:
+          type: string
+      context:
+          type: object
+          additionalProperties:
+            type: string
+      criteria:
+          type: string
+      command:
+        $ref: '#/definitions/commandDef'
+  eventDef:
+    type: object
+    properties:
+      name:
+        type: string
+      pack:
+        $ref: '#/definitions/packDef'
+  commandDef:
+    type: object
+    properties:
+      name:
+        type: string
+      pack:
+        $ref: '#/definitions/packDef'
+      input:
+        type: object
+  packDef:
+    type: object
+    properties:
+      name:
+        type: string
+      labels:
+          type: object
+          additionalProperties:
+            type: string
+  datastoreItems:
+    type: object
+    properties:
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+      datastore:
+        type: array
+        items:
+          $ref: '#/definitions/datastoreItemInfo'
+  datastoreItemInfo:
+    type: object
+    properties:
+      key:
+        type: string
+      description:
+        type: string
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  datastoreItem:
+    type: object
+    properties:
+      key:
+        type: string
+      description:
+        type: string
+      value:
+        type: object
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  flowExecutions:
+    type: object
+    properties:
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+      flows:
+        type: array
+        items:
+          $ref: '#/definitions/flowAudit'
+  flowAudit:
+    type: object
+    properties:
+      name:
+          type: string
+      uuid:
+        type: string
+      correlationId:
+        type: string
+      steps:
+        type: array
+        items:
+          $ref: '#/definitions/step'
+      actions:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/actionAudit'
+      links:
+        type: array
+        items:
+          $ref: '#/definitions/link'
+  actionAudit:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      pack:
+        $ref: '#/definitions/packIdentifier'
+      input:
+        type: object
+      state:
+        $ref: '#/definitions/state'
+      correlationId:
+        type: string
+      flowUUID:
+        type: string
+      stepId:
+        type: string
+      context:
+          type: object
+          additionalProperties:
+            type: string
+      trigger:
+        $ref: '#/definitions/event'
+      result:
+        $ref: '#/definitions/event'
+  state:
+    type: object
+    properties:
+      value:
+        enum:
+          - NEW
+          - PENDING
+          - DONE
+          - FATAL
+      time:
+        type: string
+  event:
+    type: object
+    properties:
+      name:
+        type: string
+      pack:
+        $ref: '#/definitions/packIdentifier'
+      payload:
+        type: object
+  eventPayload:
+    type: object
+    properties:
+      event:
+        type: string
+      payload:
+        type: object
+  packIdentifier:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      labels:
+          type: object
+          additionalProperties:
+            type: string
+
+parameters:
+  # query parameters
+  flowNameFilter:
+    name: flowName
+    in: query
+    description: flow name
+    required: false
+    type: string
+  stepId:
+    name: stepId
+    in: query
+    description: step id
+    required: false
+    type: string
+  actionName:
+    name: actionName
+    in: query
+    description: action name
+    required: false
+    type: string
+  actionPackName:
+    name: actionPackName
+    in: query
+    description: action pack name
+    required: false
+    type: string
+  actionPackLabels:
+    name: actionPackLabels
+    in: query
+    description: action pack labels as comma delimited key value pairs eg. actionPackLabels=env:staging,day:funday
+    required: false
+    type: string
+  start:
+    name: start
+    in: query
+    description: start index
+    required: false
+    type: integer
+  commandName:
+    name: commandName
+    in: query
+    description: command name
+    required: false
+    type: string
+
+  # path parameters
+  packId:
+    name: packId
+    in: path
+    description: pack id
+    required: true
+    type: string
+  actionId:
+    name: actionId
+    in: path
+    description: action id
+    required: true
+    type: string
+  flowName:
+    name: flowName
+    in: path
+    description: flow name
+    required: true
+    type: string
+  datastoreItemId:
+    name: datastoreItemId
+    in: path
+    description: datastore item id
+    required: true
+    type: string
+  correlationId:
+    name: correlationId
+    in: path
+    description: flow correlation id
+    required: true
+    type: string
+
+  # body parameters
+  pack:
+    name: pack
+    in: body
+    description: pack to be registered
+    required: true
+    schema:
+      $ref: '#/definitions/pack'
+  event:
+    name: event
+    in: body
+    description: event
+    required: true
+    schema:
+      $ref: '#/definitions/eventPayload'
+  flow:
+    name: flow
+    in: body
+    description: flow
+    required: true
+    schema:
+      $ref: '#/definitions/flow'
+  datastoreItem:
+    name: datastoreItem
+    in: body
+    description: datastore item to be registered
+    required: true
+    schema:
+      $ref: '#/definitions/datastoreItem'
+
+tags:
+  - name: info
+  - name: pack
+  - name: event
+  - name: action
+  - name: flow
+  - name: datastore
+  - name: flowAudit
+
+externalDocs:
+  url: https://github.com/HotelsDotCom/flyte

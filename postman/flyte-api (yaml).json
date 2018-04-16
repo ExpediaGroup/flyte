@@ -1,0 +1,294 @@
+{
+	"info": {
+		"name": "flyte-api (yaml)",
+		"_postman_id": "f930ddb6-c547-f426-5e4f-2fbe2abf8ad3",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/x-yaml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}",
+					"host": [
+						"{{host}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/x-yaml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/v1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/health",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/x-yaml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/health",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/packs",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/x-yaml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"postman-rule\",\n\t\"description\": \"test rule used by postman\",\n\t\"event\": {\n\t\t\"pack-id\": \"postman\",\n\t\t\"name\": \"manual-trigger\"\n\t},\n\t\"criteria\": \"{{ event.value != \\\"fail\\\" }}\",\n\t\"command\": {\n\t\t\"pack-id\": \"postman\",\n\t\t\"name\": \"echo\",\n\t\t\"input\": \"{{ event.value }}\"\n\t}\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/packs",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-yaml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "---\nname: Jira\nlabels:\n  env: test\ncommands:\n- name: Close_Issue\n  events:\n  - Issue_Closed\n  links:\n  - href: http://todo\n    rel: help\n- name: Create_Issue\n  events:\n  - Issue_Created\n  links:\n  - href: http://todo\n    rel: help\nevents:\n- name: Issue_Closed\n  links:\n  - href: http://todo\n    rel: help\n- name: Issue_Created\n  links:\n  - href: http://todo\n    rel: help\nlinks:\n- href: http://todo\n  rel: help\n"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/packs/<pack-id>",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/x-yaml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"postman-rule\",\n\t\"description\": \"test rule used by postman\",\n\t\"event\": {\n\t\t\"pack-id\": \"postman\",\n\t\t\"name\": \"manual-trigger\"\n\t},\n\t\"criteria\": \"{{ event.value != \\\"fail\\\"}}\", \n\t\"command\": {\n\t\t\"pack-id\": \"postman\",\n\t\t\"name\": \"echo\",\n\t\t\"input\": \"{{ event.value }}\"\n\t}\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/packs/Jira.env.test",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"packs",
+						"Jira.env.test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/datastore",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/x-yaml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event\": \"Issue\",\n    \"payload\": {\n        \"id\": \"ABC-8\",\n        \"status\": \"success\",\n        \"type\": \"issueCreated\",\n        \"jiraProject\": \"FLYTE\",\n        \"description\": \"created by flyte ...\",\n        \"states\": [\n            \"new\"\n        ],\n        \"linkedIssues\": []\n    }\n}"
+				},
+				"url": {
+					"raw": "{{host}}/v1/datastore",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"datastore"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/datastore",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "key",
+							"value": "team",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "hipchat teams",
+							"type": "text"
+						},
+						{
+							"key": "value",
+							"type": "file"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}/v1/datastore",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"datastore"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/datastore/<key>",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/x-yaml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"key\" : \"mystuff\", \n\t\"description\" : \"my own description\",\n\t\"value\" : {\n\t\t\"124\" : \"XYZ\",\n\t\t\"345\" : \"ABC\"\n\t\t}\n} "
+				},
+				"url": {
+					"raw": "{{host}}/v1/datastore/team",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"datastore",
+						"team"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/datastore/<key>",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/v1/datastore/team",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"datastore",
+						"team"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,11 @@
+flyte-api
+
+# initellij files
+.idea
+*.iml
+
+# vim bkp files
+*~
+*.swp
+
+/vendor

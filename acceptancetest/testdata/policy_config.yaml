@@ -1,0 +1,15 @@
+# auth policy config
+
+# let everything though unauthorized
+- path: /*
+# ...except this:
+- path: /v1/swagger
+  methods: [GET]
+  claims:
+    groups:
+    - dev
+- path: /v1/swagger
+  methods: [PUT]
+  claims:
+    role:
+    - superuser

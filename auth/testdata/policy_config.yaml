@@ -1,0 +1,59 @@
+# auth policy config
+
+# In each pathPolicy element, path is mandatory, methods and claims are optional
+# A request is matched to the closest matching route i.e. closest path (& optional method).
+# If no methods are specified in the pathPolicy then requests with any valid http method will match it.
+# If no claims are specified then no jwt auth is performed on the request
+#
+# Asterisks (*) can be used in the path to match multiple widlcarded levels e.g. /foo/*/bar will match a request to /foo/a/b/c/bar etc.
+# Templated paths can be used to match single levels e.g. /foo/:id will match a request to /foo/a. Additionally the template
+# value can be used in the claims (either as a key or value) e.g. claims: { "id" : ":id" } would be dynamically
+# resolved to be { "id" : "a" }
+#
+# No matching route found  => 401
+# Matches route, but not claims => 401
+# Matches route, matches claims => passes auth
+# Matches route, no claims configured  => passes auth
+
+- path: /packs
+  methods: [GET]
+- path: /packs/:pack
+  methods: [GET]
+- path: /packs/:pack
+  methods:
+  - POST
+  - PUT
+  claims:
+    groups:
+    - dev
+    - packwriter
+    role:
+    - admin
+- path: /packs/:pack
+  methods: [DELETE]
+  claims:
+    groups:
+    - packadmin
+
+- path: /flows/*
+  methods: [GET]
+- path: /flows/:namespace/:flow
+  methods: [GET]
+- path: /flows/:namespace/:flow
+  methods:
+  - PUT
+  claims:
+    groups:
+    - flowwriter
+    role:
+    - admin
+- path: /flows/:namespace/:flow
+  methods: [DELETE]
+  claims:
+    namespaceAdmin:
+    - :namespace
+
+- path: /datastore/*
+  claims:
+      groups:
+      - dev

@@ -1,0 +1,219 @@
+{
+	"variables": [],
+	"info": {
+		"name": "flyte-api",
+		"_postman_id": "5e138012-9511-61f6-1a6c-f47dfd0ea61c",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/",
+			"request": {
+				"url": "{{host}}",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/v1",
+			"request": {
+				"url": "{{host}}/v1",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/health",
+			"request": {
+				"url": "{{host}}/health",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/packs",
+			"request": {
+				"url": "{{host}}/v1/packs",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"postman-rule\",\n\t\"description\": \"test rule used by postman\",\n\t\"event\": {\n\t\t\"pack-id\": \"postman\",\n\t\t\"name\": \"manual-trigger\"\n\t},\n\t\"criteria\": \"{{ event.value != \\\"fail\\\" }}\",\n\t\"command\": {\n\t\t\"pack-id\": \"postman\",\n\t\t\"name\": \"echo\",\n\t\t\"input\": \"{{ event.value }}\"\n\t}\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/packs",
+			"request": {
+				"url": "{{host}}/v1/packs",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Jira\",\n    \"labels\": {\n        \"env\": \"test\"\n    },\n    \"commands\": [\n    {\n        \"name\": \"Close_Issue\",\n        \"events\": [\"Issue_Closed\"],\n        \"links\": [{\n            \"href\": \"http://todo\",\n            \"rel\": \"help\"\n        }]\n    },\n    {\n        \"name\": \"Create_Issue\",\n        \"events\": [\"Issue_Created\"],\n        \"links\": [{\n            \"href\": \"http://todo\",\n            \"rel\": \"help\"\n        }]\n    }\n    ],\n    \"events\": [\n    {\n        \"name\": \"Issue_Closed\",\n        \"links\": [{\n            \"href\": \"http://todo\",\n            \"rel\": \"help\"\n        }]\n    },\n    {\n        \"name\": \"Issue_Created\",\n        \"links\": [{\n            \"href\": \"http://todo\",\n            \"rel\": \"help\"\n        }]\n    }\n    ],\n    \"links\": [{\n        \"href\": \"http://todo\",\n        \"rel\": \"help\"\n    }]\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/packs/<pack-id>",
+			"request": {
+				"url": "{{host}}/v1/packs/Jira.env.test",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"postman-rule\",\n\t\"description\": \"test rule used by postman\",\n\t\"event\": {\n\t\t\"pack-id\": \"postman\",\n\t\t\"name\": \"manual-trigger\"\n\t},\n\t\"criteria\": \"{{ event.value != \\\"fail\\\"}}\", \n\t\"command\": {\n\t\t\"pack-id\": \"postman\",\n\t\t\"name\": \"echo\",\n\t\t\"input\": \"{{ event.value }}\"\n\t}\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/datastore",
+			"request": {
+				"url": "{{host}}/v1/datastore",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event\": \"Issue\",\n    \"payload\": {\n        \"id\": \"ABC-8\",\n        \"status\": \"success\",\n        \"type\": \"issueCreated\",\n        \"jiraProject\": \"FLYTE\",\n        \"description\": \"created by flyte ...\",\n        \"states\": [\n            \"new\"\n        ],\n        \"linkedIssues\": []\n    }\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/datastore",
+			"request": {
+				"url": "{{host}}/v1/datastore",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "key",
+							"value": "team",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "hipchat teams",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "value",
+							"description": "",
+							"type": "file",
+							"src": "teams"
+						},
+						{
+							"key": "",
+							"value": "",
+							"description": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/datastore/<key>",
+			"request": {
+				"url": "{{host}}/v1/datastore/team",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"key\" : \"mystuff\", \n\t\"description\" : \"my own description\",\n\t\"value\" : {\n\t\t\"124\" : \"XYZ\",\n\t\t\"345\" : \"ABC\"\n\t\t}\n} "
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/datastore/<key>",
+			"request": {
+				"url": "{{host}}/v1/datastore/team",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"key\" : \"mystuff\", \n\t\"description\" : \"my own description\",\n\t\"value\" : {\n\t\t\"124\" : \"XYZ\",\n\t\t\"345\" : \"ABC\"\n\t\t}\n} "
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
