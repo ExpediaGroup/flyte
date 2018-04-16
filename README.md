@@ -207,7 +207,7 @@ There are a number of postman files in [postman] that can be used to test runnin
 
 ## Acceptance Tests
 
-See [README](acceptance-test/README.md).
+See [README](acceptancetest/README.md).
 
 ## Integration Tests
 
@@ -377,7 +377,7 @@ There are a number of custom filters available to use:
 Pongo provides a number of inbuilt filters in addition to these:
 https://github.com/flosch/pongo2/blob/master/filters_builtin.go#L3.
 
-For examples please see [template/template_test.go](../browse/template/template_test.go)
+For examples please see [template/template_test.go](template/template_test.go)
 
 #### Context
 
