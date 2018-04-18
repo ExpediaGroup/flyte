@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/HotelsDotCom/flyte.svg?branch=master)](https://travis-ci.org/HotelsDotCom/flyte)
+
 ![Flyte](docs/images/flyte_logo.png)
 
 ## Overview
