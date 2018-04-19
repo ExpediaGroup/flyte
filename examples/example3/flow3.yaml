@@ -1,0 +1,28 @@
+---
+name: flow3
+description: Example flow with criteria, datastore, labels set on pack and multiple
+  steps
+steps:
+- id: flow3_stepone
+  event:
+    packName: MessageSender
+    name: SendMessage
+  command:
+    packName: Shell
+    labels:
+      ABC: '123'
+    name: Shell
+    input: echo -e '{{ datastore('teams').teama.email }}'
+  criteria: "{{ Event.Payload | match: datastore('teams').teama.hipchat_room}}"
+- id: flow3_steptwo
+  event:
+    packName: Shell
+    name: Output
+  dependsOn:
+  - flow3_stepone
+  command:
+    packName: Shell
+    labels:
+      ABC: '123'
+    name: Shell
+    input: echo -e 'i am flow3 step 2'

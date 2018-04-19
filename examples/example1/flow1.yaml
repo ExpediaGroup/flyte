@@ -1,0 +1,12 @@
+---
+name: flow1
+description: Example flow1!
+steps:
+- id: output
+  event:
+    packName: MessageSender
+    name: SendMessage
+  command:
+    packName: Shell
+    name: Shell
+    input: 'echo -e  this is the payLoad: {{  Event.Payload }} this is the packName:  {{ Event.Pack.Name }}'
