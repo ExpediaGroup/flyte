@@ -1,0 +1,28 @@
+sudo: required
+
+language: generic
+
+env:
+  global:
+    - IMAGE=hotelsdotcom/flyte
+    - MAJOR_VERSION=1
+
+services:
+  - docker
+
+script:
+  - docker build -t $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER .
+
+before_deploy:
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+deploy:
+  provider: script
+  script:
+    - docker push $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER
+  on:
+    branch: master
+
+
+
+

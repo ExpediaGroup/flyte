@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/HotelsDotCom/flyte.svg?branch=master)](https://travis-ci.org/HotelsDotCom/flyte)
+[![Docker Stars](https://img.shields.io/docker/stars/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
+
 ![Flyte](docs/images/flyte_logo.png)
 
 ## Overview
