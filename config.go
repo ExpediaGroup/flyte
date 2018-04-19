@@ -18,9 +18,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/HotelsDotCom/go-logger"
 	"math"
 	"os"
-	"github.com/HotelsDotCom/go-logger"
 	"strconv"
 )
 
@@ -40,14 +40,14 @@ const (
 )
 
 type Config struct {
-	MongoHost      string
-	Port           string
-	TLSCertPath    string
-	TLSKeyPath     string
-	AuthPolicyPath string
+	MongoHost          string
+	Port               string
+	TLSCertPath        string
+	TLSKeyPath         string
+	AuthPolicyPath     string
 	OidcIssuerURL      string
 	OidcIssuerClientID string
-	FlyteTTL       int
+	FlyteTTL           int
 }
 
 func NewConfig() Config {
