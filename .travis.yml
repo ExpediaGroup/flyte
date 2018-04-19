@@ -14,7 +14,7 @@ script:
   - docker build -t $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER .
 
 before_deploy:
-  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
 
 deploy:
   provider: script
@@ -22,7 +22,3 @@ deploy:
     - docker push $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER
   on:
     branch: master
-
-
-
-
