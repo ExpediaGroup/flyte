@@ -16,6 +16,7 @@ can then be used by the flows to interact with.
 Launch the messagepack pack by opening a new terminal and using
 ```
 cd $GOPATH/src/github.com/HotelsDotCom/flyte/examples/messagesender
+dep ensure
 go build
 export FLYTE_API="http://localhost:8080"
  ./messagesender
