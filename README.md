@@ -143,7 +143,7 @@ If the request matches a path & method and satisfies it's claims then the reques
 
 A path policy may be as follows:
 
-```
+```yaml
 path: /packs/:pack
 methods: [DELETE]
 claims:
@@ -197,21 +197,20 @@ See [README](acceptancetest/README.md).
 
 For integration tests:
 
-```
+```bash
 go test ./... -tags=integration
-
 ```
 
 For the mongo db integration tests, which are slower running:
 
-```
+```bash
 go test ./... -tags=db
-
 ```
+
 To run both:
-```
-go test ./... -tags="integration db"
 
+```bash
+go test ./... -tags="integration db"
 ```
 
 Please note that both unit and integration tests will run using the above command/s.

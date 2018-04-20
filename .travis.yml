@@ -14,7 +14,7 @@ script:
   - docker build -t $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER .
 
 before_deploy:
-  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
   - docker tag $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER $IMAGE:latest
 
 deploy:
@@ -23,7 +23,3 @@ deploy:
     - docker push $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER && docker push $IMAGE:latest
   on:
     branch: master
-
-
-
-
