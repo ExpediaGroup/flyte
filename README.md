@@ -82,26 +82,6 @@ docker run -p 8080:8080 -e FLYTE_MGO_HOST=mongo -d --name flyte --link mongo:mon
  
 ```
 
-#### Using Docker-Compose
-
-```
-docker-compose build
-docker-compose up
-```
-
-N.B. to use the mongo-cli on the running mongo container you can use e.g.
- 
-```
- docker exec -it flyteapi_mongo_1 mongo
-```
-
-### Example
-
-using our example set-up will allow you to understand the basics with packs, flows, actions etc. This should be your starting
-point for flyte.
-
-[Examples](examples/)
-
 ### TLS Mode
 
 TLS is supported by the flyte-api.
