@@ -15,11 +15,12 @@ script:
 
 before_deploy:
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker tag $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER $IMAGE:latest
 
 deploy:
   provider: script
   script:
-    - docker push $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER
+    - docker push $IMAGE:$MAJOR_VERSION.$TRAVIS_BUILD_NUMBER && docker push $IMAGE:latest
   on:
     branch: master
 
