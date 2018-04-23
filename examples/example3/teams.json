@@ -1,0 +1,10 @@
+{
+    "teama": {
+        "email": "teama@example.com",
+        "hipchat_room": "10000"
+    },
+    "teamb": {
+        "email": "teamb@example.com",
+        "hipchat_room": "10001"
+    }
+}

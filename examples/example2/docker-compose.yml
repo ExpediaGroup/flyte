@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  mongo:
+    image: 'mongo'
+    ports:
+      - '27017:27017'
+  api:
+    depends_on:
+      - 'mongo'
+    image: 'hotelsdotcom/flyte:1.29'
+    environment:
+      FLYTE_MGO_HOST: "mongo:27017"
+    ports:
+      - '8080:8080'
+  shella:
+    depends_on:
+      - 'api'
+      - 'mongo'
+    image: 'hotelsdotcom/flyte-shell:1.8'
+    environment:
+      FLYTE_API_URL: "http://api:8080"
