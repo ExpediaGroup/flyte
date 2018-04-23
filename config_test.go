@@ -17,8 +17,8 @@ limitations under the License.
 package main
 
 import (
-	"github.com/stretchr/testify/assert"
 	"github.com/HotelsDotCom/go-logger/loggertest"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -38,7 +38,7 @@ func newflyteEnvVars() envVars {
 		authPolicyPathEnvName:  "/path/to/authpolicy",
 		oidcIssuerURLName:      "dex:5559",
 		oidcIssuerClientIDName: "example-app",
-		flyteTTLEnvName:       "86400",
+		flyteTTLEnvName:        "86400",
 	}
 }
 
@@ -142,7 +142,7 @@ func TestConfigShouldSetDefaultTTLAndLogOnStringToIntConversionError(t *testing.
 	// default flyte data ttl
 	assert.Equal(t, 31557600, c.FlyteTTL)
 	logMessages := loggertest.GetLogMessages()
-	assert.Equal(t, "Error converting FLYTE_TTL_IN_SECONDS to int, using default. " +
+	assert.Equal(t, "Error converting FLYTE_TTL_IN_SECONDS to int, using default. "+
 		"Value of FLYTE_TTL_IN_SECONDS: this-string-cannot-be-converted-to-int!!!", logMessages[0].Message)
 
 }

@@ -24,6 +24,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
+	"strings"
 )
 
 var PackFeatures = []Test{
@@ -37,7 +38,7 @@ func AddPack(t *testing.T) {
 
 	ResetFlyteApi(t)
 
-	resp, err := httpClient.Post(flyteApi.PacksURL(), jiraPackDef)
+	resp, err := httpClient.Post(flyteApi.PacksURL(), slackPackDef)
 	require.NoError(t, err)
 
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
@@ -45,7 +46,9 @@ func AddPack(t *testing.T) {
 	loc, err := resp.Location()
 	require.NoError(t, err, "Error getting location from response")
 
-	assert.Equal(t, flyteApi.PacksURL()+"/Jira", loc.String())
+	assert.Equal(t, flyteApi.PacksURL()+"/Slack", loc.String())
+
+	assert.Equal(t, slackPackResponse, resp.Body)
 }
 
 func GetPack(t *testing.T) {
@@ -122,3 +125,68 @@ const bambooPackDef = `
         }
     ]
 }`
+
+const slackPackDef = `
+{
+    "name": "Slack",
+    "commands": [
+        {
+            "name": "SendMessage",
+            "events": ["MessageSent", "SendMessageFailed"]
+        }
+    ],
+    "events": [
+        {
+            "name": "MessageSent"
+        },
+        {
+            "name": "SendMessageFailed"
+        }
+    ]
+}
+`
+
+var slackPackResponse = strings.Replace(strings.Replace(`
+{
+    "id": "Slack",
+    "name": "Slack",
+    "commands": [
+        {
+            "name": "SendMessage",
+            "events": ["MessageSent", "SendMessageFailed"],
+            "links": [
+                {
+                    "href": "http://example.com/v1/packs/Slack/actions/take?commandName=SendMessage",
+                    "rel": "http://example.com/swagger#!/action/takeAction"
+                }
+            ]
+        }
+    ],
+    "events": [
+        {
+            "name": "MessageSent"
+        },
+        {
+            "name": "SendMessageFailed"
+        }
+    ],
+    "links": [
+        {
+            "href": "http://example.com/v1/packs/Slack",
+            "rel": "self"
+        },
+        {
+            "href": "http://example.com/v1/packs",
+            "rel": "up"
+        },
+        {
+            "href": "http://example.com/v1/packs/Slack/actions/take",
+            "rel": "http://example.com/swagger#!/action/takeAction"
+        },
+        {
+            "href": "http://example.com/v1/packs/Slack/events",
+            "rel": "http://example.com/swagger#/event"
+        }
+    ]
+}
+`, "\n", "", -1), " ", "", -1)
