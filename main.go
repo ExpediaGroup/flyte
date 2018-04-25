@@ -17,9 +17,9 @@ limitations under the License.
 package main
 
 import (
-	"net/http"
 	"github.com/HotelsDotCom/flyte/server"
 	"github.com/HotelsDotCom/go-logger"
+	"net/http"
 )
 
 func main() {

@@ -1,0 +1,13 @@
+---
+name: flow2
+description: Example flow with criteria!
+steps:
+- id: output
+  event:
+    packName: MessageSender
+    name: SendMessage
+  command:
+    packName: Shell
+    name: Shell
+    input: 'echo -e command: ''{{ Event.Payload }}'''
+  criteria: "{{ Event.Payload|match:'^deploy' }}"
