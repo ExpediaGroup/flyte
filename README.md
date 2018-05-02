@@ -2,7 +2,7 @@
 [![Docker Stars](https://img.shields.io/docker/stars/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
 
-![Flyte](docs/images/flyte_logo.png)
+![Flyte](docs/images/flyte_logo_compact_small.png)
 
 ## Overview
 
