@@ -1,3 +1,21 @@
+// +build integration
+
+/*
+Copyright (C) 2018 Expedia Group.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package datastore
 
 import (
@@ -32,10 +50,10 @@ func TestAdd_ShouldAddNewItem(t *testing.T) {
 	mongoT.DropDatabase(t)
 
 	expected := DataItem{
-		Key: "new-item",
+		Key:         "new-item",
 		Description: "My shiny new item",
 		ContentType: httputil.MediaTypeJson,
-		Value: []byte(`"hello"`),
+		Value:       []byte(`"hello"`),
 	}
 	err := datastoreRepo.Add(expected)
 	require.NoError(t, err)
@@ -47,10 +65,10 @@ func TestAdd_ShouldAddNewItem(t *testing.T) {
 func TestAdd_ShouldUpdateExistingItem(t *testing.T) {
 	mongoT.DropDatabase(t)
 	existingItem := DataItem{
-		Key: "existing-item",
+		Key:         "existing-item",
 		Description: "My existing item",
 		ContentType: httputil.MediaTypeJson,
-		Value: []byte(`"hello"`),
+		Value:       []byte(`"hello"`),
 	}
 	mongoT.Insert(t, mongo.DatastoreCollectionId, existingItem)
 
@@ -58,10 +76,10 @@ func TestAdd_ShouldUpdateExistingItem(t *testing.T) {
 	assert.Equal(t, existingItem, findDataItem(t, "existing-item"))
 
 	updatedItem := DataItem{
-		Key: existingItem.Key,
+		Key:         existingItem.Key,
 		Description: "",
 		ContentType: httputil.MediaTypeYaml,
-		Value: []byte(`goodbye`),
+		Value:       []byte(`goodbye`),
 	}
 	err := datastoreRepo.Add(updatedItem)
 	require.NoError(t, err)
@@ -72,7 +90,7 @@ func TestAdd_ShouldUpdateExistingItem(t *testing.T) {
 
 func TestHas_ShouldReturnTrueWhenItemExists(t *testing.T) {
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.DatastoreCollectionId, DataItem{Key:"existing"})
+	mongoT.Insert(t, mongo.DatastoreCollectionId, DataItem{Key: "existing"})
 
 	has, err := datastoreRepo.Has("existing")
 	require.NoError(t, err)
