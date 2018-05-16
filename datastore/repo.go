@@ -74,3 +74,8 @@ func (r datastoreMgoRepo) FindAll() ([]DataItem, error) {
 
 	return dataItems, err
 }
+
+func (r datastoreMgoRepo) Has(key string) (bool, error){
+	//TODO add implementation
+	return false, nil
+}

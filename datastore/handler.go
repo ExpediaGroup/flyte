@@ -87,6 +87,37 @@ func PostItem(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+func PutItem(w http.ResponseWriter, r *http.Request) {
+	item, err := toDataItem(r)
+	if err != nil {
+		logger.Errorf("Error putting data store item: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	isUpdate, err := datastoreRepo.Has(item.Key)
+	if err != nil {
+		logger.Errorf("Cannot check if item exists key=%s: %v", item.Key, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := datastoreRepo.Add(item); err != nil {
+		logger.Errorf("Cannot add item key=%s: %v", item.Key, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	logger.Infof("Data item stored: key=%s contentType=%s", item.Key, item.ContentType)
+	w.Header().Set("Location", httputil.UriBuilder(r).Path(flytepath.DatastorePath, item.Key).Build())
+
+	if isUpdate {
+		w.WriteHeader(http.StatusNoContent)
+	} else {
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
 func DeleteItem(w http.ResponseWriter, r *http.Request) {
 
 	key := vestigo.Param(r, "key")

@@ -30,6 +30,7 @@ type Repository interface {
 	Remove(key string) error
 	Get(key string) (*DataItem, error)
 	FindAll() ([]DataItem, error)
+	Has(key string) (bool, error)
 }
 
 var (
