@@ -192,9 +192,9 @@
 			"response": []
 		},
 		{
-			"name": "/v1/datastore",
+			"name": "/v1/datastore/<key>",
 			"request": {
-				"method": "POST",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -204,11 +204,6 @@
 				"body": {
 					"mode": "formdata",
 					"formdata": [
-						{
-							"key": "key",
-							"value": "team",
-							"type": "text"
-						},
 						{
 							"key": "description",
 							"value": "hipchat teams",
@@ -227,13 +222,14 @@
 					]
 				},
 				"url": {
-					"raw": "{{host}}/v1/datastore",
+					"raw": "{{host}}/v1/datastore/team",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"v1",
-						"datastore"
+						"datastore",
+						"team"
 					]
 				}
 			},
