@@ -534,6 +534,7 @@ func testForm() *multipartForm {
 		fileKey:         "value",
 		fileContentType: httputil.MediaTypeJson,
 		fileContent:     []byte(`true`),
+		fileName:        "my-file",
 		fields:          map[string]string{"description": "Data item description"},
 	}
 }
