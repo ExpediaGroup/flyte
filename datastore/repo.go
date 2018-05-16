@@ -24,15 +24,12 @@ import (
 
 type datastoreMgoRepo struct{}
 
-func (r datastoreMgoRepo) Add(dataItem DataItem) error {
+func (r datastoreMgoRepo) Add(item DataItem) error {
 
 	s := mongo.GetSession()
 	defer s.Close()
 
-	err := s.DB(mongo.DbName).C(mongo.DatastoreCollectionId).Insert(dataItem)
-	if mgo.IsDup(err) {
-		err = dataItemExists
-	}
+	_, err := s.DB(mongo.DbName).C(mongo.DatastoreCollectionId).UpsertId(item.Key, item)
 	return err
 }
 
@@ -75,7 +72,10 @@ func (r datastoreMgoRepo) FindAll() ([]DataItem, error) {
 	return dataItems, err
 }
 
-func (r datastoreMgoRepo) Has(key string) (bool, error){
-	//TODO add implementation
-	return false, nil
+func (r datastoreMgoRepo) Has(key string) (bool, error) {
+	s := mongo.GetSession()
+	defer s.Close()
+
+	n, err := s.DB(mongo.DbName).C(mongo.DatastoreCollectionId).Count()
+	return n == 1, err
 }
