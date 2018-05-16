@@ -35,17 +35,16 @@ const datastoreItem = `
 
 var DatastoreFeatures = []Test{
 	{"Add Item", AddItem},
-	{"Add Item Path MissingKey", AddPathWithMissingKey},
+	{"Add Existing Item", AddAlreadyExistingItem},
 	{"Get Item", GetItem},
 	{"Delete Item", DeleteItem},
-	{"Add Existing Item", AddAlreadyExistingItem},
 	{"Get Non Existant Item", GetNonExistantItem},
 	{"Delete Non Existant Item", DeleteNonExistantItem},
 }
 
 func AddItem(t *testing.T) {
-	form := map[string]string{"key": "techops", "description": "some rubbish"}
-	resp, err := httpClient.PostMultipart(flyteApi.DatastoreURL(), form, []byte(datastoreItem), httputil.MediaTypeJson)
+	form := map[string]string{"description": "some rubbish"}
+	resp, err := httpClient.PutMultipart(flyteApi.DatastoreURL() + "/techops", form, []byte(datastoreItem), httputil.MediaTypeJson)
 	if err != nil {
 		t.Fatalf("Error registering datastore item: %s", err)
 	}
@@ -58,18 +57,6 @@ func AddItem(t *testing.T) {
 		t.Fatalf("Error getting location from response: %s", err)
 	}
 	httpClient.DeleteResource(t, loc)
-}
-
-func AddPathWithMissingKey(t *testing.T) {
-	// no 'key' in form
-	form := map[string]string{"description": "some rubbish"}
-	resp, err := httpClient.PostMultipart(flyteApi.DatastoreURL(), form, []byte(datastoreItem), httputil.MediaTypeJson)
-	if err != nil {
-		t.Fatalf("Error registering datastore item: %s", err)
-	}
-	if resp.StatusCode != http.StatusBadRequest {
-		t.Fatalf("Add incorrect datastore \n Expecting status code 400, got %d", resp.StatusCode)
-	}
 }
 
 func GetItem(t *testing.T) {
@@ -111,13 +98,13 @@ func AddAlreadyExistingItem(t *testing.T) {
 	defer httpClient.DeleteResource(t, loc)
 
 	// add the same item
-	form := map[string]string{"key": "techops", "description": "some rubbish"}
-	resp, err := httpClient.PostMultipart(flyteApi.DatastoreURL(), form, []byte(datastoreItem), httputil.MediaTypeJson)
+	form := map[string]string{"description": "some rubbish"}
+	resp, err := httpClient.PutMultipart(flyteApi.DatastoreURL() + "/techops", form, []byte(datastoreItem), httputil.MediaTypeJson)
 	if err != nil {
 		t.Fatalf("Error registering datastore item: %s", err)
 	}
-	if resp.StatusCode != http.StatusConflict {
-		t.Fatalf("Add existing datastore \n Expecting status code 409, got %d", resp.StatusCode)
+	if resp.StatusCode != http.StatusNoContent {
+		t.Fatalf("Add existing datastore \n Expecting status code 204, got %d", resp.StatusCode)
 	}
 }
 
@@ -148,8 +135,8 @@ func DeleteNonExistantItem(t *testing.T) {
 }
 
 func addDatastoreItem(t *testing.T) *url.URL {
-	form := map[string]string{"key": "techops", "description": "some rubbish"}
-	resp, err := httpClient.PostMultipart(flyteApi.DatastoreURL(), form, []byte(datastoreItem), httputil.MediaTypeJson)
+	form := map[string]string{"description": "some rubbish"}
+	resp, err := httpClient.PutMultipart(flyteApi.DatastoreURL() +"/techops", form, []byte(datastoreItem), httputil.MediaTypeJson)
 	if err != nil {
 		t.Fatalf("Error registering datastore item: %s", err)
 	}

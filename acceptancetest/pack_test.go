@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"testing"
 	"strings"
+	"fmt"
 )
 
 var PackFeatures = []Test{
@@ -48,7 +49,11 @@ func AddPack(t *testing.T) {
 
 	assert.Equal(t, flyteApi.PacksURL()+"/Slack", loc.String())
 
-	assert.Equal(t, slackPackResponse, resp.Body)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	require.NoError(t, err)
+	packResponse := fmt.Sprintf(slackPackResponse, flyteApi.RootURL().String())
+	assert.Equal(t, packResponse, string(body))
 }
 
 func GetPack(t *testing.T) {
@@ -156,8 +161,8 @@ var slackPackResponse = strings.Replace(strings.Replace(`
             "events": ["MessageSent", "SendMessageFailed"],
             "links": [
                 {
-                    "href": "http://example.com/v1/packs/Slack/actions/take?commandName=SendMessage",
-                    "rel": "http://example.com/swagger#!/action/takeAction"
+                    "href": "%[1]s/v1/packs/Slack/actions/take?commandName=SendMessage",
+                    "rel": "%[1]s/swagger#!/action/takeAction"
                 }
             ]
         }
@@ -172,20 +177,20 @@ var slackPackResponse = strings.Replace(strings.Replace(`
     ],
     "links": [
         {
-            "href": "http://example.com/v1/packs/Slack",
+            "href": "%[1]s/v1/packs/Slack",
             "rel": "self"
         },
         {
-            "href": "http://example.com/v1/packs",
+            "href": "%[1]s/v1/packs",
             "rel": "up"
         },
         {
-            "href": "http://example.com/v1/packs/Slack/actions/take",
-            "rel": "http://example.com/swagger#!/action/takeAction"
+            "href": "%[1]s/v1/packs/Slack/actions/take",
+            "rel": "%[1]s/swagger#!/action/takeAction"
         },
         {
-            "href": "http://example.com/v1/packs/Slack/events",
-            "rel": "http://example.com/swagger#/event"
+            "href": "%[1]s/v1/packs/Slack/events",
+            "rel": "%[1]s/swagger#/event"
         }
     ]
 }
