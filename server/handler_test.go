@@ -105,7 +105,7 @@ func TestPostingFlow_shouldProcessRequestThroughHandler(t *testing.T) {
 	assert.Equal(t, numInvocations, 1)
 }
 
-func TestPostingDatastore_shouldProcessRequestThroughHandler(t *testing.T) {
+func TestPuttingDatastore_shouldProcessRequestThroughHandler(t *testing.T) {
 	numInvocations := 0
 	cleanupFunc := mockYamlHandler(
 		func(http.ResponseWriter, *http.Request) { numInvocations++ },
@@ -115,7 +115,9 @@ func TestPostingDatastore_shouldProcessRequestThroughHandler(t *testing.T) {
 	server := httptest.NewServer(Handler())
 	defer server.Close()
 
-	_, err := http.DefaultClient.Post(server.URL+flytepath.DatastorePath, "any content type", nil)
+	req, err := http.NewRequest(http.MethodPut, server.URL+flytepath.DatastoreItemPath, nil)
+	require.NoError(t, err)
+	_, err = http.DefaultClient.Do(req)
 	require.NoError(t, err)
 
 	assert.Equal(t, numInvocations, 1)
