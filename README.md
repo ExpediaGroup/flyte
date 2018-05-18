@@ -478,7 +478,7 @@ format. You can then select and use datastore data in your flows using the `data
 
 #### Datastore Example
 
-curl: `curl -v -F "description=hipchat teams.json" -F "value=@teams.json;type=application/json" http://localhost:8080/v1/datastore/teams.json`
+curl: `curl -v -X PUT -F "description=hipchat teams.json" -F "value=@teams.json;type=application/json" http://localhost:8080/v1/datastore/teams.json`
 
 File content type is optional and defaults to 'text/plain; charset=us-ascii'. File key has to be `value`.
 
