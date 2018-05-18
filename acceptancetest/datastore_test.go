@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"testing"
 	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/stretchr/testify/require"
 )
 
 const datastoreItem = `
@@ -34,17 +35,18 @@ const datastoreItem = `
 `
 
 var DatastoreFeatures = []Test{
-	{"Add Item", AddItem},
-	{"Add Existing Item", AddAlreadyExistingItem},
+	{"Store New Item", StoreNewItem},
+	{"Store Existing Item", StoreAlreadyExistingItem},
 	{"Get Item", GetItem},
 	{"Delete Item", DeleteItem},
 	{"Get Non Existant Item", GetNonExistantItem},
 	{"Delete Non Existant Item", DeleteNonExistantItem},
 }
 
-func AddItem(t *testing.T) {
+func StoreNewItem(t *testing.T) {
 	form := map[string]string{"description": "some rubbish"}
-	resp, err := httpClient.PutMultipart(flyteApi.DatastoreURL() + "/techops", form, []byte(datastoreItem), httputil.MediaTypeJson)
+	loc := flyteApi.DatastoreURL() + "/techops"
+	resp, err := httpClient.PutMultipart(loc, form, []byte(datastoreItem), httputil.MediaTypeJson)
 	if err != nil {
 		t.Fatalf("Error registering datastore item: %s", err)
 	}
@@ -52,11 +54,10 @@ func AddItem(t *testing.T) {
 	if resp.StatusCode != http.StatusCreated {
 		t.Fatalf("Error registering datastore item \n Expecting status code 201, got %d", resp.StatusCode)
 	}
-	loc, err := resp.Location()
-	if err != nil {
-		t.Fatalf("Error getting location from response: %s", err)
-	}
-	httpClient.DeleteResource(t, loc)
+
+	u, err := url.Parse(loc)
+	require.NoError(t, err)
+	httpClient.DeleteResource(t, u)
 }
 
 func GetItem(t *testing.T) {
@@ -93,12 +94,12 @@ func DeleteItem(t *testing.T) {
 	}
 }
 
-func AddAlreadyExistingItem(t *testing.T) {
+func StoreAlreadyExistingItem(t *testing.T) {
 	loc := addDatastoreItem(t)
 	defer httpClient.DeleteResource(t, loc)
 
 	// add the same item
-	form := map[string]string{"description": "some rubbish"}
+	form := map[string]string{"description": "new rubbish"}
 	resp, err := httpClient.PutMultipart(flyteApi.DatastoreURL() + "/techops", form, []byte(datastoreItem), httputil.MediaTypeJson)
 	if err != nil {
 		t.Fatalf("Error registering datastore item: %s", err)
@@ -136,13 +137,12 @@ func DeleteNonExistantItem(t *testing.T) {
 
 func addDatastoreItem(t *testing.T) *url.URL {
 	form := map[string]string{"description": "some rubbish"}
-	resp, err := httpClient.PutMultipart(flyteApi.DatastoreURL() +"/techops", form, []byte(datastoreItem), httputil.MediaTypeJson)
+	loc := flyteApi.DatastoreURL() +"/techops"
+	_, err := httpClient.PutMultipart(loc, form, []byte(datastoreItem), httputil.MediaTypeJson)
 	if err != nil {
 		t.Fatalf("Error registering datastore item: %s", err)
 	}
-	loc, err := resp.Location()
-	if err != nil {
-		t.Fatalf("Error getting item location: %s", err)
-	}
-	return loc
+	u, err := url.Parse(loc)
+	require.NoError(t, err)
+	return u
 }

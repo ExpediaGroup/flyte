@@ -64,7 +64,7 @@ func Handler() http.Handler {
 	// --- datastore ---
 	router.Get(flytepath.DatastorePath, datastore.GetItems)
 	router.Get(flytepath.DatastoreItemPath, datastore.GetItem)
-	router.Put(flytepath.DatastoreItemPath, datastore.PutItem, YamlHandler)
+	router.Put(flytepath.DatastoreItemPath, datastore.StoreItem, YamlHandler)
 	router.Delete(flytepath.DatastoreItemPath, datastore.DeleteItem)
 
 	// --- audit ---

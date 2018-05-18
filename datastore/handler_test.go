@@ -317,32 +317,29 @@ func TestGetDataStoreValue_ShouldReturnError_WhenThereIsIssueGettingItem(t *test
 	assert.EqualError(t, err, "cannot find datastore item key=error_item: unexpected error")
 }
 
-func TestPutItem_ShouldCreateNewItem(t *testing.T) {
+func TestStoreItem_ShouldCreateNewItem(t *testing.T) {
 	defer resetDatastoreRepo()
 	var actualItem DataItem
 	datastoreRepo = mockDatastoreRepo{
-		add: func(item DataItem) error { actualItem = item; return nil },
-		has: func(key string) (bool, error) { return false, nil },
+		store: func(item DataItem) (bool, error) { actualItem = item; return false, nil },
 	}
 
 	form := testForm()
 	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/new-item", *form)
 	require.NoError(t, err)
 
-	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, PutItem)
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
 
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
-	assert.Equal(t, "http://example.com/v1/datastore/new-item", resp.Header.Get("location"))
 	expectedItem := DataItem{Key: "new-item", Description: form.fields["description"], Value: form.fileContent, ContentType: form.fileContentType}
 	assert.Equal(t, expectedItem, actualItem)
 }
 
-func TestPutItem_ShouldUpdateItem(t *testing.T) {
+func TestStoreItem_ShouldUpdateItem(t *testing.T) {
 	defer resetDatastoreRepo()
 	var actualItem DataItem
 	datastoreRepo = mockDatastoreRepo{
-		add: func(item DataItem) error { actualItem = item; return nil },
-		has: func(key string) (bool, error) { return true, nil },
+		store: func(item DataItem) (bool, error) { actualItem = item; return true, nil },
 	}
 
 	form := testForm()
@@ -350,15 +347,14 @@ func TestPutItem_ShouldUpdateItem(t *testing.T) {
 	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/existing-item", *form)
 	require.NoError(t, err)
 
-	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, PutItem)
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
 
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
-	assert.Equal(t, "http://example.com/v1/datastore/existing-item", resp.Header.Get("location"))
 	expectedItem := DataItem{Key: "existing-item", Value: form.fileContent, ContentType: form.fileContentType}
 	assert.Equal(t, expectedItem, actualItem)
 }
 
-func TestPutItem_ShouldFailForEmptyDataItem(t *testing.T) {
+func TestStoreItem_ShouldFailForEmptyDataItem(t *testing.T) {
 	defer loggertest.Reset()
 	loggertest.Init(loggertest.LogLevelError)
 
@@ -367,21 +363,20 @@ func TestPutItem_ShouldFailForEmptyDataItem(t *testing.T) {
 	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/empty-file", *form)
 	require.NoError(t, err)
 
-	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, PutItem)
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
 
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 
 	logMessages := loggertest.GetLogMessages()
 	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Error putting data store item: error getting multipart file: file content is empty", logMessages[0].Message)
+	assert.Equal(t, "Error storing data store item: error getting multipart file: file content is empty", logMessages[0].Message)
 }
 
-func TestPutItem_ShouldUseDefaultFileContentTypeIfMissing(t *testing.T) {
+func TestStoreItem_ShouldUseDefaultFileContentTypeIfMissing(t *testing.T) {
 	defer resetDatastoreRepo()
 	var actualItem DataItem
 	datastoreRepo = mockDatastoreRepo{
-		add: func(item DataItem) error { actualItem = item; return nil },
-		has: func(key string) (bool, error) { return false, nil },
+		store: func(item DataItem) (bool, error) { actualItem = item; return false, nil },
 	}
 
 	form := testForm()
@@ -389,73 +384,49 @@ func TestPutItem_ShouldUseDefaultFileContentTypeIfMissing(t *testing.T) {
 	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/file-with-missing-ct", *form)
 	require.NoError(t, err)
 
-	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, PutItem)
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
 
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
-	assert.Equal(t, "http://example.com/v1/datastore/file-with-missing-ct", resp.Header.Get("location"))
 	expectedItem := DataItem{Key: "file-with-missing-ct", Description: form.fields["description"], Value: form.fileContent, ContentType: "text/plain; charset=us-ascii"}
 	assert.Equal(t, expectedItem, actualItem)
 }
 
-func TestPutItem_ShouldReturn500WhenUnableToAddToRepo(t *testing.T) {
+func TestStoreItem_ShouldReturn500WhenUnableToAddToRepo(t *testing.T) {
 	defer loggertest.Reset()
 	loggertest.Init(loggertest.LogLevelError)
 
 	defer resetDatastoreRepo()
 	datastoreRepo = mockDatastoreRepo{
-		add: func(dataItem DataItem) error { return errors.New("something went wrong") },
-		has: func(key string) (bool, error) { return false, nil },
+		store: func(dataItem DataItem) (bool, error) { return false, errors.New("something went wrong") },
 	}
 
-	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/add-error", *testForm())
+	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/store-error", *testForm())
 	require.NoError(t, err)
 
-	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, PutItem)
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
 
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 
 	logMessages := loggertest.GetLogMessages()
 	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot add item key=add-error: something went wrong", logMessages[0].Message)
-}
-
-func TestPutItem_ShouldReturn500WhenUnableToCheckRepo(t *testing.T) {
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	defer resetDatastoreRepo()
-	datastoreRepo = mockDatastoreRepo{
-		has: func(key string) (bool, error) { return false, errors.New("something went wrong") },
-	}
-
-	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/has-error", *testForm())
-	require.NoError(t, err)
-
-	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, PutItem)
-
-	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot check if item exists key=has-error: something went wrong", logMessages[0].Message)
+	assert.Equal(t, "Cannot store item key=store-error: something went wrong", logMessages[0].Message)
 }
 
 // --- mocks & helpers ---
 
 type mockDatastoreRepo struct {
-	add     func(dataItem DataItem) error
+	store   func(item DataItem) (bool, error)
 	remove  func(key string) error
 	get     func(key string) (*DataItem, error)
 	findAll func() ([]DataItem, error)
-	has     func(key string) (bool, error)
 }
 
 func resetDatastoreRepo() {
 	datastoreRepo = datastoreMgoRepo{}
 }
 
-func (r mockDatastoreRepo) Add(dataItem DataItem) error {
-	return r.add(dataItem)
+func (r mockDatastoreRepo) Store(item DataItem) (bool, error) {
+	return r.store(item)
 }
 
 func (r mockDatastoreRepo) Remove(key string) error {
@@ -468,10 +439,6 @@ func (r mockDatastoreRepo) Get(key string) (*DataItem, error) {
 
 func (r mockDatastoreRepo) FindAll() ([]DataItem, error) {
 	return r.findAll()
-}
-
-func (r mockDatastoreRepo) Has(key string) (bool, error) {
-	return r.has(key)
 }
 
 type multipartForm struct {
