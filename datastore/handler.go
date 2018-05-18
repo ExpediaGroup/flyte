@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"github.com/husobee/vestigo"
 	"net/http"
-	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
 	"strings"
@@ -61,30 +60,26 @@ func GetItem(w http.ResponseWriter, r *http.Request) {
 	w.Write(dataItem.Value)
 }
 
-func PostItem(w http.ResponseWriter, r *http.Request) {
-
-	dataItem, err := toDataItem(r)
+func StoreItem(w http.ResponseWriter, r *http.Request) {
+	item, err := toDataItem(r)
 	if err != nil {
-		logger.Errorf("Error posting data store item: %v", err)
+		logger.Errorf("Error storing data store item: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if err := datastoreRepo.Add(dataItem); err != nil {
-		switch err {
-		case dataItemExists:
-			logger.Errorf("Cannot add item, key=%s already exists", dataItem.Key)
-			w.WriteHeader(http.StatusConflict)
-		default:
-			logger.Errorf("Cannot add item key=%s: %v", dataItem.Key, err)
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+	updated, err := datastoreRepo.Store(item)
+	if err != nil {
+		logger.Errorf("Cannot store item key=%s: %v", item.Key, err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	logger.Infof("Data item stored: key=%s contentType=%s", dataItem.Key, dataItem.ContentType)
-	w.Header().Set("Location", httputil.UriBuilder(r).Path(flytepath.DatastorePath, dataItem.Key).Build())
-	w.WriteHeader(http.StatusCreated)
+	if updated {
+		w.WriteHeader(http.StatusNoContent)
+	} else {
+		w.WriteHeader(http.StatusCreated)
+	}
 }
 
 func DeleteItem(w http.ResponseWriter, r *http.Request) {

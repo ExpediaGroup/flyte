@@ -130,10 +130,10 @@
 			"response": []
 		},
 		{
-			"name": "/v1/datastore",
+			"name": "/v1/datastore/<key>",
 			"request": {
-				"url": "{{host}}/v1/datastore",
-				"method": "POST",
+				"url": "{{host}}/v1/datastore/team",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -144,12 +144,6 @@
 				"body": {
 					"mode": "formdata",
 					"formdata": [
-						{
-							"key": "key",
-							"value": "team",
-							"description": "",
-							"type": "text"
-						},
 						{
 							"key": "description",
 							"value": "hipchat teams",

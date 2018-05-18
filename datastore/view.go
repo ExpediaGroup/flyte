@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/husobee/vestigo"
 )
 
 type dataItemResponse struct {
@@ -68,7 +69,7 @@ func toDataItem(r *http.Request) (DataItem, error) {
 		return DataItem{}, fmt.Errorf("error getting multipart file: %v", err)
 	}
 
-	key := r.Form.Get("key")
+	key := vestigo.Param(r, "key")
 	if key == "" {
 		return DataItem{}, errors.New("data store item key is empty")
 	}

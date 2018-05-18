@@ -26,7 +26,7 @@ type DataItem struct {
 }
 
 type Repository interface {
-	Add(dataItem DataItem) error
+	Store(dataItem DataItem) (updated bool, err error)
 	Remove(key string) error
 	Get(key string) (*DataItem, error)
 	FindAll() ([]DataItem, error)
@@ -34,5 +34,4 @@ type Repository interface {
 
 var (
 	dataItemNotFound = errors.New("not found")
-	dataItemExists   = errors.New("data item already exists")
 )

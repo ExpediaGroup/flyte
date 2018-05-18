@@ -24,16 +24,16 @@ import (
 
 type datastoreMgoRepo struct{}
 
-func (r datastoreMgoRepo) Add(dataItem DataItem) error {
+func (r datastoreMgoRepo) Store(item DataItem) (updated bool, err error) {
 
 	s := mongo.GetSession()
 	defer s.Close()
 
-	err := s.DB(mongo.DbName).C(mongo.DatastoreCollectionId).Insert(dataItem)
-	if mgo.IsDup(err) {
-		err = dataItemExists
+	info, err := s.DB(mongo.DbName).C(mongo.DatastoreCollectionId).UpsertId(item.Key, item)
+	if err != nil {
+		return false, err
 	}
-	return err
+	return info.Updated > 0, nil
 }
 
 func (r datastoreMgoRepo) Remove(key string) error {

@@ -475,15 +475,14 @@ The command must be an available command on a pack registered with the flyte-api
 ## Datastore
 
 flyte provides a datastore that allows reference data to be persisted and made available for use in flow definitions.
-The datastore data is global and items are added by POSTing a multipart request to its resource. The value may be in any
+The datastore data is global and items are added by PUTting a multipart request to its resource. The value may be in any
 format. You can then select and use datastore data in your flows using the `datastore` function as described previously.
 
 #### Datastore Example
 
-curl: `curl -v -F "key=teams.json" -F "description=hipchat teams.json" -F "value=@teams.json;type=application/json" http://localhost:8080/v1/datastore`
+curl: `curl -v -X PUT -F "description=hipchat teams.json" -F "value=@teams.json;type=application/json" http://localhost:8080/v1/datastore/teams.json`
 
-Key in the form field is required and has to be unique. File content type is optional and defaults to
-'text/plain; charset=us-ascii'. File key has to be `value`.
+File content type is optional and defaults to 'text/plain; charset=us-ascii'. File key has to be `value`.
 
 `teams` file exmaple:
 ```

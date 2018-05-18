@@ -185,16 +185,6 @@ paths:
           description: datastore
           schema:
             $ref: '#/definitions/datastoreItems'
-    post:
-      tags:
-        - datastore
-      summary: add item to datastore
-      operationId: addDatastoreItem
-      parameters:
-        - $ref: '#/parameters/datastoreItem'
-      responses:
-        '201':
-          description: datastore item added
   '/v1/datastore/{datastoreItemId}':
     get:
       tags:
@@ -208,6 +198,19 @@ paths:
           description: datastore item
           schema:
             $ref: '#/definitions/datastoreItem'
+    put:
+      tags:
+        - datastore
+      summary: add item to datastore
+      operationId: addDatastoreItem
+      parameters:
+        - $ref: '#/parameters/datastoreItemId'
+        - $ref: '#/parameters/datastoreItem'
+      responses:
+        '201':
+          description: datastore item created
+        '204':
+          description: datastore item updated
   '/v1/audit/flows':
     get:
       tags:

@@ -104,7 +104,7 @@ func (c HttpClient) PostWithStructResponse(url, requestBody string, response int
 	return nil
 }
 
-func (c HttpClient) PostMultipart(url string, form map[string]string, fileContent []byte, fileContentType string) (*http.Response, error) {
+func (c HttpClient) PutMultipart(url string, form map[string]string, fileContent []byte, fileContentType string) (*http.Response, error) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 
@@ -122,7 +122,7 @@ func (c HttpClient) PostMultipart(url string, form map[string]string, fileConten
 		return nil, fmt.Errorf("error closing multipart writer: %v", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, url, body)
+	req, err := http.NewRequest(http.MethodPut, url, body)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create request: %v", err)
 	}

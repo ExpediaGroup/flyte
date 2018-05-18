@@ -32,6 +32,8 @@ import (
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger/loggertest"
 	"testing"
+	"github.com/husobee/vestigo"
+	"github.com/HotelsDotCom/flyte/flytepath"
 )
 
 func TestGetItems(t *testing.T) {
@@ -185,167 +187,6 @@ func TestGetItem_ServiceError(t *testing.T) {
 	assert.Equal(t, "Cannot retrieve data item key=: something went wrong", logMessages[0].Message)
 }
 
-func TestPostDataItem(t *testing.T) {
-
-	defer resetDatastoreRepo()
-	actualItem := DataItem{}
-	datastoreRepo = mockDatastoreRepo{
-		add: func(dataItem DataItem) error {
-			actualItem = dataItem
-			return nil
-		},
-	}
-
-	form := map[string]string{"key": "itemABC", "description": "test item ABC"}
-	value := []byte(`{"one": "1", "two", "2"}`)
-	header, body := multipartPostRequest(t, form, value, httputil.MediaTypeJson)
-	request := httptest.NewRequest(http.MethodPost, "/datastore", body)
-	request.Header = header
-	httputil.SetProtocolAndHostIn(request)
-
-	w := httptest.NewRecorder()
-	PostItem(w, request)
-	response := w.Result()
-
-	assert.Equal(t, http.StatusCreated, response.StatusCode)
-	expectedItem := DataItem{Key: "itemABC", Description: "test item ABC", Value: value, ContentType: httputil.MediaTypeJson}
-	assert.Equal(t, expectedItem, actualItem)
-	assert.Equal(t, "http://example.com/v1/datastore/itemABC", response.Header.Get("location"))
-}
-
-func TestPostEmptyDataItem(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	form := map[string]string{"key": "empty_item"}
-	value := []byte("")
-	header, body := multipartPostRequest(t, form, value, httputil.MediaTypeJson)
-	request := httptest.NewRequest(http.MethodPost, "/datastore", body)
-	request.Header = header
-
-	w := httptest.NewRecorder()
-	PostItem(w, request)
-
-	response := w.Result()
-	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Error posting data store item: error getting multipart file: file content is empty", logMessages[0].Message)
-}
-
-func TestPostDataItemWithMissingRequiredFieldsShouldFail(t *testing.T) {
-
-	var cases = []struct {
-		form  map[string]string
-		value string
-	}{
-		{form: map[string]string{"key": "the key"}, value: ``},
-		{form: map[string]string{}, value: `{"json": "value"}`},
-	}
-
-	for _, c := range cases {
-
-		header, body := multipartPostRequest(t, c.form, []byte(c.value), httputil.MediaTypeJson)
-		request := httptest.NewRequest(http.MethodPost, "/datastore", body)
-		request.Header = header
-
-		w := httptest.NewRecorder()
-		PostItem(w, request)
-		response := w.Result()
-
-		assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-	}
-}
-
-func TestPostDataItemMissingMultipartHeaderDefaultValue(t *testing.T) {
-
-	defer resetDatastoreRepo()
-	actualItem := DataItem{}
-	datastoreRepo = mockDatastoreRepo{
-		add: func(dataItem DataItem) error {
-			actualItem = dataItem
-			return nil
-		},
-	}
-
-	form := map[string]string{"key": "ItemWithMissingContentType"}
-	value := []byte(`[1, 2, 3]`)
-	header, body := multipartPostRequest(t, form, value, "")
-	request := httptest.NewRequest(http.MethodPost, "/datastore", body)
-	request.Header = header
-	httputil.SetProtocolAndHostIn(request)
-
-	w := httptest.NewRecorder()
-	PostItem(w, request)
-	response := w.Result()
-
-	assert.Equal(t, http.StatusCreated, response.StatusCode)
-	expectedItem := DataItem{Key: "ItemWithMissingContentType", Value: value, ContentType: "text/plain; charset=us-ascii"}
-	assert.Equal(t, expectedItem, actualItem)
-	assert.Empty(t, actualItem.Description)
-	assert.Equal(t, "http://example.com/v1/datastore/ItemWithMissingContentType", response.Header.Get("location"))
-}
-
-func TestPostDataItemServiceFailed(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	defer resetDatastoreRepo()
-	datastoreRepo = mockDatastoreRepo{
-		add: func(dataItem DataItem) error {
-			return errors.New("something went wrong")
-		},
-	}
-
-	form := map[string]string{"key": "failing_item"}
-	value := []byte(`some value`)
-	header, body := multipartPostRequest(t, form, value, "plain/text")
-	request := httptest.NewRequest(http.MethodPost, "/datastore", body)
-	request.Header = header
-
-	w := httptest.NewRecorder()
-	PostItem(w, request)
-
-	response := w.Result()
-	assert.Equal(t, http.StatusInternalServerError, response.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot add item key=failing_item: something went wrong", logMessages[0].Message)
-}
-
-func TestPostDuplicateDataItem(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	defer resetDatastoreRepo()
-	datastoreRepo = mockDatastoreRepo{
-		add: func(dataItem DataItem) error {
-			return dataItemExists
-		},
-	}
-
-	form := map[string]string{"key": "duplicate_item"}
-	value := []byte(`---`)
-	header, body := multipartPostRequest(t, form, value, "text/plain")
-	request := httptest.NewRequest(http.MethodPost, "/datastore", body)
-	request.Header = header
-
-	w := httptest.NewRecorder()
-	PostItem(w, request)
-
-	response := w.Result()
-	assert.Equal(t, http.StatusConflict, response.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot add item, key=duplicate_item already exists", logMessages[0].Message)
-}
-
 func TestDeleteItem(t *testing.T) {
 
 	defer resetDatastoreRepo()
@@ -476,47 +317,105 @@ func TestGetDataStoreValue_ShouldReturnError_WhenThereIsIssueGettingItem(t *test
 	assert.EqualError(t, err, "cannot find datastore item key=error_item: unexpected error")
 }
 
+func TestStoreItem_ShouldCreateNewItem(t *testing.T) {
+	defer resetDatastoreRepo()
+	var actualItem DataItem
+	datastoreRepo = mockDatastoreRepo{
+		store: func(item DataItem) (bool, error) { actualItem = item; return false, nil },
+	}
+
+	form := testForm()
+	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/new-item", *form)
+	require.NoError(t, err)
+
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
+
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	expectedItem := DataItem{Key: "new-item", Description: form.fields["description"], Value: form.fileContent, ContentType: form.fileContentType}
+	assert.Equal(t, expectedItem, actualItem)
+}
+
+func TestStoreItem_ShouldUpdateItem(t *testing.T) {
+	defer resetDatastoreRepo()
+	var actualItem DataItem
+	datastoreRepo = mockDatastoreRepo{
+		store: func(item DataItem) (bool, error) { actualItem = item; return true, nil },
+	}
+
+	form := testForm()
+	form.fields = nil
+	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/existing-item", *form)
+	require.NoError(t, err)
+
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
+
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	expectedItem := DataItem{Key: "existing-item", Value: form.fileContent, ContentType: form.fileContentType}
+	assert.Equal(t, expectedItem, actualItem)
+}
+
+func TestStoreItem_ShouldFailForEmptyDataItem(t *testing.T) {
+	defer loggertest.Reset()
+	loggertest.Init(loggertest.LogLevelError)
+
+	form := testForm()
+	form.fileContent = []byte(``)
+	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/empty-file", *form)
+	require.NoError(t, err)
+
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
+
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+
+	logMessages := loggertest.GetLogMessages()
+	require.Len(t, logMessages, 1)
+	assert.Equal(t, "Error storing data store item: error getting multipart file: file content is empty", logMessages[0].Message)
+}
+
+func TestStoreItem_ShouldUseDefaultFileContentTypeIfMissing(t *testing.T) {
+	defer resetDatastoreRepo()
+	var actualItem DataItem
+	datastoreRepo = mockDatastoreRepo{
+		store: func(item DataItem) (bool, error) { actualItem = item; return false, nil },
+	}
+
+	form := testForm()
+	form.fileContentType = ""
+	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/file-with-missing-ct", *form)
+	require.NoError(t, err)
+
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
+
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	expectedItem := DataItem{Key: "file-with-missing-ct", Description: form.fields["description"], Value: form.fileContent, ContentType: "text/plain; charset=us-ascii"}
+	assert.Equal(t, expectedItem, actualItem)
+}
+
+func TestStoreItem_ShouldReturn500WhenUnableToAddToRepo(t *testing.T) {
+	defer loggertest.Reset()
+	loggertest.Init(loggertest.LogLevelError)
+
+	defer resetDatastoreRepo()
+	datastoreRepo = mockDatastoreRepo{
+		store: func(dataItem DataItem) (bool, error) { return false, errors.New("something went wrong") },
+	}
+
+	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/store-error", *testForm())
+	require.NoError(t, err)
+
+	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
+
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+
+	logMessages := loggertest.GetLogMessages()
+	require.Len(t, logMessages, 1)
+	assert.Equal(t, "Cannot store item key=store-error: something went wrong", logMessages[0].Message)
+}
+
 // --- mocks & helpers ---
 
-func multipartPostRequest(t *testing.T, form map[string]string, fileContent []byte, fileContentType string) (http.Header, io.Reader) {
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.FormDataContentType()
-
-	if err := writeMultipartFile(writer, fileContent, fileContentType); err != nil {
-		assert.Fail(t, fmt.Sprintf("cannot create form file: %v", err))
-	}
-
-	for k, v := range form {
-		if err := writer.WriteField(k, v); err != nil {
-			assert.Fail(t, fmt.Sprintf("cannot write form field: %v", err))
-		}
-	}
-
-	if err := writer.Close(); err != nil {
-		assert.Fail(t, fmt.Sprintf("error closing multipart writer: %v", err))
-	}
-
-	return http.Header{httputil.HeaderContentType: []string{writer.FormDataContentType()}}, body
-}
-
-func writeMultipartFile(writer *multipart.Writer, content []byte, contentType string) error {
-
-	h := make(textproto.MIMEHeader)
-	h.Set("Content-Disposition", `form-data; name="value"; filename="test_file_item"`)
-	h.Set(httputil.HeaderContentType, contentType)
-	part, err := writer.CreatePart(h)
-	if err != nil {
-		return err
-	}
-
-	_, err = part.Write(content)
-	return err
-}
-
 type mockDatastoreRepo struct {
-	add     func(dataItem DataItem) error
+	store   func(item DataItem) (bool, error)
 	remove  func(key string) error
 	get     func(key string) (*DataItem, error)
 	findAll func() ([]DataItem, error)
@@ -526,8 +425,8 @@ func resetDatastoreRepo() {
 	datastoreRepo = datastoreMgoRepo{}
 }
 
-func (r mockDatastoreRepo) Add(dataItem DataItem) error {
-	return r.add(dataItem)
+func (r mockDatastoreRepo) Store(item DataItem) (bool, error) {
+	return r.store(item)
 }
 
 func (r mockDatastoreRepo) Remove(key string) error {
@@ -540,4 +439,81 @@ func (r mockDatastoreRepo) Get(key string) (*DataItem, error) {
 
 func (r mockDatastoreRepo) FindAll() ([]DataItem, error) {
 	return r.findAll()
+}
+
+type multipartForm struct {
+	fileKey         string
+	fileName        string
+	fileContentType string
+	fileContent     []byte
+	fields          map[string]string
+}
+
+func newMultipartRequest(method, target string, form multipartForm) (*http.Request, error) {
+	body, contentType, err := getMultipartContent(form)
+	if err != nil {
+		return nil, err
+	}
+
+	req := httptest.NewRequest(method, target, body)
+	httputil.SetProtocolAndHostIn(req)
+	req.Header.Set(httputil.HeaderContentType, contentType)
+	return req, nil
+}
+
+func getMultipartContent(form multipartForm) (io.Reader, string, error) {
+	body := new(bytes.Buffer)
+	w := multipart.NewWriter(body)
+
+	if err := writeFormFile(w, form); err != nil {
+		return nil, "", err
+	}
+
+	for key, val := range form.fields {
+		if err := w.WriteField(key, val); err != nil {
+			return nil, "", err
+		}
+	}
+
+	if err := w.Close(); err != nil {
+		return nil, "", err
+	}
+
+	return body, w.FormDataContentType(), nil
+}
+
+func writeFormFile(w *multipart.Writer, form multipartForm) error {
+	h := make(textproto.MIMEHeader)
+	h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, form.fileKey, form.fileName))
+	h.Set("Content-Type", form.fileContentType)
+
+	part, err := w.CreatePart(h)
+	if err != nil {
+		return err
+	}
+
+	_, err = part.Write(form.fileContent)
+	return err
+}
+
+func testForm() *multipartForm {
+	return &multipartForm{
+		fileKey:         "value",
+		fileContentType: httputil.MediaTypeJson,
+		fileContent:     []byte(`true`),
+		fileName:        "my-file",
+		fields:          map[string]string{"description": "Data item description"},
+	}
+}
+
+// Use vestigo router to serve HTTP
+// Allows to use unmodified path in the request
+// without need to hack it like this `?:my_path_param_key=my_path_param_value`
+func serve(req *http.Request, method, path string, handler http.HandlerFunc, middleware ...vestigo.Middleware) *http.Response {
+	r := vestigo.NewRouter()
+	r.Add(method, path, handler, middleware...)
+
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	return w.Result()
 }
