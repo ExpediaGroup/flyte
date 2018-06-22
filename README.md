@@ -40,7 +40,7 @@ while the Flyte-API runs in a less secure environment, or even the internal netw
 
 ## Running
 
-The are a number of ways to run flyte-api and its mongo db.
+The are a number of ways to run flyte and its mongo db.
 Note that the default mongo host and port for flyte is `localhost:27017` (this value can be changed using the
 `FLYTE_MGO_HOST` env variable).
 
@@ -65,7 +65,7 @@ or manually...
 dep ensure
 go test ./... -tags="integration acceptance" //remove tags if only want to run unit tests
 docker run -d -p 27017:27017 --name mongo mongo:latest
-go build && ./flyte-api
+go build && ./flyte
 ```
 
 #### Using Docker
@@ -86,9 +86,9 @@ docker run -p 8080:8080 -e FLYTE_MGO_HOST=mongo -d --name flyte --link mongo:mon
 
 ### TLS Mode
 
-TLS is supported by the flyte-api.
+TLS is supported by flyte
 
-To run the flyte-api with TLS mode enabled, filenames of a certificate and matching private key for the server must be 
+To run flyte with TLS mode enabled, filenames of a certificate and matching private key for the server must be
 provided using the environment variables `FLYTE_TLS_CERT_PATH` and `FLYTE_TLS_KEY_PATH`. 
 
 More information regarding the use of TLS in Golang can be found in the [Golang documentation](https://golang.org/pkg/net/http/#ListenAndServeTLS).
@@ -102,9 +102,9 @@ By default the action collection data will expire after a year. To change this, 
 ## Authentication and Authorization
 
 Authentication and Authorization is handled using [JWT](https://jwt.io/).
-The flyte-api implements OpenID Connect (OIDC), an authentication layer on top of OAuth 2.0, an authorization framework.
+Flyte implements OpenID Connect (OIDC), an authentication layer on top of OAuth 2.0, an authorization framework.
 
-More information regarding how the Flyte API and an OIDC provider interact with Users / Flyte Packs can be found [here](docs/readme/AuthenticationAuthorization.md).
+More information regarding how Flyte API and an OIDC provider interact with Users / Flyte Packs can be found [here](docs/readme/AuthenticationAuthorization.md).
 
 To enable auth you must set the following env variables:
 
@@ -114,8 +114,8 @@ To enable auth you must set the following env variables:
 
 #### jwt token
 
-Protected resources are accessed by including a valid JWT bearer token in HTTP requests to the flyte-api.
-This token must be issued by the same provider as the referenced OIDC issuer in the flyte-api configuration (`FLYTE_OIDC_ISSUER_URL` & `FLYTE_OIDC_ISSUER_CLIENT_ID`)
+Protected resources are accessed by including a valid JWT bearer token in HTTP requests to flyte.
+This token must be issued by the same provider as the referenced OIDC issuer in flyte configuration (`FLYTE_OIDC_ISSUER_URL` & `FLYTE_OIDC_ISSUER_CLIENT_ID`)
 
 #### auth policy yaml 
 
@@ -178,7 +178,7 @@ For example a token containing any of the following claims would succeed (this i
 
 The port number is configurable using the environment variable `FLYTE_PORT`
 
-By default the flyte-api serves on port `8080` (when TLS is disabled) or `8443` (when TLS is enabled, by specifying 
+By default flyte serves on port `8080` (when TLS is disabled) or `8443` (when TLS is enabled, by specifying
 valid `FLYTE_TLS_CERT_PATH` and `FLYTE_TLS_KEY_PATH` environment variables as described above). 
 
 
@@ -189,7 +189,7 @@ valid `FLYTE_TLS_CERT_PATH` and `FLYTE_TLS_KEY_PATH` environment variables as de
 
 ## Postman
 
-There are a number of postman files in [postman] that can be used to test running flyte-api
+There are a number of postman files in [postman] that can be used to test running flyte
 
 ## Acceptance Tests
 
@@ -219,7 +219,7 @@ Please note that both unit and integration tests will run using the above comman
 
 ## Writing Flows
 
-The main interaction of users with flyte is in writing flows for flyte-api to execute.
+The main interaction of users with flyte is in writing flows for flyte to execute.
  
 Flows are a list of steps that define a particular use case - for example triggering the deploy of an app when a user
 types the message "deploy foo-app 1.2.0" in a particular chat room.
@@ -227,7 +227,7 @@ Each step in a flow consists of an event that triggers it (e.g. an instant messa
 room); criteria that must be satisfied for the step to run (e.g. the message matches a certain regex); and finally an
 action that will be executed off the back of the step (e.g. triggering the deployment system to deploy the requested app).
 
-flyte packs are self-contained apps that are responsible for executing these actions and sending events to the flyte api. 
+flyte packs are self-contained apps that are responsible for executing these actions and sending events to the flyte api.
 Packs are domain specific and new ones can be created as and when required. For example the bamboo pack can be used to
 trigger bamboo builds and will send events to the flyte api to inform it of build successes, failures etc. Flow writers
 can then look out for these events in their flow.
@@ -245,9 +245,9 @@ The happy day flow for the above deploy scenario would look to an end user somet
     2. Exposes a command that can be called to send a message programmatically
  - the "Bamboo" pack that will expose a command that can be called to trigger labeling of an app and will send an event
  to flyte when this is complete
- - flyte-api itself that will handle the interactions with the packs and execute the deploy flow that the user defines.
+ - flyte itself that will handle the interactions with the packs and execute the deploy flow that the user defines.
   
-The above 'deploy' flow would be defined in the flyte-api as follows:
+The above 'deploy' flow would be defined in flyte as follows:
 
 ```
 {
@@ -470,7 +470,7 @@ any set of steps that is a prerequisite for the current step.
 #### Command
 
 The command section of a step details what you want to execute if the step is executed. 
-The command must be an available command on a pack registered with the flyte-api.
+The command must be an available command on a pack registered with flyte.
 
 ## Datastore
 

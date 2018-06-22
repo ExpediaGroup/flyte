@@ -1,5 +1,5 @@
 ## Interaction between Flyte API, OIDC Provider and User/Flyte Packs
-The following information is applicable when the Flyte API is configured with Authentication/Authorization enabled.
+The following information is applicable when Flyte is configured with Authentication/Authorization enabled.
 
 - *User* refers to a human client. For example, a User may send a POST flow request to the Flyte API.
 - *Pack* refers to the encompassment of a Flyte Pack and Flyte client.

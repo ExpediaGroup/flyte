@@ -3,6 +3,17 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/HotelsDotCom/flyte-client"
+  packages = [
+    "client",
+    "config",
+    "flyte",
+    "healthcheck"
+  ]
+  revision = "cfdc49ada2b0afd0e23b8907888f79025c43e3d7"
+
+[[projects]]
+  branch = "master"
   name = "github.com/HotelsDotCom/go-docker-client"
   packages = ["."]
   revision = "569c194a5d2d12e3a82db8121be2f397cec19b60"
@@ -245,6 +256,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "65bef8ff544058a3f9287dce2aa5a7daccf9173589c44d0d55620e129d546caa"
+  inputs-digest = "5d5a4efed761079347f26c1864c916864ae1cb6020d458e7ef9e6aa268850759"
   solver-name = "gps-cdcl"
   solver-version = 1

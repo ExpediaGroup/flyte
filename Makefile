@@ -4,10 +4,10 @@ build:
 	go build
 
 run: build run-mongo
-	./flyte-api &
+	./flyte &
 
 stop: stop-mongo
-	killall flyte-api
+	killall flyte
 
 run-mongo:
 	docker run -dp 27017:27017 --name mongo mongo:latest

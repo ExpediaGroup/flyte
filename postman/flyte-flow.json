@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "bc1bf441-ec48-4dba-97dd-4977ff46a49b",
-		"name": "flyte-api-flow",
+		"name": "flyte-flow",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [

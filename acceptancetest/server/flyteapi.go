@@ -123,7 +123,7 @@ func (f *Flyte) startFlyteApi(mgoHost, oidcIssuerUri string) (map[string][]httpu
 	var err error
 	client := urlutil.NewClient(5 * time.Second)
 
-	// The flyte-api takes time to start-up; therefore, we attempt to connect several times
+	// Flyte takes time to start-up; therefore, we attempt to connect several times
 	for i := 0; i < 5; i++ {
 		time.Sleep(2 * time.Second)
 
