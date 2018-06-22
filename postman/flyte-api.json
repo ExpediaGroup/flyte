@@ -1,7 +1,7 @@
 {
 	"variables": [],
 	"info": {
-		"name": "flyte-api",
+		"name": "flyte",
 		"_postman_id": "5e138012-9511-61f6-1a6c-f47dfd0ea61c",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"

@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  title: flyte-api
+  title: flyte
   description: Automation API
   contact:
     name: FLYTE Team
