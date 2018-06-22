@@ -86,9 +86,9 @@ docker run -p 8080:8080 -e FLYTE_MGO_HOST=mongo -d --name flyte --link mongo:mon
 
 ### TLS Mode
 
-TLS is supported by the flyte
+TLS is supported by flyte
 
-To run the flyte with TLS mode enabled, filenames of a certificate and matching private key for the server must be 
+To run flyte with TLS mode enabled, filenames of a certificate and matching private key for the server must be
 provided using the environment variables `FLYTE_TLS_CERT_PATH` and `FLYTE_TLS_KEY_PATH`. 
 
 More information regarding the use of TLS in Golang can be found in the [Golang documentation](https://golang.org/pkg/net/http/#ListenAndServeTLS).
@@ -102,9 +102,9 @@ By default the action collection data will expire after a year. To change this, 
 ## Authentication and Authorization
 
 Authentication and Authorization is handled using [JWT](https://jwt.io/).
-The flyte implements OpenID Connect (OIDC), an authentication layer on top of OAuth 2.0, an authorization framework.
+Flyte implements OpenID Connect (OIDC), an authentication layer on top of OAuth 2.0, an authorization framework.
 
-More information regarding how the Flyte API and an OIDC provider interact with Users / Flyte Packs can be found [here](docs/readme/AuthenticationAuthorization.md).
+More information regarding how Flyte API and an OIDC provider interact with Users / Flyte Packs can be found [here](docs/readme/AuthenticationAuthorization.md).
 
 To enable auth you must set the following env variables:
 
@@ -114,8 +114,8 @@ To enable auth you must set the following env variables:
 
 #### jwt token
 
-Protected resources are accessed by including a valid JWT bearer token in HTTP requests to the flyte.
-This token must be issued by the same provider as the referenced OIDC issuer in the flyte configuration (`FLYTE_OIDC_ISSUER_URL` & `FLYTE_OIDC_ISSUER_CLIENT_ID`)
+Protected resources are accessed by including a valid JWT bearer token in HTTP requests to flyte.
+This token must be issued by the same provider as the referenced OIDC issuer in flyte configuration (`FLYTE_OIDC_ISSUER_URL` & `FLYTE_OIDC_ISSUER_CLIENT_ID`)
 
 #### auth policy yaml 
 
@@ -178,7 +178,7 @@ For example a token containing any of the following claims would succeed (this i
 
 The port number is configurable using the environment variable `FLYTE_PORT`
 
-By default the flyte serves on port `8080` (when TLS is disabled) or `8443` (when TLS is enabled, by specifying 
+By default flyte serves on port `8080` (when TLS is disabled) or `8443` (when TLS is enabled, by specifying
 valid `FLYTE_TLS_CERT_PATH` and `FLYTE_TLS_KEY_PATH` environment variables as described above). 
 
 
@@ -227,7 +227,7 @@ Each step in a flow consists of an event that triggers it (e.g. an instant messa
 room); criteria that must be satisfied for the step to run (e.g. the message matches a certain regex); and finally an
 action that will be executed off the back of the step (e.g. triggering the deployment system to deploy the requested app).
 
-flyte packs are self-contained apps that are responsible for executing these actions and sending events to the flyte api. 
+flyte packs are self-contained apps that are responsible for executing these actions and sending events to the flyte api.
 Packs are domain specific and new ones can be created as and when required. For example the bamboo pack can be used to
 trigger bamboo builds and will send events to the flyte api to inform it of build successes, failures etc. Flow writers
 can then look out for these events in their flow.
@@ -247,7 +247,7 @@ The happy day flow for the above deploy scenario would look to an end user somet
  to flyte when this is complete
  - flyte itself that will handle the interactions with the packs and execute the deploy flow that the user defines.
   
-The above 'deploy' flow would be defined in the flyte as follows:
+The above 'deploy' flow would be defined in flyte as follows:
 
 ```
 {
@@ -470,7 +470,7 @@ any set of steps that is a prerequisite for the current step.
 #### Command
 
 The command section of a step details what you want to execute if the step is executed. 
-The command must be an available command on a pack registered with the flyte.
+The command must be an available command on a pack registered with flyte.
 
 ## Datastore
 
