@@ -58,9 +58,11 @@ Build & run:
 ```
 make run
 ```
- 
+
+Command starts mongo docker container and flyte go executable in the background. Output is written to `flyte.out` file.
+
 or manually...
- 
+
 ```
 dep ensure
 go test ./... -tags="integration acceptance" //remove tags if only want to run unit tests
