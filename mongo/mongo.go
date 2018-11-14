@@ -17,8 +17,9 @@ limitations under the License.
 package mongo
 
 import (
-	"gopkg.in/mgo.v2"
 	"github.com/HotelsDotCom/go-logger"
+	"gopkg.in/mgo.v2"
+	"time"
 )
 
 const (
@@ -30,7 +31,11 @@ const (
 	DatastoreCollectionId = "datastore"
 )
 
-var session *mgo.Session
+var (
+	session *mgo.Session
+	mongoDialTimeout      = 5 * time.Second
+	mongoDialRetryWait    = 30 * time.Second
+)
 
 func GetSession() *mgo.Session {
 	if session == nil {
@@ -46,13 +51,30 @@ func Health() error {
 }
 
 func InitSession(url string, ttl int) {
-	s, err := mgo.Dial(url)
+
+	_, err := mgo.ParseURL(url)
+
 	if err != nil {
-		logger.Fatalf("Unable to connect to mongo on url=%s: %v", url, err)
+		logger.Fatalf("Invalid mongo url=%s: %v", url, err)
 	}
-	session = s
+
+	session = dial(url)
 
 	EnsureIndexExists(ActionCollectionId, "actionCorrelationId", []string{"correlationId"})
 	EnsureIndexExists(ActionCollectionId, "actionCompound", []string{"packName", "state.value", "name", "state.time"})
 	EnsureTTLIndexExists(ActionCollectionId, "actionTTL", []string{"state.time"}, ttl)
+}
+
+func dial(url string) *mgo.Session {
+
+	s, err := mgo.DialWithTimeout(url, mongoDialTimeout)
+	if err != nil {
+		logger.Errorf("Unable to connect to mongo on url=%s will retry in %s: %v", url, mongoDialRetryWait.String(), err)
+		time.Sleep(mongoDialRetryWait)
+		return dial(url)
+	}
+	s.SetSyncTimeout(1 * time.Minute)
+	s.SetSocketTimeout(1 * time.Minute)
+
+	return s
 }
