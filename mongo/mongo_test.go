@@ -61,14 +61,14 @@ func Test_InitSession_ShouldKeepTryingToConnectToMongo(t *testing.T) {
 	}()
 
 	select {
-	case <-time.After(2 * time.Second):
+	case <-time.After(3 * time.Second):
 	case <-c:
 	}
 
 	// then
 	logMessages := loggertest.GetLogMessages()
 	require.NotEmpty(t, logMessages)
-	require.True(t, len(logMessages) > 2)
+	require.True(t, len(logMessages) > 1)
 
 	expectedError := fmt.Sprintf("Unable to connect to mongo on url=%s will retry in %s: no reachable servers", url, mongoDialRetryWait)
 	assert.Equal(t, expectedError, logMessages[0].Message)
