@@ -73,8 +73,8 @@ func dial(url string) *mgo.Session {
 		time.Sleep(mongoDialRetryWait)
 		return dial(url)
 	}
+
 	s.SetSyncTimeout(1 * time.Minute)
 	s.SetSocketTimeout(1 * time.Minute)
-
 	return s
 }

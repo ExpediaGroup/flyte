@@ -52,7 +52,7 @@ func Test_InitSession_ShouldKeepTryingToConnectToMongo(t *testing.T) {
 	mongoDialTimeout = 100 * time.Millisecond
 	mongoDialRetryWait = 100 * time.Millisecond
 	c := make(chan struct{})
-	url := "mongodb://localhost:27017/flyte"
+	url := "localhost"
 
 	// when
 	go func() {
@@ -61,13 +61,14 @@ func Test_InitSession_ShouldKeepTryingToConnectToMongo(t *testing.T) {
 	}()
 
 	select {
-	case <-time.After(3 * time.Second):
+	case <-time.After(5 * time.Second):
 	case <-c:
 	}
 
 	// then
 	logMessages := loggertest.GetLogMessages()
 	require.NotEmpty(t, logMessages)
+	fmt.Println(len(logMessages))
 	require.True(t, len(logMessages) > 1)
 
 	expectedError := fmt.Sprintf("Unable to connect to mongo on url=%s will retry in %s: no reachable servers", url, mongoDialRetryWait)
