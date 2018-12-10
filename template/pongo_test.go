@@ -39,6 +39,12 @@ func TestRandomAlphaShouldGenerateRandomAlphaStringOfRequestedSize(t *testing.T)
 	assert.Regexp(t, "^[A-Za-z]{10}$", val.(string))
 }
 
+func TestUnmarshallJson(t *testing.T) {
+	val, err := Resolve(`it is {{ unmarshalJson(j).foo }}`, Context{"j": `{"foo":"bar"}`})
+	require.NoError(t, err)
+	assert.Equal(t, "it is bar", val)
+}
+
 func TestRandomAlphaShouldReturnErrorIfLengthIsNegative(t *testing.T) {
 	_, err := Resolve("{{ randomAlpha(-5) }}", nil)
 
