@@ -39,16 +39,21 @@ func TestRandomAlphaShouldGenerateRandomAlphaStringOfRequestedSize(t *testing.T)
 	assert.Regexp(t, "^[A-Za-z]{10}$", val.(string))
 }
 
-func TestUnmarshallJson(t *testing.T) {
+func TestRandomAlphaShouldReturnErrorIfLengthIsNegative(t *testing.T) {
+	_, err := Resolve("{{ randomAlpha(-5) }}", nil)
+
+	assert.EqualError(t, err, "error while evaluating expression: '{{ randomAlpha(-5) }}': word length must be non-negative")
+}
+
+func TestUnmarshallJsonValid(t *testing.T) {
 	val, err := Resolve(`it is {{ unmarshalJson(j).foo }}`, Context{"j": `{"foo":"bar"}`})
 	require.NoError(t, err)
 	assert.Equal(t, "it is bar", val)
 }
 
-func TestRandomAlphaShouldReturnErrorIfLengthIsNegative(t *testing.T) {
-	_, err := Resolve("{{ randomAlpha(-5) }}", nil)
-
-	assert.EqualError(t, err, "error while evaluating expression: '{{ randomAlpha(-5) }}': word length must be non-negative")
+func TestUnmarshallJsonInvalid(t *testing.T) {
+	_, err := Resolve(`this should error: {{ unmarshalJson(j).foo }}`, Context{"j": `{"foo":}`})
+	require.Error(t, err)
 }
 
 func TestTemplateFunctionShouldResolveTemplateWithProvidedContext(t *testing.T) {
