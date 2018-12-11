@@ -27,6 +27,7 @@ import (
 	"strings"
 	"time"
 	"github.com/gorhill/cronexpr"
+	"encoding/json"
 )
 
 func init() {
@@ -43,6 +44,7 @@ func init() {
 	AddStaticContextEntry("base64Decode", base64Decode)
 	AddStaticContextEntry("datastore", datastoreFn)
 	AddStaticContextEntry("template", template)
+	AddStaticContextEntry("unmarshalJson", unmarshalJson)
 }
 
 // Executes a template with given context and returns the rendered template as a string
@@ -151,4 +153,12 @@ func matchesCron(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.
 	}
 
 	return pongo2.AsValue(ce.Matches(t)), nil
+}
+
+func unmarshalJson(in string) map[string]interface{} {
+	out := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(in), &out); err != nil {
+		panic(err)
+	}
+	return out
 }

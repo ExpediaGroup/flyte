@@ -45,6 +45,17 @@ func TestRandomAlphaShouldReturnErrorIfLengthIsNegative(t *testing.T) {
 	assert.EqualError(t, err, "error while evaluating expression: '{{ randomAlpha(-5) }}': word length must be non-negative")
 }
 
+func TestUnmarshallJsonValid(t *testing.T) {
+	val, err := Resolve(`it is {{ unmarshalJson(j).foo }}`, Context{"j": `{"foo":"bar"}`})
+	require.NoError(t, err)
+	assert.Equal(t, "it is bar", val)
+}
+
+func TestUnmarshallJsonInvalid(t *testing.T) {
+	_, err := Resolve(`this should error: {{ unmarshalJson(j).foo }}`, Context{"j": `{"foo":}`})
+	require.Error(t, err)
+}
+
 func TestTemplateFunctionShouldResolveTemplateWithProvidedContext(t *testing.T) {
 
 	context := Context{
