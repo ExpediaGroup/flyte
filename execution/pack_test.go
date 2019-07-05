@@ -27,6 +27,9 @@ import (
 func TestCompleteAction_ShouldFinishAction_WhenItExistsAndIsInPendingState(t *testing.T) {
 
 	//Given
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	completedAction := Action{State: State{Value: stateSuccess}, Result: Event{Name: "resultEvent"}}
 	actualUpdateAction := Action{}
@@ -62,6 +65,9 @@ func TestCompleteAction_ShouldFinishAction_WhenItExistsAndIsInPendingState(t *te
 func TestCompleteAction_ShouldSetActionStateToFatalForFatalResult(t *testing.T) {
 
 	//Given
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
 		get: func(actionId string) (*Action, error) {
@@ -86,6 +92,9 @@ func TestCompleteAction_ShouldSetActionStateToFatalForFatalResult(t *testing.T) 
 
 func TestCompleteAction_ShouldReturnErrorWhenActionIsInNewState(t *testing.T) {
 
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
 		get: func(actionId string) (*Action, error) {
@@ -100,6 +109,8 @@ func TestCompleteAction_ShouldReturnErrorWhenActionIsInNewState(t *testing.T) {
 }
 
 func TestCompleteAction_ShouldReturnErrorWhenActionIsInSuccessState(t *testing.T) {
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
 
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
@@ -116,6 +127,9 @@ func TestCompleteAction_ShouldReturnErrorWhenActionIsInSuccessState(t *testing.T
 
 func TestCompleteAction_ShouldReturnErrorWhenActionIsInFatalState(t *testing.T) {
 
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
 		get: func(actionId string) (*Action, error) {
@@ -131,6 +145,9 @@ func TestCompleteAction_ShouldReturnErrorWhenActionIsInFatalState(t *testing.T) 
 
 func TestCompleteAction_ShouldReturnActionNotFoundErrWhenItDoesNotExist(t *testing.T) {
 
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
 		get: func(actionId string) (*Action, error) {
@@ -144,6 +161,9 @@ func TestCompleteAction_ShouldReturnActionNotFoundErrWhenItDoesNotExist(t *testi
 }
 
 func TestCompleteAction_ShouldReturnErrorProducedWhileSearchingForAction(t *testing.T) {
+
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
 
 	defer resetActionRepo()
 	expectedError := errors.New("something went terribly wrong Sir")
@@ -161,6 +181,9 @@ func TestCompleteAction_ShouldReturnErrorProducedWhileSearchingForAction(t *test
 func TestCompleteAction_ShouldReturnErrorProducedWhileUpdatingAction(t *testing.T) {
 
 	//Given
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	expectedError := errors.New("something went terribly wrong Sir")
 	actionRepo = mockActionRepo{
@@ -182,6 +205,9 @@ func TestCompleteAction_ShouldReturnErrorProducedWhileUpdatingAction(t *testing.
 func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHadNewActionWithTheGivenName(t *testing.T) {
 
 	//Given
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	calledFindNew := false
 	pendingAction := Action{State: State{Value: statePending}}
@@ -216,6 +242,9 @@ func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHadNewActionWithThe
 func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHasAnyNewActionAndNameWasNotSpecified(t *testing.T) {
 
 	//Given
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
 		findNew: func(pack Pack, name string) (*Action, error) {
@@ -240,6 +269,9 @@ func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHasAnyNewActionAndN
 
 func TestTakeAction_ShouldReturnNilWhenPackDoesNotHaveNewActions(t *testing.T) {
 
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
 		findNew: func(pack Pack, name string) (*Action, error) {
@@ -254,6 +286,9 @@ func TestTakeAction_ShouldReturnNilWhenPackDoesNotHaveNewActions(t *testing.T) {
 }
 
 func TestTakeAction_ShouldReturnErrorIfItHappensWhileTryingToFindNewActions(t *testing.T) {
+
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
 
 	defer resetActionRepo()
 	expectedError := errors.New("not juju error again")
@@ -270,6 +305,9 @@ func TestTakeAction_ShouldReturnErrorIfItHappensWhileTryingToFindNewActions(t *t
 
 func TestTakeAction_ShouldReturnErrorForPendingAction(t *testing.T) {
 
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
 		findNew: func(pack Pack, name string) (*Action, error) {
@@ -284,6 +322,9 @@ func TestTakeAction_ShouldReturnErrorForPendingAction(t *testing.T) {
 }
 
 func TestTakeAction_ShouldReturnErrorForSuccessAction(t *testing.T) {
+
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
 
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
@@ -300,6 +341,9 @@ func TestTakeAction_ShouldReturnErrorForSuccessAction(t *testing.T) {
 
 func TestTakeAction_ShouldReturnErrorForFatalAction(t *testing.T) {
 
+	defer resetPackRepo()
+	packRepo = mockPackRepo{}
+
 	defer resetActionRepo()
 	actionRepo = mockActionRepo{
 		findNew: func(pack Pack, name string) (*Action, error) {
@@ -311,6 +355,22 @@ func TestTakeAction_ShouldReturnErrorForFatalAction(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "action is not in NEW state, cannot set to PENDING")
+}
+
+func TestUpdateLastSeen_ShouldRecordLastSeen(t *testing.T) {
+
+	defer resetPackRepo()
+	actualId := ""
+	packRepo = mockPackRepo{
+		updateLastSeen: func(id string) error {
+			actualId = id
+			return nil
+		},
+	}
+
+	Pack{Id: "packA"}.UpdateLastSeen()
+
+	assert.Equal(t, "packA", actualId)
 }
 
 // --- mocks & helpers ---

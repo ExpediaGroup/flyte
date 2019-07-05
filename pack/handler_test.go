@@ -29,15 +29,14 @@ import (
 	"github.com/HotelsDotCom/go-logger/loggertest"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestPostPack_ShouldCreatePackForValidRequest(t *testing.T) {
 
 	defer resetPackRepo()
-	actualPack := Pack{}
 	packRepo = mockPackRepo{
 		add: func(pack Pack) error {
-			actualPack = pack
 			return nil
 		},
 	}
@@ -57,7 +56,17 @@ func TestPostPack_ShouldCreatePackForValidRequest(t *testing.T) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	require.NoError(t, err)
-	assert.Equal(t, slackPackResponse, string(body))
+
+	var got Pack
+	err = json.Unmarshal(body, &got)
+	require.NoError(t, err)
+	assert.WithinDuration(t, time.Now(), got.LastSeen, 5 * time.Second)
+
+	lsB, err := json.Marshal(got.LastSeen)
+	require.NoError(t, err)
+	packResp := strings.Replace(slackPackResponse, "replace_last_seen", string(lsB), 1)
+
+	assert.JSONEq(t, packResp, string(body))
 }
 
 
@@ -105,10 +114,13 @@ func TestPostPack_ShouldReturn500_WhenRepoFails(t *testing.T) {
 func TestGetPacks_ShouldReturnListOfPacksWithLinks_WhenPacksExist(t *testing.T) {
 
 	defer resetPackRepo()
+	tLive := time.Now()
+	tWarning := tLive.Add(-1 * time.Hour)
+
 	packRepo = mockPackRepo{
 		findAll: func() ([]Pack, error) {
-			slack := Pack{Id: "Slack", Name: "Slack", Labels: map[string]string{"env": "dev"}}
-			hipChat := Pack{Id: "HipChat", Name: "HipChat"}
+			slack := Pack{Id: "Slack", Name: "Slack", Labels: map[string]string{"env": "dev"}, LastSeen: tLive}
+			hipChat := Pack{Id: "HipChat", Name: "HipChat", LastSeen:tWarning}
 			return []Pack{slack, hipChat}, nil
 		},
 	}
@@ -125,7 +137,15 @@ func TestGetPacks_ShouldReturnListOfPacksWithLinks_WhenPacksExist(t *testing.T) 
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, httputil.ContentTypeJson, resp.Header.Get(httputil.HeaderContentType))
-	assert.Equal(t, slackAndHipchatPacksResponse, string(body))
+
+	tLiveJson, err := tLive.MarshalJSON()
+	require.NoError(t, err)
+	packsResp := strings.Replace(slackAndHipchatPacksResponse, "replace_last_seen_slack", string(tLiveJson), 1)
+	tWarningJson, err := tWarning.MarshalJSON()
+	require.NoError(t, err)
+	packsResp = strings.Replace(packsResp, "replace_last_seen_hipchat", string(tWarningJson), 1)
+
+	assert.JSONEq(t, packsResp, string(body))
 }
 
 func TestGetPacks_ShouldReturnEmptyListOfPacksWithLinks_WhenThereAreNoPacks(t *testing.T) {
@@ -179,12 +199,14 @@ func TestGetPacks_ShouldReturn500_WhenRepoFails(t *testing.T) {
 func TestGetPack_ShouldReturnPack(t *testing.T) {
 
 	defer resetPackRepo()
+	now := time.Now()
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			if id == "Slack" {
 				slack := &Pack{}
 				json.NewDecoder(strings.NewReader(slackPackJson)).Decode(slack)
 				slack.Id = "Slack"
+				slack.LastSeen = now
 				return slack, nil
 			}
 			return nil, PackNotFoundErr
@@ -202,7 +224,10 @@ func TestGetPack_ShouldReturnPack(t *testing.T) {
 	require.Nil(t, err)
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.Equal(t, slackPackResponse, string(body))
+	nowJson, err := now.MarshalJSON()
+	require.NoError(t, err)
+	packResp := strings.Replace(slackPackResponse, "replace_last_seen", string(nowJson), 1)
+	assert.JSONEq(t, packResp, string(body))
 }
 
 func TestGetPack_Should404ForNonExistingPack(t *testing.T) {
@@ -360,6 +385,8 @@ var slackPackResponse = strings.Replace(strings.Replace(`
             "name": "SendMessageFailed"
         }
     ],
+	"lastSeen": replace_last_seen,
+    "status": "live",
     "links": [
         {
             "href": "http://example.com/README.md",
@@ -408,6 +435,8 @@ var slackAndHipchatPacksResponse = strings.Replace(strings.Replace(`
             "labels": {
                 "env": "dev"
             },
+			"lastSeen": replace_last_seen_slack,
+			"status": "live",
             "links": [
                 {
                     "href": "http://example.com/v1/packs/Slack",
@@ -418,6 +447,8 @@ var slackAndHipchatPacksResponse = strings.Replace(strings.Replace(`
         {
             "id": "HipChat",
             "name": "HipChat",
+			"lastSeen": replace_last_seen_hipchat,
+			"status": "warning",
             "links": [
                 {
                     "href": "http://example.com/v1/packs/HipChat",

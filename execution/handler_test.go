@@ -37,12 +37,17 @@ func TestPostEvent_ShouldHandleValidEvent(t *testing.T) {
 
 	//Given
 	defer resetPackRepo()
+	recPackId := ""
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			if id == "Slack" {
 				return &Pack{Id: "Slack"}, nil
 			}
 			return nil, PackNotFoundErr
+		},
+		updateLastSeen: func(id string) error {
+			recPackId = id
+			return nil
 		},
 	}
 
@@ -67,6 +72,8 @@ func TestPostEvent_ShouldHandleValidEvent(t *testing.T) {
 	waitWithTimeout(wg, 500*time.Millisecond)
 	expectedEvent := Event{Name: "MessageReceived", Pack: Pack{Id: "Slack"}, Payload: map[string]interface{}{"channelId": "123456"}}
 	assert.Equal(t, expectedEvent, actualEvent)
+
+	assert.Equal(t, "Slack", recPackId)
 }
 
 func TestPostEvent_ShouldReturn404WhenPackDoesNotExist(t *testing.T) {
@@ -75,6 +82,9 @@ func TestPostEvent_ShouldReturn404WhenPackDoesNotExist(t *testing.T) {
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return nil, PackNotFoundErr
+		},
+		updateLastSeen: func(id string) error {
+			return nil
 		},
 	}
 
@@ -94,6 +104,9 @@ func TestPostEvent_ShouldReturn500WhenThereIsErrorRetrievingPack(t *testing.T) {
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return nil, errors.New("it is an error")
+		},
+		updateLastSeen: func(id string) error {
+			return nil
 		},
 	}
 
@@ -118,6 +131,9 @@ func TestPostEvent_ShouldReturn400WhenRequestBodyIsInvalid(t *testing.T) {
 		get: func(id string) (*Pack, error) {
 			return &Pack{Id: "Slack"}, nil
 		},
+		updateLastSeen: func(id string) error {
+			return nil
+		},
 	}
 
 	w := httptest.NewRecorder()
@@ -136,10 +152,15 @@ func TestCompleteAction_ShouldCompleteActionAndHandleIt(t *testing.T) {
 
 	//Given
 	defer resetPackRepo()
+	recPackId := ""
 	pack := Pack{Id: "Slack"}
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return &Pack{Id: id}, nil
+		},
+		updateLastSeen: func(id string) error {
+			recPackId = id
+			return nil
 		},
 	}
 
@@ -181,6 +202,8 @@ func TestCompleteAction_ShouldCompleteActionAndHandleIt(t *testing.T) {
 	action := Action{Id: "123", PackName: pack.Name, Result: event, State: State{Value: stateSuccess}}
 	assert.Equal(t, event, actualEvent)
 	assert.Equal(t, action, actualAction)
+
+	assert.Equal(t, "Slack", recPackId)
 }
 
 func TestCompleteAction_ShouldReturn404WhenPackDoesNotExist(t *testing.T) {
@@ -189,6 +212,9 @@ func TestCompleteAction_ShouldReturn404WhenPackDoesNotExist(t *testing.T) {
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return nil, PackNotFoundErr
+		},
+		updateLastSeen: func(id string) error {
+			return nil
 		},
 	}
 
@@ -209,6 +235,9 @@ func TestCompleteAction_ShouldReturn500WhenThereIsErrorRetrievingPack(t *testing
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return nil, errors.New("it is an error")
+		},
+		updateLastSeen: func(id string) error {
+			return nil
 		},
 	}
 
@@ -234,6 +263,9 @@ func TestCompleteAction_ShouldReturn400WhenRequestBodyIsInvalid(t *testing.T) {
 		get: func(id string) (*Pack, error) {
 			return &Pack{Id: id}, nil
 		},
+		updateLastSeen: func(id string) error {
+			return nil
+		},
 	}
 
 	w := httptest.NewRecorder()
@@ -255,6 +287,9 @@ func TestCompleteAction_ShouldReturn404ForNonExistingAction(t *testing.T) {
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return &Pack{Id: id}, nil
+		},
+		updateLastSeen: func(id string) error {
+			return nil
 		},
 	}
 
@@ -288,6 +323,9 @@ func TestCompleteAction_ShouldReturn500WhenThereIsErrorCompletingAction(t *testi
 		get: func(id string) (*Pack, error) {
 			return &Pack{Id: id}, nil
 		},
+		updateLastSeen: func(id string) error {
+			return nil
+		},
 	}
 
 	defer resetCompleteAction()
@@ -317,9 +355,14 @@ func TestTakeAction_ShouldReturnActionWhenPackHasAnyNewActionsAndNameIsNotSpecif
 
 	//Given
 	defer resetPackRepo()
+	recPackId := ""
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return &Pack{Id: id}, nil
+		},
+		updateLastSeen: func(id string) error {
+			recPackId = id
+			return nil
 		},
 	}
 
@@ -349,6 +392,8 @@ func TestTakeAction_ShouldReturnActionWhenPackHasAnyNewActionsAndNameIsNotSpecif
 	assert.Equal(t, httputil.ContentTypeJson, resp.Header.Get(httputil.HeaderContentType))
 	expectedBody := `{"command":"","input":null,"links":[{"href":"http://example.com/v1/packs/Slack/actions/596759ef/result","rel":"http://example.com/swagger#/actionResult"}]}`
 	assert.Equal(t, expectedBody, string(body))
+
+	assert.Equal(t, "Slack", recPackId)
 }
 
 func TestTakeAction_ShouldReturnActionWhenPackHasNewActionsWithTheGivenName(t *testing.T) {
@@ -358,6 +403,9 @@ func TestTakeAction_ShouldReturnActionWhenPackHasNewActionsWithTheGivenName(t *t
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return &Pack{Id: id}, nil
+		},
+		updateLastSeen: func(id string) error {
+			return nil
 		},
 	}
 
@@ -395,6 +443,9 @@ func TestTakeAction_ShouldReturn404WhenPackDoesNotExist(t *testing.T) {
 		get: func(id string) (*Pack, error) {
 			return nil, PackNotFoundErr
 		},
+		updateLastSeen: func(id string) error {
+			return nil
+		},
 	}
 
 	w := httptest.NewRecorder()
@@ -413,6 +464,9 @@ func TestTakeAction_ShouldReturn500WhenThereIsErrorRetrievingPack(t *testing.T) 
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return nil, errors.New("it is an error")
+		},
+		updateLastSeen: func(id string) error {
+			return nil
 		},
 	}
 
@@ -437,6 +491,9 @@ func TestTakeAction_ShouldReturn500WhenThereIsErrorTakingAction(t *testing.T) {
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return &Pack{Id: id}, nil
+		},
+		updateLastSeen: func(id string) error {
+			return nil
 		},
 	}
 
@@ -469,6 +526,9 @@ func TestTakeAction_ShouldReturn204WhenPackDoesNotHaveNewAction(t *testing.T) {
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
 			return &Pack{Id: id}, nil
+		},
+		updateLastSeen: func(id string) error {
+			return nil
 		},
 	}
 
@@ -507,10 +567,15 @@ func (s mockFlowService) HandleAction(a Action) {
 
 type mockPackRepo struct {
 	get func(id string) (*Pack, error)
+	updateLastSeen func(id string) error
 }
 
 func (r mockPackRepo) Get(id string) (*Pack, error) {
 	return r.get(id)
+}
+
+func (r mockPackRepo) UpdateLastSeen(id string) error {
+	return r.updateLastSeen(id)
 }
 
 func resetFlowService()    { flowSvc = flowService{} }
