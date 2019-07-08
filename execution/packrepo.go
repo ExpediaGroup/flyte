@@ -17,8 +17,9 @@ limitations under the License.
 package execution
 
 import (
-	"gopkg.in/mgo.v2"
 	"github.com/HotelsDotCom/flyte/mongo"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type packMgoRepo struct{}
@@ -34,4 +35,12 @@ func (r packMgoRepo) Get(id string) (*Pack, error) {
 		return nil, PackNotFoundErr
 	}
 	return &pack, err
+}
+
+func (r packMgoRepo) UpdateLastSeen(id string) error {
+	s := mongo.GetSession()
+	defer s.Close()
+
+	return s.DB(mongo.DbName).C(mongo.PackCollectionId).
+		Update(bson.M{"_id": id}, bson.M{"$currentDate": bson.M{"lastSeen": true}})
 }

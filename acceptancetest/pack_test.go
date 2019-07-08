@@ -19,6 +19,8 @@ limitations under the License.
 package acceptancetest
 
 import (
+	"encoding/json"
+	"github.com/HotelsDotCom/flyte/pack"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
@@ -26,6 +28,7 @@ import (
 	"testing"
 	"strings"
 	"fmt"
+	"time"
 )
 
 var PackFeatures = []Test{
@@ -52,8 +55,18 @@ func AddPack(t *testing.T) {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	require.NoError(t, err)
+
+	var got pack.Pack
+	err = json.Unmarshal(body, &got)
+	require.NoError(t, err)
+	assert.WithinDuration(t, time.Now(), got.LastSeen, 5 * time.Second)
+
 	packResponse := fmt.Sprintf(slackPackResponse, flyteApi.RootURL().String())
-	assert.Equal(t, packResponse, string(body))
+
+	lsJson, err := got.LastSeen.MarshalJSON()
+	require.NoError(t, err)
+	packResponse = strings.Replace(packResponse, "replace_last_seen", string(lsJson), 1)
+	assert.JSONEq(t, packResponse, string(body))
 }
 
 func GetPack(t *testing.T) {
@@ -175,6 +188,8 @@ var slackPackResponse = strings.Replace(strings.Replace(`
             "name": "SendMessageFailed"
         }
     ],
+    "lastSeen": replace_last_seen,
+    "status": "live",
     "links": [
         {
             "href": "%[1]s/v1/packs/Slack",

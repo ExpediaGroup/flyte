@@ -39,6 +39,8 @@ func PostEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pack.UpdateLastSeen()
+
 	defer r.Body.Close()
 	event, err := toEvent(*pack, r.Body)
 	if err != nil {
@@ -69,6 +71,8 @@ func CompleteAction(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	pack.UpdateLastSeen()
 
 	defer r.Body.Close()
 	result, err := toEvent(*pack, r.Body)
@@ -118,6 +122,8 @@ func TakeAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pack.UpdateLastSeen()
+
 	actionName := r.FormValue("actionName")
 	action, err := pack.TakeAction(actionName)
 
@@ -148,4 +154,5 @@ var packRepo PackRepository = packMgoRepo{}
 
 type PackRepository interface {
 	Get(id string) (*Pack, error)
+	UpdateLastSeen(id string) error
 }

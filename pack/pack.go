@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/HotelsDotCom/flyte/collections"
 	"github.com/HotelsDotCom/flyte/httputil"
+	"time"
 )
 
 type Pack struct {
@@ -29,6 +30,8 @@ type Pack struct {
 	Labels   map[string]string `json:"labels,omitempty"`
 	Commands []Command         `json:"commands,omitempty"`
 	Events   []Event           `json:"events,omitempty"`
+	LastSeen time.Time         `json:"lastSeen,omitempty" bson:"lastSeen,omitempty"`
+	Status   string            `json:"status,omitempty"`
 	Links    []httputil.Link   `json:"links,omitempty"`
 }
 
@@ -50,6 +53,17 @@ func (p *Pack) generateId() {
 		id += fmt.Sprintf(".%s.%s", k, p.Labels[k])
 	}
 	p.Id = id
+}
+
+func (p *Pack) setStatus() {
+	d := time.Since(p.LastSeen)
+	if d < 10 * time.Minute {
+		p.Status = "live"
+	} else if d < 24 * time.Hour {
+		p.Status = "warning"
+	} else {
+		p.Status = "critical"
+	}
 }
 
 type Repository interface {

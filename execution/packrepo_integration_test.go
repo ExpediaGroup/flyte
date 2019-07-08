@@ -19,10 +19,12 @@ limitations under the License.
 package execution
 
 import (
+	"github.com/HotelsDotCom/flyte/mongo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/HotelsDotCom/flyte/mongo"
+	"gopkg.in/mgo.v2/bson"
 	"testing"
+	"time"
 )
 
 func TestGet_ShouldReturnExistingPack(t *testing.T) {
@@ -45,4 +47,24 @@ func TestGet_ShouldReturnNilForNonExistingPack(t *testing.T) {
 	_, err := packRepo.Get("nonExistingPack")
 
 	assert.EqualError(t, err, PackNotFoundErr.Error())
+}
+
+func TestUpdateLastSeen_ShouldRecordLastSeenWithCurrentDate(t *testing.T) {
+
+	mongoT.DropDatabase(t)
+	mongoT.Insert(t, mongo.PackCollectionId, Pack{Id: "existingPack"})
+
+	before := time.Now()
+	err := packRepo.UpdateLastSeen("existingPack")
+	require.NoError(t, err)
+
+	var p map[string]interface{}
+	err = mongoT.FindOne(mongo.PackCollectionId, bson.M{"_id": "existingPack"}, &p)
+	require.NoError(t, err)
+	require.NotNil(t, p)
+
+	lastSeen := p["lastSeen"]
+	require.NotNil(t, lastSeen)
+
+	assert.WithinDuration(t, before, lastSeen.(time.Time), 1 * time.Second)
 }

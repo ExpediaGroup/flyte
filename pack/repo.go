@@ -67,7 +67,7 @@ func (r packMgoRepo) FindAll() ([]Pack, error) {
 	err := s.DB(mongo.DbName).
 		C(mongo.PackCollectionId).
 		Find(nil).
-		Select(bson.M{"_id": 1, "name": 1, "labels": 1}).
+		Select(bson.M{"_id": 1, "name": 1, "lastSeen": 1, "labels": 1}).
 		Sort("name").
 		All(&ps)
 

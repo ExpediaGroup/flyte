@@ -64,4 +64,17 @@ func takeActionFn(pack Pack, actionName string) (*Action, error) {
 	return action, action.take()
 }
 
+func (p Pack) UpdateLastSeen() {
+		updateLastSeen(p)
+}
+
+var updateLastSeen = updateLastSeenFn
+
+func updateLastSeenFn(pack Pack) {
+	err := packRepo.UpdateLastSeen(pack.Id)
+	if err != nil {
+		logger.Infof("error recording last seen record for a pack id %s: %v", pack.Id, err)
+	}
+}
+
 var PackNotFoundErr = errors.New("pack not found")

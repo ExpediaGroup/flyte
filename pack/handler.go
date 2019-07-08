@@ -23,6 +23,7 @@ import (
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
+	"time"
 )
 
 var packRepo Repository = packMgoRepo{}
@@ -37,6 +38,7 @@ func PostPack(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	pack.generateId()
+	pack.LastSeen = time.Now()
 
 	if err := packRepo.Add(*pack); err != nil {
 		logger.Errorf("Cannot save packName=%s, packLabels=%+v: %v", pack.Name, pack.Labels, err)
