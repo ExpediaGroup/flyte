@@ -40,7 +40,7 @@ func toPackResponse(r *http.Request, pack Pack) packResponse {
 		pr.Commands[i].Links = []httputil.Link{link}
 	}
 
-	pr.SetStatus()
+	pr.setStatus()
 
 	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PackPath).Replace(":packId", pack.Id).Build(), Rel: "self"})
 	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PackPath).Parent().Build(), Rel: "up"})
@@ -60,7 +60,7 @@ func toPacksResponse(r *http.Request, packs []Pack) packsResponse {
 	for _, p := range packs {
 		pr := packResponse{p}
 		pr.Links = []httputil.Link{{Href: httputil.UriBuilder(r).Path(flytepath.PackPath).Replace(":packId", p.Id).Build(), Rel: "self"}}
-		pr.SetStatus()
+		pr.setStatus()
 		ps = append(ps, pr)
 	}
 

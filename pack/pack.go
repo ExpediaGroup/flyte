@@ -55,7 +55,7 @@ func (p *Pack) generateId() {
 	p.Id = id
 }
 
-func (p *Pack) SetStatus() {
+func (p *Pack) setStatus() {
 	d := time.Since(p.LastSeen)
 	if d < 10 * time.Minute {
 		p.Status = "live"
