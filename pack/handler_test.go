@@ -385,7 +385,7 @@ var slackPackResponse = strings.Replace(strings.Replace(`
             "name": "SendMessageFailed"
         }
     ],
-	"lastSeen": replace_last_seen,
+    "lastSeen": replace_last_seen,
     "status": "live",
     "links": [
         {
@@ -435,7 +435,7 @@ var slackAndHipchatPacksResponse = strings.Replace(strings.Replace(`
             "labels": {
                 "env": "dev"
             },
-			"lastSeen": replace_last_seen_slack,
+            "lastSeen": replace_last_seen_slack,
 			"status": "live",
             "links": [
                 {
@@ -447,7 +447,7 @@ var slackAndHipchatPacksResponse = strings.Replace(strings.Replace(`
         {
             "id": "HipChat",
             "name": "HipChat",
-			"lastSeen": replace_last_seen_hipchat,
+            "lastSeen": replace_last_seen_hipchat,
 			"status": "warning",
             "links": [
                 {

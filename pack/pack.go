@@ -64,7 +64,6 @@ func (p *Pack) SetStatus() {
 	} else {
 		p.Status = "critical"
 	}
-	return
 }
 
 type Repository interface {
