@@ -28,26 +28,29 @@ import (
 var lookupEnv = os.LookupEnv
 
 const (
-	portEnvName            = "FLYTE_PORT"
-	tlsCertPathEnvName     = "FLYTE_TLS_CERT_PATH"
-	tlsKeyPathEnvName      = "FLYTE_TLS_KEY_PATH"
-	mgoHostEnvName         = "FLYTE_MGO_HOST"
-	authPolicyPathEnvName  = "FLYTE_AUTH_POLICY_PATH"
-	oidcIssuerURLName      = "FLYTE_OIDC_ISSUER_URL"
-	oidcIssuerClientIDName = "FLYTE_OIDC_ISSUER_CLIENT_ID"
-	flyteTTLEnvName        = "FLYTE_TTL_IN_SECONDS"
-	oneYearInSeconds       = "31557600"
+	portEnvName            					 = "FLYTE_PORT"
+	tlsCertPathEnvName     					 = "FLYTE_TLS_CERT_PATH"
+	tlsKeyPathEnvName      					 = "FLYTE_TLS_KEY_PATH"
+	mgoHostEnvName         					 = "FLYTE_MGO_HOST"
+	authPolicyPathEnvName  					 = "FLYTE_AUTH_POLICY_PATH"
+	oidcIssuerURLName      					 = "FLYTE_OIDC_ISSUER_URL"
+	oidcIssuerClientIDName 					 = "FLYTE_OIDC_ISSUER_CLIENT_ID"
+	flyteTTLEnvName        					 = "FLYTE_TTL_IN_SECONDS"
+	packGracePeriodUntilDeadInSecondsEnvName	= "FLYTE_PACK_GRACE_PERIOD_UNTIL_MARKED_DEAD_IN_SECONDS"
+	oneWeekInSeconds       					 = "604800"
+	oneYearInSeconds       					 = "31557600"
 )
 
 type Config struct {
-	MongoHost          string
-	Port               string
-	TLSCertPath        string
-	TLSKeyPath         string
-	AuthPolicyPath     string
-	OidcIssuerURL      string
-	OidcIssuerClientID string
-	FlyteTTL           int
+	MongoHost          				  string
+	Port               				  string
+	TLSCertPath        				  string
+	TLSKeyPath         				  string
+	AuthPolicyPath     				  string
+	OidcIssuerURL      				  string
+	OidcIssuerClientID 				  string
+	FlyteTTL           				  int
+	PackGracePeriodUntilDeadInSeconds	int
 }
 
 func NewConfig() Config {
@@ -60,6 +63,7 @@ func NewConfig() Config {
 	c.OidcIssuerURL = getEnvVar(oidcIssuerURLName)
 	c.OidcIssuerClientID = getEnvVar(oidcIssuerClientIDName)
 	c.FlyteTTL = getIntEnvVarWithDefault(flyteTTLEnvName, oneYearInSeconds)
+	c.PackGracePeriodUntilDeadInSeconds = getIntEnvVarWithDefault(packGracePeriodUntilDeadInSecondsEnvName, oneWeekInSeconds)
 	return c
 }
 

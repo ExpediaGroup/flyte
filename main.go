@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"github.com/HotelsDotCom/flyte/pack"
 	"github.com/HotelsDotCom/flyte/server"
 	"github.com/HotelsDotCom/go-logger"
 	"net/http"
@@ -42,4 +43,6 @@ func main() {
 	if err != nil && err != http.ErrServerClosed {
 		logger.Fatalf("flyteapi server failure: %s", err)
 	}
+
+	go pack.ScheduleDailyRemovalOfDeadPacksAt("23:00", c.PackGracePeriodUntilDeadInSeconds)
 }

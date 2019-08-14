@@ -21,6 +21,7 @@ import (
 	"errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/mgo.v2"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -487,6 +488,7 @@ type mockPackRepo struct {
 	remove  func(id string) error
 	get     func(id string) (*Pack, error)
 	findAll func() ([]Pack, error)
+	removeAllOlderThan func(date time.Time) (info *mgo.ChangeInfo, err error)
 }
 
 func (r mockPackRepo) Add(pack Pack) error {
@@ -503,6 +505,10 @@ func (r mockPackRepo) Get(id string) (*Pack, error) {
 
 func (r mockPackRepo) FindAll() ([]Pack, error) {
 	return r.findAll()
+}
+
+func (r mockPackRepo) RemoveAllOlderThan(date time.Time) (info *mgo.ChangeInfo, err error) {
+	return r.removeAllOlderThan(date)
 }
 
 func resetPackRepo() {

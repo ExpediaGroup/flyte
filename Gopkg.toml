@@ -34,6 +34,10 @@
   name = "github.com/HotelsDotCom/go-logger"
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/jasonlvhit/gocron"
+
+[[constraint]]
   branch = "v2"
   name = "github.com/coreos/go-oidc"
 

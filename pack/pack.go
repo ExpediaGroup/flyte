@@ -21,8 +21,12 @@ import (
 	"fmt"
 	"github.com/HotelsDotCom/flyte/collections"
 	"github.com/HotelsDotCom/flyte/httputil"
+	"gopkg.in/mgo.v2"
 	"time"
 )
+
+var packRepo Repository = packMgoRepo{}
+var PackNotFoundErr = errors.New("pack not found")
 
 type Pack struct {
 	Id       string            `json:"id" bson:"_id"`
@@ -71,6 +75,5 @@ type Repository interface {
 	Remove(id string) error
 	Get(id string) (*Pack, error)
 	FindAll() ([]Pack, error)
+	RemoveAllOlderThan(date time.Time) (info *mgo.ChangeInfo, err error)
 }
-
-var PackNotFoundErr = errors.New("pack not found")

@@ -26,8 +26,6 @@ import (
 	"time"
 )
 
-var packRepo Repository = packMgoRepo{}
-
 func PostPack(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()

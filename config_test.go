@@ -31,14 +31,15 @@ func (e envVars) lookupEnv(key string) (string, bool) {
 
 func newflyteEnvVars() envVars {
 	return envVars{
-		portEnvName:            "80",
-		tlsCertPathEnvName:     "/path/to/tls/cert",
-		tlsKeyPathEnvName:      "/path/to/tls/key",
-		mgoHostEnvName:         "mongo:27017",
-		authPolicyPathEnvName:  "/path/to/authpolicy",
-		oidcIssuerURLName:      "dex:5559",
-		oidcIssuerClientIDName: "example-app",
-		flyteTTLEnvName:        "86400",
+		portEnvName:            				  "80",
+		tlsCertPathEnvName:     				  "/path/to/tls/cert",
+		tlsKeyPathEnvName:      				  "/path/to/tls/key",
+		mgoHostEnvName:         				  "mongo:27017",
+		authPolicyPathEnvName:  				  "/path/to/authpolicy",
+		oidcIssuerURLName:      				  "dex:5559",
+		oidcIssuerClientIDName: 				  "example-app",
+		flyteTTLEnvName:        				  "86400",
+		packGracePeriodUntilDeadInSecondsEnvName: "500000",
 	}
 }
 
@@ -59,6 +60,7 @@ func TestConfigShouldReadFlyteEnvVars(t *testing.T) {
 	assert.Equal(t, "dex:5559", c.OidcIssuerURL)
 	assert.Equal(t, "example-app", c.OidcIssuerClientID)
 	assert.Equal(t, 86400, c.FlyteTTL)
+	assert.Equal(t, 500000, c.PackGracePeriodUntilDeadInSeconds)
 }
 
 func TestConfigShouldDefaultMongoHostIfNotSetAsEnvVar(t *testing.T) {
@@ -302,4 +304,20 @@ func TestConfigShouldLogFatalIfTLSKeyPathInvalid(t *testing.T) {
 	}()
 
 	NewConfig()
+}
+
+func TestConfigShouldSetDefaultPackGracePeriodUntilDead(t *testing.T) {
+	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
+	fileExists = func(string) bool { return true }
+
+	// remove default flyte pack grace period from env vars
+	flyteEnvVars := newflyteEnvVars()
+	delete(flyteEnvVars, packGracePeriodUntilDeadInSecondsEnvName)
+	defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
+	lookupEnv = flyteEnvVars.lookupEnv
+
+	c := NewConfig()
+
+	// default flyte pack grace period in seconds
+	assert.Equal(t, 604800, c.PackGracePeriodUntilDeadInSeconds)
 }
