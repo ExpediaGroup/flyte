@@ -44,5 +44,7 @@ func main() {
 		logger.Fatalf("flyteapi server failure: %s", err)
 	}
 
-	go pack.ScheduleDailyRemovalOfDeadPacksAt("23:00", c.PackGracePeriodUntilDeadInSeconds)
+	if c.ShouldDeleteDeadPacks {
+		go pack.ScheduleDailyRemovalOfDeadPacksAt(c.DeleteDeadPacksTime, c.PackGracePeriodUntilDeadInSeconds)
+	}
 }

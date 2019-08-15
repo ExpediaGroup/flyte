@@ -3,6 +3,11 @@ build:
 	go test ./... -tags="integration acceptance"
 	go build
 
+build-all:
+	dep ensure
+	go test ./... -tags="integration acceptance slow"
+	go build
+
 run: build run-mongo
 	nohup ./flyte &> flyte.out &
 	echo "OK: flyte successfully started, output is in flyte.out file"

@@ -189,6 +189,18 @@ valid `FLYTE_TLS_CERT_PATH` and `FLYTE_TLS_KEY_PATH` environment variables as de
  - Log level is set by using `LOGLEVEL` env. variable. Example: `LOGLEVEL=DEBUG|INFO|ERROR|FATAL`
  - Logs can be written to a file instead of std out by setting `LOGFILE` env. variable. Example: `LOGFILE=/tmp/flyte.out`
 
+## Automatic removal of unused or 'dead' packs
+
+If you'd like to clean up your mongo db of unused or 'dead' packs, flyte can schedule a process to do this daily.
+
+Set the following env variables before you start flyte:
+
+  - FLYTE_SHOULD_DELETE_DEAD_PACKS - default is false, set to true to turn this feature on.
+  - FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM - specify a time of day to do your deletion in the format 'HH:MM'. If not set the default is '23:00'.
+  - FLYTE_PACK_GRACE_PERIOD_UNTIL_MARKED_DEAD_IN_SECONDS - This tells the scheduler to remove packs with a 'LastSeen' date older than the value passed. The default is 604800 (one week).
+  
+The scheduler will start it's cleanup for the first time after midnight on the day flyte is started.
+
 ## Postman
 
 There are a number of postman files in [postman] that can be used to test running flyte
@@ -205,16 +217,16 @@ For integration tests:
 go test ./... -tags=integration
 ```
 
-For the mongo db integration tests, which are slower running:
+For the mongo db and scheduler integration tests, which are slower running:
 
 ```bash
-go test ./... -tags=db
+go test ./... -tags=slow
 ```
 
 To run both:
 
 ```bash
-go test ./... -tags="integration db"
+go test ./... -tags="integration slow"
 ```
 
 Please note that both unit and integration tests will run using the above command/s.

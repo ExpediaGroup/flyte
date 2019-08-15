@@ -39,6 +39,8 @@ func newflyteEnvVars() envVars {
 		oidcIssuerURLName:      				  "dex:5559",
 		oidcIssuerClientIDName: 				  "example-app",
 		flyteTTLEnvName:        				  "86400",
+		shouldDeleteDeadPacksEnvName:			  "false",
+		deleteDeadPacksTimeEnvName:				  "10:00",
 		packGracePeriodUntilDeadInSecondsEnvName: "500000",
 	}
 }
@@ -60,6 +62,8 @@ func TestConfigShouldReadFlyteEnvVars(t *testing.T) {
 	assert.Equal(t, "dex:5559", c.OidcIssuerURL)
 	assert.Equal(t, "example-app", c.OidcIssuerClientID)
 	assert.Equal(t, 86400, c.FlyteTTL)
+	assert.Equal(t, false, c.ShouldDeleteDeadPacks)
+	assert.Equal(t, "10:00", c.DeleteDeadPacksTime)
 	assert.Equal(t, 500000, c.PackGracePeriodUntilDeadInSeconds)
 }
 
@@ -124,7 +128,7 @@ func TestConfigShouldSetDefaultTTL(t *testing.T) {
 	c := NewConfig()
 
 	// default flyte data ttl
-	assert.Equal(t, 31557600, c.FlyteTTL)
+	assert.Equal(t, oneYearInSeconds, c.FlyteTTL)
 }
 
 func TestConfigShouldSetDefaultTTLAndLogOnStringToIntConversionError(t *testing.T) {
@@ -306,7 +310,84 @@ func TestConfigShouldLogFatalIfTLSKeyPathInvalid(t *testing.T) {
 	NewConfig()
 }
 
-func TestConfigShouldSetDefaultPackGracePeriodUntilDead(t *testing.T) {
+func TestConfigShouldSetDefaultForShouldDeleteDeadPacksIfNotSetAsEnvVar(t *testing.T) {
+	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
+	fileExists = func(string) bool { return true }
+
+	// remove shouldDeleteDeadPacksEnvName from env vars
+	flyteEnvVars := newflyteEnvVars()
+	delete(flyteEnvVars, shouldDeleteDeadPacksEnvName)
+	defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
+	lookupEnv = flyteEnvVars.lookupEnv
+
+	c := NewConfig()
+	assert.Equal(t, false, c.ShouldDeleteDeadPacks)
+}
+
+func TestConfigShouldSetDefaultAndLogErrorForShouldDeleteDeadPacksIfEnvVarValueSetIsNotBoolean(t *testing.T) {
+	loggertest.Init(loggertest.LogLevelError)
+	defer loggertest.Reset()
+
+	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
+	fileExists = func(string) bool { return true }
+
+	// change shouldDeleteDeadPacksEnvName in env vars to non boolean value
+	flyteEnvVars := newflyteEnvVars()
+	flyteEnvVars[shouldDeleteDeadPacksEnvName] = "6372gyd"
+	defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
+	lookupEnv = flyteEnvVars.lookupEnv
+
+	c := NewConfig()
+	assert.Equal(t, false, c.ShouldDeleteDeadPacks)
+	assert.Equal(t, "Error converting FLYTE_SHOULD_DELETE_DEAD_PACKS to bool, using default: false. Value of FLYTE_SHOULD_DELETE_DEAD_PACKS: 6372gyd", loggertest.GetLogMessages()[0].Message)
+}
+
+func TestConfigShouldSetDefaultDeleteDeadPacksTimeIfNotSetAsEnvVar(t *testing.T) {
+	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
+	fileExists = func(string) bool { return true }
+
+	// remove deleteDeadPacksTimeEnvName from env vars
+	flyteEnvVars := newflyteEnvVars()
+	delete(flyteEnvVars, deleteDeadPacksTimeEnvName)
+	defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
+	lookupEnv = flyteEnvVars.lookupEnv
+
+	c := NewConfig()
+	assert.Equal(t, defaultDeleteDeadPacksTime, c.DeleteDeadPacksTime)
+}
+
+var invalidTimes = []struct {
+	invalidValue  string
+	errorMsg string
+}{
+	{"1100", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. time is not in 'HH:MM' format. invalid value: 1100."},
+	{"AA:00", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. hour is invalid. invalid value: AA:00. err: strconv.Atoi: parsing \"AA\": invalid syntax."},
+	{"23:AA", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. minute is invalid. invalid value: 23:AA. err: strconv.Atoi: parsing \"AA\": invalid syntax."},
+	{"24:00", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. hours should be 0-23, minute should be 0-59. invalid value: 24:00."},
+	{"23:60", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. hours should be 0-23, minute should be 0-59. invalid value: 23:60."},
+}
+
+func TestConfigShouldSetDefaultDeleteDeadPacksTimeAndLogErrorIfTimeIsInInvalidFormat(t *testing.T) {
+	for _, tt := range invalidTimes {
+		loggertest.Init(loggertest.LogLevelError)
+		defer loggertest.Reset()
+
+		defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
+		fileExists = func(string) bool { return true }
+
+		// change deleteDeadPacksTimeEnvName in env vars
+		flyteEnvVars := newflyteEnvVars()
+		flyteEnvVars[deleteDeadPacksTimeEnvName] = tt.invalidValue
+		defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
+		lookupEnv = flyteEnvVars.lookupEnv
+
+		c := NewConfig()
+		assert.Equal(t, defaultDeleteDeadPacksTime, c.DeleteDeadPacksTime)
+		assert.Equal(t, tt.errorMsg, loggertest.GetLogMessages()[0].Message)
+	}
+}
+
+func TestConfigShouldSetDefaultPackGracePeriodUntilDeadInSeconds(t *testing.T) {
 	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
 	fileExists = func(string) bool { return true }
 
@@ -319,5 +400,5 @@ func TestConfigShouldSetDefaultPackGracePeriodUntilDead(t *testing.T) {
 	c := NewConfig()
 
 	// default flyte pack grace period in seconds
-	assert.Equal(t, 604800, c.PackGracePeriodUntilDeadInSeconds)
+	assert.Equal(t, oneWeekInSeconds, c.PackGracePeriodUntilDeadInSeconds)
 }
