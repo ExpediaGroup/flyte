@@ -31,16 +31,16 @@ func (e envVars) lookupEnv(key string) (string, bool) {
 
 func newflyteEnvVars() envVars {
 	return envVars{
-		portEnvName:            				  "80",
-		tlsCertPathEnvName:     				  "/path/to/tls/cert",
-		tlsKeyPathEnvName:      				  "/path/to/tls/key",
-		mgoHostEnvName:         				  "mongo:27017",
-		authPolicyPathEnvName:  				  "/path/to/authpolicy",
-		oidcIssuerURLName:      				  "dex:5559",
-		oidcIssuerClientIDName: 				  "example-app",
-		flyteTTLEnvName:        				  "86400",
-		shouldDeleteDeadPacksEnvName:			  "false",
-		deleteDeadPacksTimeEnvName:				  "10:00",
+		portEnvName:                              "80",
+		tlsCertPathEnvName:                       "/path/to/tls/cert",
+		tlsKeyPathEnvName:                        "/path/to/tls/key",
+		mgoHostEnvName:                           "mongo:27017",
+		authPolicyPathEnvName:                    "/path/to/authpolicy",
+		oidcIssuerURLName:                        "dex:5559",
+		oidcIssuerClientIDName:                   "example-app",
+		flyteTTLEnvName:                          "86400",
+		shouldDeleteDeadPacksEnvName:             "false",
+		deleteDeadPacksTimeEnvName:               "10:00",
 		packGracePeriodUntilDeadInSecondsEnvName: "500000",
 	}
 }
@@ -357,8 +357,8 @@ func TestConfigShouldSetDefaultDeleteDeadPacksTimeIfNotSetAsEnvVar(t *testing.T)
 }
 
 var invalidTimes = []struct {
-	invalidValue  string
-	errorMsg string
+	invalidValue string
+	errorMsg     string
 }{
 	{"1100", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. time is not in 'HH:MM' format. invalid value: 1100."},
 	{"AA:00", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. hour is invalid. invalid value: AA:00. err: strconv.Atoi: parsing \"AA\": invalid syntax."},

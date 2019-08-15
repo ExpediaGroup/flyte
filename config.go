@@ -39,25 +39,25 @@ const (
 	oidcIssuerClientIDName                   = "FLYTE_OIDC_ISSUER_CLIENT_ID"
 	flyteTTLEnvName                          = "FLYTE_TTL_IN_SECONDS"
 	shouldDeleteDeadPacksEnvName             = "FLYTE_SHOULD_DELETE_DEAD_PACKS"
-	deleteDeadPacksTimeEnvName	             = "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM"
+	deleteDeadPacksTimeEnvName               = "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM"
 	packGracePeriodUntilDeadInSecondsEnvName = "FLYTE_PACK_GRACE_PERIOD_UNTIL_MARKED_DEAD_IN_SECONDS"
-	defaultDeleteDeadPacksTime				 = "23:00"
+	defaultDeleteDeadPacksTime               = "23:00"
 	oneWeekInSeconds                         = 604800
 	oneYearInSeconds                         = 31557600
 )
 
 type Config struct {
-	MongoHost          				  	string
-	Port               				  	string
-	TLSCertPath        				  	string
-	TLSKeyPath         				  	string
-	AuthPolicyPath     				  	string
-	OidcIssuerURL      				  	string
-	OidcIssuerClientID 				  	string
-	FlyteTTL           				  	int
-	ShouldDeleteDeadPacks				bool
-	DeleteDeadPacksTime					string
-	PackGracePeriodUntilDeadInSeconds	int
+	MongoHost                         string
+	Port                              string
+	TLSCertPath                       string
+	TLSKeyPath                        string
+	AuthPolicyPath                    string
+	OidcIssuerURL                     string
+	OidcIssuerClientID                string
+	FlyteTTL                          int
+	ShouldDeleteDeadPacks             bool
+	DeleteDeadPacksTime               string
+	PackGracePeriodUntilDeadInSeconds int
 }
 
 func NewConfig() Config {
