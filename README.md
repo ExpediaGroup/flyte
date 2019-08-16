@@ -19,7 +19,7 @@
 
 Flyte binds together the tools you use into easily defined, automated workflows. It is a request-based, decoupled automation engine which allows you to define flows to enable integrated behaviour across these disparate tools.
 
-Flyte has chat-ops enabling integrations for Slack and HipChat, as well as integrations with BitBucket, JIRA, Serf, SMTP, LDAP, and the ability to execute shell scripts, etc. These can be added to and extended easily by using Flyte's RESTful API.
+Flyte has chat-ops enabling integrations for Slack, as well as integrations with BitBucket, JIRA, Serf, SMTP, LDAP, and the ability to execute shell scripts, etc. These can be added to and extended easily by using Flyte's RESTful API.
 
 Some of the applications already in use include chat-ops based inventory management, host/container administration and orchestration, and deployment of applications into Kubernetes.
 
