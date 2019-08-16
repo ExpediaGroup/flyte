@@ -58,7 +58,7 @@ The Flyte-API acts as the orchestrator and is backed by a (MongoDB) database ser
 
 ## Getting Started
    
-Check out the [Quick Start](docs/quick-start/index.md) documentation to get started on building new flows or custom packs.
+Check out the [Quick Start](docs/quickstart.md) documentation to get started on building new flows or custom packs.
 
 ## Running
 
