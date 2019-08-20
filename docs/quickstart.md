@@ -39,7 +39,6 @@ For more information, check [flows](flows.md) page.
 ## Create an item in the datastore
 
 
-
     curl -v -X PUT -F "description=teams.json" -F "value=@teams.json;type=application/json" http://localhost:8080/v1/datastore/teams.json
 
 For more information, check [datastore](datastores.md) page.
