@@ -184,7 +184,7 @@ Without a dependsOn clause, a step is a 'trigger step' and can be triggered by a
 Ids just need to be unique within a flow. The dependsOn does not have to refer to the immediate previous step - it can be
 any set of steps that is a prerequisite for the current step.
 
-##Templating
+## Templating
 
 Templates can be used at numerous points to define dynamic values in the flow definition. 
 The templates use [Pongo](https://github.com/flosch/pongo2) which is a Golang implementation of Django templates.
