@@ -33,21 +33,28 @@ The above 'deploy' flow would be defined in flyte as follows:
 
 1. Start Mongo db:
 
-        docker run -dp 27017:27017 --name mongo mongo:latest
+        docker run -d --name mongo -p 27017:27017 mongo:latest
 
 1. Start Flyte api:
     
-        docker run --rm -p 8080:8080 -e FLYTE_MGO_HOST=mongo -d --name flyte --link mongo:mongo hotelsdotcom/flyte:latest
+        docker run -d --name flyte --rm -p 8080:8080 -e FLYTE_MGO_HOST=mongo \
+               --link mongo:mongo hotelsdotcom/flyte:latest
 
 1. Start [Slack pack](https://github.com/HotelsDotCom/flyte-slack):
 
-        docker run --rm -e FLYTE_API=http://flyte:8080 -e FLYTE_SLACK_TOKEN=<SLACK-TOKEN> -e FLYTE_SLACK_DEFAULT_JOIN_CHANNEL=<ROOM-ID> -d --name flyte-slack --link flyte:flyte hotelsdotcom/flyte-slack:latest
+        docker run -d --name flyte-slack --rm \
+            -e FLYTE_API=http://flyte:8080 \
+            -e FLYTE_SLACK_TOKEN=<SLACK-TOKEN> \
+            -e FLYTE_SLACK_DEFAULT_JOIN_CHANNEL=<ROOM-ID> \
+            --link flyte:flyte hotelsdotcom/flyte-slack:latest
 
     Replace `<SLACK-TOKEN>` and  `<ROOM-ID>` placeholders with your own values. Slack pack will require them to listen to messages in that channel and reply to them if they match the criteria.
     
 1. Start [Shell pack](https://github.com/HotelsDotCom/flyte-shell):
 
-        docker run --rm -e FLYTE_API_URL=http://flyte:8080 -d --name flyte-shell --link flyte:flyte hotelsdotcom/flyte-shell:latest
+        docker run -d --name flyte-shell --rm \
+            -e FLYTE_API_URL=http://flyte:8080 \
+            --link flyte:flyte hotelsdotcom/flyte-shell:latest
 
 ## Define a flow
 
