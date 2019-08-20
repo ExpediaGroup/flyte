@@ -27,8 +27,6 @@ In this section we are going to build a simple flow that will return the UK bank
  - the "Shell" pack that will expose a command that can be called to run any shell command inside flyte-shell container and will send an event to flyte when this is complete
  - flyte itself that will handle the interactions with the packs and execute the deploy flow that the user defines.
   
-The above 'deploy' flow would be defined in flyte as follows:
-
 ## Spin up your local environment
 
 1. Start Mongo db:
@@ -96,6 +94,10 @@ steps:
         
         {{Event.Payload.stdout}}
 ```
+
+This flow consists of 2 steps - one to look out for users typing `flyte uk-bank-holidays` messages & to kick off fetching bank holidays data from somewhere,
+and the 2nd to look out for the successful retrieving and to send a success message back to the user with the list of bank holidays.
+
 
 For more information, check [flows](flows.md) page.
 
