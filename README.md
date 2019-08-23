@@ -156,6 +156,9 @@ There are a number of postman files in [postman](postman) folder that can be use
 - [Security](docs/security/security.md)
 - [Audit](docs/audit.md)
 - [Configuration](docs/configuration.md)
+- [Flows](docs/flows.md)
+- [Packs](docs/packs.md)
+- [DataStores](docs/datastores.md)
 
 ## Contributing
 
