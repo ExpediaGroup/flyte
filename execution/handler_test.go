@@ -18,15 +18,14 @@ package execution
 
 import (
 	"errors"
+	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"strings"
 	"sync"
 	"testing"
@@ -380,7 +379,6 @@ func TestTakeAction_ShouldReturnActionWhenPackHasAnyNewActionsAndNameIsNotSpecif
 
 	request := httptest.NewRequest(http.MethodPost, "/v1/packs/Slack/actions/take?:packId=Slack", nil)
 	httputil.SetProtocolAndHostIn(request)
-	flytepath.EnsureUriDocMapIsInitialised(request)
 	TakeAction(w, request)
 
 	//Then
@@ -422,7 +420,6 @@ func TestTakeAction_ShouldReturnActionWhenPackHasNewActionsWithTheGivenName(t *t
 	w := httptest.NewRecorder()
 	request := httptest.NewRequest(http.MethodPost, "/v1/packs/Slack/actions/take?:packId=Slack&actionName=SendMessage", nil)
 	httputil.SetProtocolAndHostIn(request)
-	flytepath.EnsureUriDocMapIsInitialised(request)
 	TakeAction(w, request)
 
 	//Then

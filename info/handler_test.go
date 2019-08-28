@@ -17,12 +17,11 @@ limitations under the License.
 package info
 
 import (
+	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"strings"
 	"testing"
 )
@@ -30,7 +29,6 @@ import (
 func TestIndexLinks(t *testing.T) {
 	req := httptest.NewRequest("GET", "/", strings.NewReader(""))
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 
 	responseWriter := httptest.NewRecorder()
 
@@ -46,7 +44,6 @@ func TestIndexLinks(t *testing.T) {
 func TestV1Links(t *testing.T) {
 	req := httptest.NewRequest("GET", "/v1", strings.NewReader(""))
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	responseWriter := httptest.NewRecorder()
 
 	V1(responseWriter, req)

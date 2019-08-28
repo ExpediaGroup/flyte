@@ -37,7 +37,7 @@ const (
 	FlowExecutionDoc    = "flowExecution"
 	TakeActionResultDoc = "takeActionResult"
 
-	FlowDoc = "flow"
+	FlowDoc = "FlowDoc"
 
 	// info
 	HealthPath     = "/health"
@@ -62,31 +62,29 @@ const (
 	TakeActionWithCommandPath = PackPath + "/actions/take?commandName=:commandName"
 	TakeActionResultPath      = PackPath + "/actions/:actionId/result"
 
-	GetPacksDoc   = "getPacksDoc"
-	PostEventDoc  = "postEvent"
-	TakeActionDoc = "takeAction"
+	GetPacksDoc   = "GetPacksDoc"
+	PostEventDoc  = "PostEventDoc"
+	TakeActionDoc = "TakeActionDoc"
 )
 
-func getFlyteDocPaths() map[string]string {
-	relMap := make(map[string]string)
-	relMap[AuditDoc] = "/swagger#/flowExecs"
-	relMap[AuditFlowsDoc] = "/swagger#!/audit/findFlows"
-	relMap[DatastoreDoc] = "/swagger#/datastore"
-	relMap[FlowExecutionDoc] = "/swagger#!/flow-executions"
-	relMap[FlowDoc] = "/swagger#/flow"
-	relMap[InfoDoc] = "/swagger#/info"
-	relMap[InfoVersionDoc] = "/swagger#!/info" + VersionPath
-	relMap[GetPacksDoc] = "/swagger#/pack"
-	relMap[HealthDoc] = "/swagger#!/info/health"
-	relMap[ListDataItemsDoc] = "/swagger#!/datastore/listDataItems"
-	relMap[ListFlowDoc] = "/swagger#!/flow/listFlows"
-	relMap[ListFlowExecutionsDoc] = "/swagger#!/flowExecutions"
-	relMap[ListPacksDoc] = "/swagger#!/pack/listPacks"
-	relMap[PostEventDoc] = "/swagger#/event"
-	relMap["swagger"] = VersionPath + "/swagger"
-	relMap[SwaggerRootDoc] = "/swagger"
-	relMap[TakeActionDoc] = "/swagger#!/action/takeAction"
-	relMap[TakeActionResultDoc] = "/swagger#/actionResult"
-	relMap[VersionInfoDoc] = "/swagger#!/info" + VersionPath
-	return relMap
+var FlyteDocPaths = map[string]string{
+	AuditDoc:              "/swagger#/flowExecs",
+	AuditFlowsDoc:         "/swagger#!/audit/findFlows",
+	DatastoreDoc:          "/swagger#/datastore",
+	FlowExecutionDoc:      "/swagger#!/flow-executions",
+	FlowDoc:               "/swagger#/flow",
+	InfoDoc:               "/swagger#/info",
+	InfoVersionDoc:        "/swagger#!/info" + VersionPath,
+	GetPacksDoc:           "/swagger#/pack",
+	HealthDoc:             "/swagger#!/info/health",
+	ListDataItemsDoc:      "/swagger#!/datastore/listDataItems",
+	ListFlowDoc:           "/swagger#!/flow/listFlows",
+	ListFlowExecutionsDoc: "/swagger#!/flowExecutions",
+	ListPacksDoc:          "/swagger#!/pack/listPacks",
+	PostEventDoc:          "/swagger#/event",
+	VersionDocPath:        VersionPath + "/swagger",
+	SwaggerRootDoc:        "/swagger",
+	TakeActionDoc:         "/swagger#!/action/takeAction",
+	TakeActionResultDoc:   "/swagger#/actionResult",
+	VersionInfoDoc:        "/swagger#!/info" + VersionPath,
 }
