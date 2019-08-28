@@ -55,8 +55,8 @@ func TestV1Links(t *testing.T) {
 		`{"href":"http://example.com/health","rel":"http://example.com/swagger#!/info/health"},`+
 		`{"href":"http://example.com/v1/packs","rel":"http://example.com/swagger#!/pack/listPacks"},`+
 		`{"href":"http://example.com/v1/flows","rel":"http://example.com/swagger#!/flow/listFlows"},`+
-		`{"href":"http://example.com/v1/datastore","rel":"http://example.com/swagger#!/datastore/listDataItems"},`+
-		`{"href":"http://example.com/v1/audit/flows","rel":"http://example.com/swagger#!/audit/findFlows"},`+
+		`{"href":"http://example.com/v1/datastore","rel":"http://example.com/swagger#!/datastore/listDatastoreItems"},`+
+		`{"href":"http://example.com/v1/audit/flows","rel":"http://example.com/swagger#!/flowAudit/findFlows"},`+
 		`{"href":"http://example.com/v1/swagger","rel":"http://example.com/swagger"}]}`, responseWriter.Body.String())
 }
 
