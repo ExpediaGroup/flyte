@@ -69,7 +69,7 @@ const (
 
 var FlyteDocPaths = map[string]string{
 	AuditDoc:              "/swagger#/flowExecs",
-	AuditFlowsDoc:         "/swagger#!/audit/findFlows",
+	AuditFlowsDoc:         "/swagger#!/flowAudit/findFlows",
 	DatastoreDoc:          "/swagger#/datastore",
 	FlowExecutionDoc:      "/swagger#!/flow-executions",
 	FlowDoc:               "/swagger#/flow",
@@ -77,7 +77,7 @@ var FlyteDocPaths = map[string]string{
 	InfoVersionDoc:        "/swagger#!/info" + VersionPath,
 	GetPacksDoc:           "/swagger#/pack",
 	HealthDoc:             "/swagger#!/info/health",
-	ListDataItemsDoc:      "/swagger#!/datastore/listDataItems",
+	ListDataItemsDoc:      "/swagger#!/datastore/listDatastoreItems",
 	ListFlowDoc:           "/swagger#!/flow/listFlows",
 	ListFlowExecutionsDoc: "/swagger#!/flowExecutions",
 	ListPacksDoc:          "/swagger#!/pack/listPacks",
