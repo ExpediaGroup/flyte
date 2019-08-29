@@ -1,6 +1,4 @@
-build:
-	dep ensure
-	go test ./... -tags="integration acceptance"
+build: test
 	go build
 
 run: build run-mongo
@@ -27,5 +25,4 @@ docker-stop: stop-mongo
 
 test:
 	dep ensure
-	go test ./...
 	go test ./... -tags="integration acceptance"
