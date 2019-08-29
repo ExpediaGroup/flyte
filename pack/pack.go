@@ -48,25 +48,12 @@ type Event struct {
 	Links []httputil.Link `json:"links,omitempty"`
 }
 
-type ok interface {
-	OK() error
-}
-
 func (p *Pack) generateId() {
 	id := p.Name
 	for _, k := range collections.SortedKeys(p.Labels) {
 		id += fmt.Sprintf(".%s.%s", k, p.Labels[k])
 	}
 	p.Id = id
-}
-
-func (p *Pack) OK() error {
-	for _, link := range p.Links {
-		if hateoasRegex.MatchString(link.Rel) {
-			return fmt.Errorf("you can't use %s as it collides with flyte relative links", link.Rel)
-		}
-	}
-	return nil
 }
 
 type Repository interface {

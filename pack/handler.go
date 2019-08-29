@@ -18,6 +18,7 @@ package pack
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
@@ -33,8 +34,14 @@ func PostPack(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	pack := &Pack{}
 
-	if err := decode(r, pack); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(pack); err != nil {
 		logger.Errorf("Cannot convert request to pack: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := checkLinks(pack); err != nil {
+		logger.Errorf("invalid links found: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -107,9 +114,11 @@ func DeletePack(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func decode(r *http.Request, v ok) error {
-	if err := json.NewDecoder(r.Body).Decode(v); err != nil {
-		return err
+func checkLinks(p *Pack) error {
+	for _, link := range p.Links {
+		if hateoasRegex.MatchString(link.Rel) {
+			return fmt.Errorf("you can't use %s as it collides with flyte relative links", link.Rel)
+		}
 	}
-	return v.OK()
+	return nil
 }
