@@ -69,7 +69,7 @@ func TestPostPack_ShouldCreatePackForValidRequest(t *testing.T) {
 	assert.JSONEq(t, packResp, string(body))
 }
 
-func TestPostPack_ShouldFailWhenHateoasLinksAreGoingToBeOverride(t *testing.T) {
+func TestPostPack_should_fail_with_bad_request(t *testing.T) {
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		add: func(pack Pack) error {
@@ -82,23 +82,23 @@ func TestPostPack_ShouldFailWhenHateoasLinksAreGoingToBeOverride(t *testing.T) {
 		link httputil.Link
 	}{
 		{
-			name: "should BadRequest error when 'self' is used",
+			name: "'self' is used as a relative name",
 			link: httputil.Link{Href: "http://somewhere.com", Rel: "self"},
 		},
 		{
-			name: "should BadRequest error when 'up' is used",
+			name: "'up' is used as a relative name",
 			link: httputil.Link{Href: "http://somewhere.com", Rel: "up"},
 		},
 		{
-			name: "should BadRequest error when 'Rel' attribute ends with 'actionResult'",
+			name: "'Rel' attribute ends with 'actionResult'",
 			link: httputil.Link{Href: "http://somewhere.com", Rel: "somewhere.com/actionResult"},
 		},
 		{
-			name: "should BadRequest error when 'Rel' attribute ends with 'takeAction'",
+			name: "'Rel' attribute ends with 'takeAction'",
 			link: httputil.Link{Href: "http://somewhere.com", Rel: "somewhere.com/takeAction"},
 		},
 		{
-			name: "should BadRequest error when 'Rel' attribute ends with '/event'",
+			name: "'Rel' attribute ends with '/event'",
 			link: httputil.Link{Href: "http://somewhere.com", Rel: "somewhere.com/something/event"},
 		},
 	}
