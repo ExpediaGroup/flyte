@@ -74,7 +74,7 @@ func TestRemovePacksOlderThan_ShouldLogOnError(t *testing.T) {
 	removePacksOlderThan(oneWeekInSeconds)
 
 	// then
-	expectedMessage := fmt.Sprintf("problem removing dead packs older than '%s'. err: 'some error'.", passedInDate.String())
+	expectedMessage := fmt.Sprintf("problem removing dead packs older than '%s'. err: 'some error'.", passedInDate.Format(time.RFC850))
 	assert.Equal(t, expectedMessage, loggertest.GetLogMessages()[0].Message)
 }
 

@@ -37,11 +37,13 @@ func removePacksOlderThan(packGracePeriodInSeconds int) {
 
 	info, err := packRepo.RemoveAllOlderThan(date)
 	if err != nil {
-		logger.Errorf("problem removing dead packs older than '%s'. err: '%v'.", date.String(), err)
+		logger.Errorf("problem removing dead packs older than '%s'. err: '%v'.", date.Format(time.RFC850), err)
 		return
 	}
 
-	logger.Infof("%v dead packs older than '%s' removed.", info.Removed, date.String())
+	if info.Removed > 0 {
+		logger.Infof("%v dead pack/s older than '%s' removed.", info.Removed, date.Format(time.RFC850))
+	}
 }
 
 var getPastDateFrom = getPastDateFromFn
