@@ -18,11 +18,11 @@ package pack
 
 import (
 	"encoding/json"
-	"github.com/husobee/vestigo"
-	"net/http"
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
+	"github.com/husobee/vestigo"
+	"net/http"
 	"time"
 )
 
@@ -32,11 +32,13 @@ func PostPack(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	pack := &Pack{}
-	if err := json.NewDecoder(r.Body).Decode(pack); err != nil {
+
+	if err := decode(r, pack); err != nil {
 		logger.Errorf("Cannot convert request to pack: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
 	pack.generateId()
 	pack.LastSeen = time.Now()
 
@@ -103,4 +105,11 @@ func DeletePack(w http.ResponseWriter, r *http.Request) {
 
 	logger.Infof("Pack PackId=%s deleted", packId)
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func decode(r *http.Request, v ok) error {
+	if err := json.NewDecoder(r.Body).Decode(v); err != nil {
+		return err
+	}
+	return v.OK()
 }

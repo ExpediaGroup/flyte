@@ -24,3 +24,8 @@ docker-run: docker-build run-mongo
 
 docker-stop: stop-mongo
 	docker rm -f flyte
+
+test:
+	dep ensure
+	go test ./...
+	go test ./... -tags="integration acceptance"
