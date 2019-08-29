@@ -21,11 +21,8 @@ import (
 	"fmt"
 	"github.com/HotelsDotCom/flyte/collections"
 	"github.com/HotelsDotCom/flyte/httputil"
-	"regexp"
 	"time"
 )
-
-var hateoasRegex, _ = regexp.Compile("up|self|/actionResult$|/takeAction$|/event$")
 
 type Pack struct {
 	Id       string            `json:"id" bson:"_id"`

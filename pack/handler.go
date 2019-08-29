@@ -24,10 +24,12 @@ import (
 	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
 	"net/http"
+	"regexp"
 	"time"
 )
 
 var packRepo Repository = packMgoRepo{}
+var hateoasRegex, _ = regexp.Compile("up|self|/actionResult$|/takeAction$|/event$")
 
 func PostPack(w http.ResponseWriter, r *http.Request) {
 
