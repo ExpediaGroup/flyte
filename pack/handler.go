@@ -42,7 +42,7 @@ func PostPack(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := checkLinks(pack); err != nil {
+	if err := validateLinks(pack); err != nil {
 		logger.Errorf("invalid links found: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -116,7 +116,7 @@ func DeletePack(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func checkLinks(p *Pack) error {
+func validateLinks(p *Pack) error {
 	for _, link := range p.Links {
 		if hateoasRegex.MatchString(link.Rel) {
 			return fmt.Errorf("you can't use %s as it collides with flyte relative links", link.Rel)
