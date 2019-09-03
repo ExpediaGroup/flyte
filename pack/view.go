@@ -48,7 +48,7 @@ func toPackResponse(r *http.Request, pack Pack) packResponse {
 			Replace(":packId", pack.Id).
 			Replace(":commandName", pack.Commands[i].Name).
 			Build(),
-			Rel: flytepath.GetUriDocPathFor(flytepath.TakeActionDoc)}
+			Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.TakeActionDoc)).Build()}
 
 		pr.Commands[i].Links = []httputil.Link{link}
 	}
@@ -57,8 +57,8 @@ func toPackResponse(r *http.Request, pack Pack) packResponse {
 
 	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PackPath).Replace(":packId", pack.Id).Build(), Rel: "self"})
 	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PackPath).Parent().Build(), Rel: "up"})
-	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.TakeActionPath).Replace(":packId", pack.Id).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.TakeActionDoc)})
-	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PostEventPath).Replace(":packId", pack.Id).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.PostEventDoc)})
+	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.TakeActionPath).Replace(":packId", pack.Id).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.TakeActionDoc)).Build()})
+	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PostEventPath).Replace(":packId", pack.Id).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.PostEventDoc)).Build()})
 	return pr
 }
 
@@ -80,7 +80,7 @@ func toPacksResponse(r *http.Request, packs []Pack) packsResponse {
 	defaultLinks := []httputil.Link{
 		{Href: httputil.UriBuilder(r).Path(flytepath.PacksPath).Build(), Rel: "self"},
 		{Href: httputil.UriBuilder(r).Path(flytepath.PacksPath).Parent().Build(), Rel: "up"},
-		{Href: flytepath.GetUriDocPathFor(flytepath.GetPacksDoc), Rel: "help"},
+		{Href: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.GetPacksDoc)).Build(), Rel: "help"},
 	}
 	return packsResponse{
 		Packs: ps,

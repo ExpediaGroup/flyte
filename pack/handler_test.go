@@ -19,7 +19,6 @@ package pack
 import (
 	"encoding/json"
 	"errors"
-	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
@@ -43,7 +42,6 @@ func TestPostPack_ShouldCreatePackForValidRequest(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodPost, "/v1/packs", strings.NewReader(slackPackJson))
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	PostPack(w, req)
 
@@ -125,7 +123,6 @@ func TestPostPack_should_fail_with_bad_request(t *testing.T) {
 
 			req := httptest.NewRequest(http.MethodPost, "/v1/packs", strings.NewReader(string(bytes)))
 			httputil.SetProtocolAndHostIn(req)
-			flytepath.EnsureUriDocMapIsInitialised(req)
 			w := httptest.NewRecorder()
 			PostPack(w, req)
 
@@ -192,7 +189,6 @@ func TestGetPacks_ShouldReturnListOfPacksWithLinks_WhenPacksExist(t *testing.T) 
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/packs", nil)
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	GetPacks(w, req)
 
@@ -224,7 +220,6 @@ func TestGetPacks_ShouldReturnEmptyListOfPacksWithLinks_WhenThereAreNoPacks(t *t
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/packs", nil)
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	GetPacks(w, req)
 
@@ -280,7 +275,6 @@ func TestGetPack_ShouldReturnPack(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/packs/Slack?:packId=Slack", nil)
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	GetPack(w, req)
 

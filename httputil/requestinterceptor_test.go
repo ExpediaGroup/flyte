@@ -23,7 +23,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/flyte/flytepath"
 	"testing"
 )
 
@@ -31,24 +30,6 @@ var handlerToWrap = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "Hello, is it me you're looking for?")
 })
-
-func TestNewRequestInterceptor_ShouldInitialiseTheUriMap_BeforeFallingThroughToTheHandlerItHasWrapped(t *testing.T) {
-	interceptor := NewRequestInterceptor(handlerToWrap)
-	r := httptest.NewRequest(http.MethodGet, "http://somewhere.com/anypath", nil)
-	w := httptest.NewRecorder()
-
-	interceptor.ServeHTTP(w, r)
-
-	// base uri should be prepended to the paths
-	assert.Contains(t, flytepath.GetUriDocPathFor(flytepath.DatastoreDoc), "http://somewhere.com")
-
-	// assertions for wrapped interceptor
-	resp := w.Result()
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	b, err := ioutil.ReadAll(resp.Body)
-	require.NoError(t, err)
-	assert.Equal(t, "Hello, is it me you're looking for?\n", string(b))
-}
 
 func TestNewRequestInterceptor_ShouldWorkOutAndSetTheCorrectProtocolAndHostInTheRequest_BeforeFallingThroughToTheHandlerItHasWrapped(t *testing.T) {
 	interceptor := NewRequestInterceptor(handlerToWrap)

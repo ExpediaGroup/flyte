@@ -17,12 +17,11 @@ limitations under the License.
 package info
 
 import (
+	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"strings"
 	"testing"
 )
@@ -30,7 +29,6 @@ import (
 func TestIndexLinks(t *testing.T) {
 	req := httptest.NewRequest("GET", "/", strings.NewReader(""))
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 
 	responseWriter := httptest.NewRecorder()
 
@@ -46,7 +44,6 @@ func TestIndexLinks(t *testing.T) {
 func TestV1Links(t *testing.T) {
 	req := httptest.NewRequest("GET", "/v1", strings.NewReader(""))
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	responseWriter := httptest.NewRecorder()
 
 	V1(responseWriter, req)
@@ -58,8 +55,8 @@ func TestV1Links(t *testing.T) {
 		`{"href":"http://example.com/health","rel":"http://example.com/swagger#!/info/health"},`+
 		`{"href":"http://example.com/v1/packs","rel":"http://example.com/swagger#!/pack/listPacks"},`+
 		`{"href":"http://example.com/v1/flows","rel":"http://example.com/swagger#!/flow/listFlows"},`+
-		`{"href":"http://example.com/v1/datastore","rel":"http://example.com/swagger#!/datastore/listDataItems"},`+
-		`{"href":"http://example.com/v1/audit/flows","rel":"http://example.com/swagger#!/audit/findFlows"},`+
+		`{"href":"http://example.com/v1/datastore","rel":"http://example.com/swagger#!/datastore/listDatastoreItems"},`+
+		`{"href":"http://example.com/v1/audit/flows","rel":"http://example.com/swagger#!/flowAudit/findFlows"},`+
 		`{"href":"http://example.com/v1/swagger","rel":"http://example.com/swagger"}]}`, responseWriter.Body.String())
 }
 

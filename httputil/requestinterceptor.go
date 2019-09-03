@@ -19,7 +19,6 @@ package httputil
 import (
 	"github.com/husobee/vestigo"
 	"net/http"
-	"github.com/HotelsDotCom/flyte/flytepath"
 )
 
 // creates a http.Handler that wraps the handler passed in and sets the original http protocol and host requested by the client
@@ -28,7 +27,6 @@ func NewRequestInterceptor(h http.Handler) http.Handler {
 
 	router.Handle("/*", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		SetProtocolAndHostIn(req)
-		flytepath.EnsureUriDocMapIsInitialised(req)
 		h.ServeHTTP(w, req)
 	}))
 

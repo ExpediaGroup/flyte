@@ -54,7 +54,7 @@ func toDataItemsResponse(r *http.Request, dataItems []DataItem) dataItemsRespons
 	defaultLinks := []httputil.Link{
 		{Href: httputil.UriBuilder(r).Path(flytepath.DatastorePath).Build(), Rel: "self"},
 		{Href: httputil.UriBuilder(r).Path(flytepath.DatastorePath).Parent().Build(), Rel: "up"},
-		{Href: flytepath.GetUriDocPathFor(flytepath.DatastoreDoc), Rel: "help"},
+		{Href: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.DatastoreDoc)).Build(), Rel: "help"},
 	}
 	return dataItemsResponse{
 		DataItems: ds,

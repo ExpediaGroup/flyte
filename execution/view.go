@@ -54,7 +54,7 @@ func getTakeActionLinks(r *http.Request, packId string, action Action) []httputi
 		Replace(":packId", packId).
 		Replace(":actionId", action.Id).
 		Build(),
-		Rel: flytepath.GetUriDocPathFor(flytepath.TakeActionResultDoc)}
+		Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.TakeActionResultDoc)).Build()}
 
 	return []httputil.Link{link}
 }

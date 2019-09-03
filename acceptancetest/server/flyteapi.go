@@ -174,12 +174,12 @@ func (f *Flyte) discoverURLs(links map[string][]httputil.Link) error {
 		return err
 	}
 
-	f.datastoreURL, err = urlutil.FindURLByRel(links["links"], "datastore/listDataItems")
+	f.datastoreURL, err = urlutil.FindURLByRel(links["links"], "datastore/listDatastoreItems")
 	if err != nil {
 		return err
 	}
 
-	f.flowExecutionsURL, err = urlutil.FindURLByRel(links["links"], "audit/findFlows")
+	f.flowExecutionsURL, err = urlutil.FindURLByRel(links["links"], "flowAudit/findFlows")
 	if err != nil {
 		return err
 	}
