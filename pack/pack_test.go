@@ -23,7 +23,7 @@ func TestPack_SetStatus(t *testing.T) {
 
 	for _, tt := range cases {
 		t.Run(tt.want + "_duration:" + now.Sub(tt.lastSeen).String(), func(t *testing.T) {
-			p := Pack{LastSeen: tt.lastSeen}
+			p := packResponse{Pack: Pack{LastSeen: tt.lastSeen}}
 			p.setStatus()
 			assert.Equal(t, tt.want, p.Status)
 		})

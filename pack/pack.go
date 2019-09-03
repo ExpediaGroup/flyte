@@ -31,7 +31,6 @@ type Pack struct {
 	Commands []Command         `json:"commands,omitempty"`
 	Events   []Event           `json:"events,omitempty"`
 	LastSeen time.Time         `json:"lastSeen,omitempty" bson:"lastSeen,omitempty"`
-	Status   string            `json:"status,omitempty"`
 	Links    []httputil.Link   `json:"links,omitempty"`
 }
 
@@ -47,23 +46,11 @@ type Event struct {
 }
 
 func (p *Pack) generateId() {
-
 	id := p.Name
 	for _, k := range collections.SortedKeys(p.Labels) {
 		id += fmt.Sprintf(".%s.%s", k, p.Labels[k])
 	}
 	p.Id = id
-}
-
-func (p *Pack) setStatus() {
-	d := time.Since(p.LastSeen)
-	if d < 10 * time.Minute {
-		p.Status = "live"
-	} else if d < 24 * time.Hour {
-		p.Status = "warning"
-	} else {
-		p.Status = "critical"
-	}
 }
 
 type Repository interface {
