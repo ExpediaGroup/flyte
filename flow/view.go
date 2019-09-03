@@ -32,7 +32,7 @@ func toFlowResponse(r *http.Request, flow Flow) flowResponse {
 	defaultLinks := []httputil.Link{
 		{Href: httputil.UriBuilder(r).Path(flytepath.FlowPath).Replace(":flowName", flow.Name).Build(), Rel: "self"},
 		{Href: httputil.UriBuilder(r).Path(flytepath.FlowPath).Parent().Build(), Rel: "up"},
-		{Href: flytepath.GetUriDocPathFor(flytepath.FlowDoc), Rel: "help"},
+		{Href: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.FlowDoc)).Build(), Rel: "help"},
 	}
 	return flowResponse{
 		Flow:  flow,
@@ -56,7 +56,7 @@ func toFlowsResponse(r *http.Request, flows []Flow) flowsResponse {
 	defaultLinks := []httputil.Link{
 		{Href: httputil.UriBuilder(r).Path(flytepath.FlowsPath).Build(), Rel: "self"},
 		{Href: httputil.UriBuilder(r).Path(flytepath.FlowsPath).Parent().Build(), Rel: "up"},
-		{Href: flytepath.GetUriDocPathFor(flytepath.FlowDoc), Rel: "help"},
+		{Href: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.FlowDoc)).Build(), Rel: "help"},
 	}
 	return flowsResponse{
 		Flows: fs,

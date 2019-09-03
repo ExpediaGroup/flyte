@@ -35,8 +35,8 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	links := []httputil.Link{
 		{Href: httputil.UriBuilder(r).Path("").Build(), Rel: "self"},
-		{Href: flytepath.GetUriDocPathFor(flytepath.InfoDoc), Rel: "help"},
-		{Href: httputil.UriBuilder(r).Path(flytepath.VersionPath).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.VersionInfoDoc)},
+		{Href: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.InfoDoc)).Build(), Rel: "help"},
+		{Href: httputil.UriBuilder(r).Path(flytepath.VersionPath).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.VersionInfoDoc)).Build()},
 	}
 	httputil.WriteResponse(w, r, Response{Links: links})
 }
@@ -45,13 +45,13 @@ func V1(w http.ResponseWriter, r *http.Request) {
 	links := []httputil.Link{
 		{Href: httputil.UriBuilder(r).Path(flytepath.VersionPath).Build(), Rel: "self"},
 		{Href: httputil.UriBuilder(r).Path(flytepath.VersionPath).Parent().Build(), Rel: "up"},
-		{Href: flytepath.GetUriDocPathFor(flytepath.InfoVersionDoc), Rel: "help"},
-		{Href: httputil.UriBuilder(r).Path(flytepath.HealthPath).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.HealthDoc)},
-		{Href: httputil.UriBuilder(r).Path(flytepath.PacksPath).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.ListPacksDoc)},
-		{Href: httputil.UriBuilder(r).Path(flytepath.FlowsPath).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.ListFlowDoc)},
-		{Href: httputil.UriBuilder(r).Path(flytepath.DatastorePath).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.ListDataItemsDoc)},
-		{Href: httputil.UriBuilder(r).Path(flytepath.AuditFlowPath).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.AuditFlowsDoc)},
-		{Href: httputil.UriBuilder(r).Path(flytepath.VersionDocPath).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.SwaggerRootDoc)},
+		{Href: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.InfoVersionDoc)).Build(), Rel: "help"},
+		{Href: httputil.UriBuilder(r).Path(flytepath.HealthPath).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.HealthDoc)).Build()},
+		{Href: httputil.UriBuilder(r).Path(flytepath.PacksPath).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.ListPacksDoc)).Build()},
+		{Href: httputil.UriBuilder(r).Path(flytepath.FlowsPath).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.ListFlowDoc)).Build()},
+		{Href: httputil.UriBuilder(r).Path(flytepath.DatastorePath).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.ListDataItemsDoc)).Build()},
+		{Href: httputil.UriBuilder(r).Path(flytepath.AuditFlowPath).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.AuditFlowsDoc)).Build()},
+		{Href: httputil.UriBuilder(r).Path(flytepath.VersionDocPath).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.SwaggerRootDoc)).Build()},
 	}
 	httputil.WriteResponse(w, r, Response{Links: links})
 }

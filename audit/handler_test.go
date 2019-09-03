@@ -18,14 +18,13 @@ package audit
 
 import (
 	"errors"
+	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"testing"
 )
 
@@ -56,7 +55,6 @@ func TestGetFlows_ShouldReturnListOfFlowsWithLinks_WhenFlowsExist(t *testing.T) 
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/audit/flows?actionName=actionA", nil)
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	GetFlows(w, req)
 
@@ -91,7 +89,6 @@ func TestGetFlows_ShouldReturnListOfFlowsFilteredByFlowName(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/audit/flows?flowName=flowA", nil)
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	GetFlows(w, req)
 
@@ -145,7 +142,6 @@ func TestGetFlows_ShouldReturnZeroFlows_WhenThereAreNoFlows(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/audit/flows", nil)
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	GetFlows(w, req)
 
@@ -201,7 +197,6 @@ func TestGetFlow_ShouldReturnFlowWithActions(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/audit/flows/existingFlow?:flowName=existingFlow", nil)
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	GetFlow(w, req)
 

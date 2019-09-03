@@ -1,6 +1,4 @@
-build:
-	dep ensure
-	go test ./... -tags="integration acceptance"
+build: test
 	go build
 
 build-all:
@@ -29,3 +27,7 @@ docker-run: docker-build run-mongo
 
 docker-stop: stop-mongo
 	docker rm -f flyte
+
+test:
+	dep ensure
+	go test ./... -tags="integration acceptance"

@@ -18,23 +18,36 @@ package pack
 
 import (
 	"encoding/json"
-	"github.com/husobee/vestigo"
-	"net/http"
+	"fmt"
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
+	"github.com/husobee/vestigo"
+	"net/http"
+	"regexp"
 	"time"
 )
+
+var packRepo Repository = packMgoRepo{}
+var hateoasRegex, _ = regexp.Compile("up|self|/actionResult$|/takeAction$|/event$")
 
 func PostPack(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	pack := &Pack{}
+
 	if err := json.NewDecoder(r.Body).Decode(pack); err != nil {
 		logger.Errorf("Cannot convert request to pack: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	if err := validateLinks(pack); err != nil {
+		logger.Errorf("invalid links found: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	pack.generateId()
 	pack.LastSeen = time.Now()
 
@@ -101,4 +114,13 @@ func DeletePack(w http.ResponseWriter, r *http.Request) {
 
 	logger.Infof("Pack PackId=%s deleted", packId)
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func validateLinks(p *Pack) error {
+	for _, link := range p.Links {
+		if hateoasRegex.MatchString(link.Rel) {
+			return fmt.Errorf("you can't use %s as it collides with flyte relative links", link.Rel)
+		}
+	}
+	return nil
 }

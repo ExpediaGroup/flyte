@@ -17,25 +17,38 @@ limitations under the License.
 package pack
 
 import (
-	"net/http"
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
+	"net/http"
+	"time"
 )
 
 type packResponse struct {
 	Pack
+	Status string `json:"status,omitempty"`
+}
+
+func (p *packResponse) setStatus() {
+	d := time.Since(p.LastSeen)
+	if d < 10 * time.Minute {
+		p.Status = "live"
+	} else if d < 24 * time.Hour {
+		p.Status = "warning"
+	} else {
+		p.Status = "critical"
+	}
 }
 
 func toPackResponse(r *http.Request, pack Pack) packResponse {
 
-	pr := packResponse{pack}
+	pr := packResponse{Pack: pack}
 	for i := range pr.Commands {
 		link := httputil.Link{Href: httputil.UriBuilder(r).
 			Path(flytepath.TakeActionWithCommandPath).
 			Replace(":packId", pack.Id).
 			Replace(":commandName", pack.Commands[i].Name).
 			Build(),
-			Rel: flytepath.GetUriDocPathFor(flytepath.TakeActionDoc)}
+			Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.TakeActionDoc)).Build()}
 
 		pr.Commands[i].Links = []httputil.Link{link}
 	}
@@ -44,8 +57,8 @@ func toPackResponse(r *http.Request, pack Pack) packResponse {
 
 	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PackPath).Replace(":packId", pack.Id).Build(), Rel: "self"})
 	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PackPath).Parent().Build(), Rel: "up"})
-	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.TakeActionPath).Replace(":packId", pack.Id).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.TakeActionDoc)})
-	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PostEventPath).Replace(":packId", pack.Id).Build(), Rel: flytepath.GetUriDocPathFor(flytepath.PostEventDoc)})
+	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.TakeActionPath).Replace(":packId", pack.Id).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.TakeActionDoc)).Build()})
+	pr.Links = append(pr.Links, httputil.Link{Href: httputil.UriBuilder(r).Path(flytepath.PostEventPath).Replace(":packId", pack.Id).Build(), Rel: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.PostEventDoc)).Build()})
 	return pr
 }
 
@@ -58,7 +71,7 @@ func toPacksResponse(r *http.Request, packs []Pack) packsResponse {
 
 	ps := []packResponse{}
 	for _, p := range packs {
-		pr := packResponse{p}
+		pr := packResponse{Pack: p}
 		pr.Links = []httputil.Link{{Href: httputil.UriBuilder(r).Path(flytepath.PackPath).Replace(":packId", p.Id).Build(), Rel: "self"}}
 		pr.setStatus()
 		ps = append(ps, pr)
@@ -67,7 +80,7 @@ func toPacksResponse(r *http.Request, packs []Pack) packsResponse {
 	defaultLinks := []httputil.Link{
 		{Href: httputil.UriBuilder(r).Path(flytepath.PacksPath).Build(), Rel: "self"},
 		{Href: httputil.UriBuilder(r).Path(flytepath.PacksPath).Parent().Build(), Rel: "up"},
-		{Href: flytepath.GetUriDocPathFor(flytepath.GetPacksDoc), Rel: "help"},
+		{Href: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.GetPacksDoc)).Build(), Rel: "help"},
 	}
 	return packsResponse{
 		Packs: ps,

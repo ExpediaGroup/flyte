@@ -19,14 +19,13 @@ package flow
 import (
 	"encoding/json"
 	"errors"
+	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"strings"
 	"testing"
 )
@@ -111,7 +110,6 @@ func TestGetFlows_ShouldReturnListOfFlowsWithLinks_WhenFlowsExist(t *testing.T) 
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/flows", nil)
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	GetFlows(w, req)
 
@@ -184,7 +182,6 @@ func TestGetFlow_ShouldReturnLatestVersionOfTheFlow(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "/v1/flows/existingFlow?:flowName=existingFlow", nil)
 	httputil.SetProtocolAndHostIn(req)
-	flytepath.EnsureUriDocMapIsInitialised(req)
 	w := httptest.NewRecorder()
 	GetFlow(w, req)
 

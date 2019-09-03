@@ -39,7 +39,7 @@ func toFlowsResponse(r *http.Request, flows []Flow) flowsResponse {
 		Links: []httputil.Link{
 			{Href: httputil.UriBuilder(r).Path(flytepath.AuditFlowPath).Build(), Rel: "self"},
 			{Href: httputil.UriBuilder(r).Path(flytepath.AuditFlowPath).Parent().Parent().Build(), Rel: "up"},
-			{Href: flytepath.GetUriDocPathFor(flytepath.AuditDoc), Rel: "help"},
+			{Href: httputil.UriBuilder(r).Path(flytepath.GetUriDocPathFor(flytepath.AuditDoc)).Build(), Rel: "help"},
 		},
 	}
 }

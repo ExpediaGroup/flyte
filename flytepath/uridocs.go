@@ -16,23 +16,6 @@ limitations under the License.
 
 package flytepath
 
-import (
-	"fmt"
-	"net/http"
-)
-
-var uriMap = make(map[string]string)
-
-func EnsureUriDocMapIsInitialised(r *http.Request) {
-	if len(uriMap) == 0 {
-		baseUri := fmt.Sprintf("%v://%v", r.Proto, r.Host)
-
-		for key, value := range getFlyteDocPaths() {
-			uriMap[key] = baseUri + value
-		}
-	}
-}
-
 func GetUriDocPathFor(name string) string {
-	return uriMap[name]
+	return flyteDocPaths[name]
 }
