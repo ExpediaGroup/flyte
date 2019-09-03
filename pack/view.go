@@ -17,18 +17,31 @@ limitations under the License.
 package pack
 
 import (
-	"net/http"
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
+	"net/http"
+	"time"
 )
 
 type packResponse struct {
 	Pack
+	Status string `json:"status,omitempty"`
+}
+
+func (p *packResponse) setStatus() {
+	d := time.Since(p.LastSeen)
+	if d < 10 * time.Minute {
+		p.Status = "live"
+	} else if d < 24 * time.Hour {
+		p.Status = "warning"
+	} else {
+		p.Status = "critical"
+	}
 }
 
 func toPackResponse(r *http.Request, pack Pack) packResponse {
 
-	pr := packResponse{pack}
+	pr := packResponse{Pack: pack}
 	for i := range pr.Commands {
 		link := httputil.Link{Href: httputil.UriBuilder(r).
 			Path(flytepath.TakeActionWithCommandPath).
@@ -58,7 +71,7 @@ func toPacksResponse(r *http.Request, packs []Pack) packsResponse {
 
 	ps := []packResponse{}
 	for _, p := range packs {
-		pr := packResponse{p}
+		pr := packResponse{Pack: p}
 		pr.Links = []httputil.Link{{Href: httputil.UriBuilder(r).Path(flytepath.PackPath).Replace(":packId", p.Id).Build(), Rel: "self"}}
 		pr.setStatus()
 		ps = append(ps, pr)

@@ -58,7 +58,7 @@ func TestPostPack_ShouldCreatePackForValidRequest(t *testing.T) {
 	var got Pack
 	err = json.Unmarshal(body, &got)
 	require.NoError(t, err)
-	assert.WithinDuration(t, time.Now(), got.LastSeen, 5 * time.Second)
+	assert.WithinDuration(t, time.Now(), got.LastSeen, 5*time.Second)
 
 	lsB, err := json.Marshal(got.LastSeen)
 	require.NoError(t, err)
@@ -67,6 +67,70 @@ func TestPostPack_ShouldCreatePackForValidRequest(t *testing.T) {
 	assert.JSONEq(t, packResp, string(body))
 }
 
+func TestPostPack_should_fail_with_bad_request(t *testing.T) {
+	defer resetPackRepo()
+	packRepo = mockPackRepo{
+		add: func(pack Pack) error {
+			return nil
+		},
+	}
+
+	tests := []struct {
+		name string
+		link httputil.Link
+	}{
+		{
+			name: "'self' is used as a relative name",
+			link: httputil.Link{Href: "http://somewhere.com", Rel: "self"},
+		},
+		{
+			name: "'up' is used as a relative name",
+			link: httputil.Link{Href: "http://somewhere.com", Rel: "up"},
+		},
+		{
+			name: "'Rel' attribute ends with 'actionResult'",
+			link: httputil.Link{Href: "http://somewhere.com", Rel: "somewhere.com/actionResult"},
+		},
+		{
+			name: "'Rel' attribute ends with 'takeAction'",
+			link: httputil.Link{Href: "http://somewhere.com", Rel: "somewhere.com/takeAction"},
+		},
+		{
+			name: "'Rel' attribute ends with '/event'",
+			link: httputil.Link{Href: "http://somewhere.com", Rel: "somewhere.com/something/event"},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			pack := Pack{
+				Name: "Slack",
+				Commands: []Command{
+					{Name: "SendMessage", Events: []string{"MessageSent", "SendMessageFailed"}},
+				},
+				Events: []Event{
+					{Name: "MessageSent"},
+					{Name: "SendMessageFailed"},
+				},
+				Links: []httputil.Link{
+					{Href: "http://example.com/README.md"},
+				},
+			}
+
+			pack.Links = append(pack.Links, test.link)
+
+			bytes, err := json.Marshal(&pack)
+			require.NoError(t, err)
+
+			req := httptest.NewRequest(http.MethodPost, "/v1/packs", strings.NewReader(string(bytes)))
+			httputil.SetProtocolAndHostIn(req)
+			w := httptest.NewRecorder()
+			PostPack(w, req)
+
+			resp := w.Result()
+			assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+		})
+	}
+}
 
 func TestPostPack_ShouldReturn400ForInvalidRequest(t *testing.T) {
 
@@ -118,7 +182,7 @@ func TestGetPacks_ShouldReturnListOfPacksWithLinks_WhenPacksExist(t *testing.T) 
 	packRepo = mockPackRepo{
 		findAll: func() ([]Pack, error) {
 			slack := Pack{Id: "Slack", Name: "Slack", Labels: map[string]string{"env": "dev"}, LastSeen: tLive}
-			hipChat := Pack{Id: "HipChat", Name: "HipChat", LastSeen:tWarning}
+			hipChat := Pack{Id: "HipChat", Name: "HipChat", LastSeen: tWarning}
 			return []Pack{slack, hipChat}, nil
 		},
 	}
