@@ -67,7 +67,7 @@ const (
 	TakeActionDoc = "TakeActionDoc"
 )
 
-var FlyteDocPaths = map[string]string{
+var flyteDocPaths = map[string]string{
 	AuditDoc:              "/swagger#/flowExecs",
 	AuditFlowsDoc:         "/swagger#!/flowAudit/findFlows",
 	DatastoreDoc:          "/swagger#/datastore",

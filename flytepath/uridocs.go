@@ -17,5 +17,5 @@ limitations under the License.
 package flytepath
 
 func GetUriDocPathFor(name string) string {
-	return FlyteDocPaths[name]
+	return flyteDocPaths[name]
 }
