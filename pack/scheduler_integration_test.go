@@ -19,10 +19,7 @@ limitations under the License.
 package pack
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/mgo.v2"
-	"strconv"
 	"testing"
 	"time"
 )
@@ -32,15 +29,15 @@ func TestScheduleDailyRemovalOfDeadPacksAt_ShouldCallFunctionToRemovePacksAtExpe
 	repoCalled := false
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
-		removeAllOlderThan: func(date time.Time) (info *mgo.ChangeInfo, err error) {
+		removeAllOlderThan: func(date time.Time) (packsRemoved int, err error) {
 			repoCalled = true
-			return &mgo.ChangeInfo{Removed:2}, nil
+			return 2, nil
 		},
 	}
 
 	// and we want to schedule a removal of packs one minute from now
 	oneMinFromNow := time.Now().Add(time.Minute * time.Duration(1))
-	oneMinFromNowFormatted := fmt.Sprintf("%v:%v", formattedString(oneMinFromNow.Hour()), formattedString(oneMinFromNow.Minute()))
+	oneMinFromNowFormatted := oneMinFromNow.Format("15:04")
 
 	// when we call the scheduler and give it time to run its job
 	s, sc := ScheduleDailyRemovalOfDeadPacksAt(oneMinFromNowFormatted, 1000)
@@ -51,12 +48,4 @@ func TestScheduleDailyRemovalOfDeadPacksAt_ShouldCallFunctionToRemovePacksAtExpe
 	// and clean up
 	s.Clear()
 	close(sc)
-}
-
-func formattedString(time int) string {
-	s := strconv.Itoa(time)
-	if len(s) < 2 {
-		return "0" + s
-	}
-	return s
 }

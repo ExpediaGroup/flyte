@@ -21,7 +21,6 @@ import (
 	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/mgo.v2"
 	"testing"
 	"time"
 )
@@ -41,9 +40,9 @@ func TestRemovePacksOlderThan_ShouldPassInTheExpectedDateToTheRepoFunction(t *te
 	var passedInDate time.Time
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
-		removeAllOlderThan: func(date time.Time) (info *mgo.ChangeInfo, err error) {
+		removeAllOlderThan: func(date time.Time) (packsRemoved int, err error) {
 			passedInDate = date
-			return &mgo.ChangeInfo{Removed:2}, nil
+			return 2, nil
 		},
 	}
 
@@ -64,9 +63,9 @@ func TestRemovePacksOlderThan_ShouldLogOnError(t *testing.T) {
 	var passedInDate time.Time
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
-		removeAllOlderThan: func(date time.Time) (info *mgo.ChangeInfo, err error) {
+		removeAllOlderThan: func(date time.Time) (packsRemoved int, err error) {
 			passedInDate = date
-			return nil, errors.New("some error")
+			return 0, errors.New("some error")
 		},
 	}
 

@@ -35,14 +35,14 @@ func ScheduleDailyRemovalOfDeadPacksAt(time string, packGracePeriodInSeconds int
 func removePacksOlderThan(packGracePeriodInSeconds int) {
 	date := getPastDateFrom(packGracePeriodInSeconds)
 
-	info, err := packRepo.RemoveAllOlderThan(date)
+	packsRemoved, err := packRepo.RemoveAllOlderThan(date)
 	if err != nil {
 		logger.Errorf("problem removing dead packs older than '%s'. err: '%v'.", date.Format(time.RFC850), err)
 		return
 	}
 
-	if info.Removed > 0 {
-		logger.Infof("%v dead pack/s older than '%s' removed.", info.Removed, date.Format(time.RFC850))
+	if packsRemoved > 0 {
+		logger.Infof("%v dead pack/s older than '%s' removed.", packsRemoved, date.Format(time.RFC850))
 	}
 }
 

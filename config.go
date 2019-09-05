@@ -17,13 +17,12 @@ limitations under the License.
 package main
 
 import (
-	"errors"
 	"fmt"
 	"github.com/HotelsDotCom/go-logger"
 	"math"
 	"os"
 	"strconv"
-	"strings"
+	"time"
 )
 
 // lookupEnv wrapper used for testing
@@ -179,31 +178,11 @@ func getDeleteDeadPacksTimeEnvVarWithDefault(name, defaultVal string) string {
 		logger.Infof(fmt.Sprintf("%s env not set, using default %v", name, defaultVal))
 		return defaultVal
 	}
-	if err := validateTime(val); err != nil {
+	if _, err := time.Parse("15:04", val); err != nil {
 		logger.Errorf(fmt.Sprintf("%s env is invalid, using default %v, error: %v", name, defaultVal, err))
 		return defaultVal
 	}
 
 	logger.Infof("Using %s=%s", name, val)
 	return val
-}
-
-func validateTime(t string) error {
-	var err error
-	var hour int
-	var min int
-	ts := strings.Split(t, ":")
-	if len(ts) != 2 {
-		return errors.New(fmt.Sprintf("time format error. time is not in 'HH:MM' format. invalid value: %s.", t))
-	}
-	if hour, err = strconv.Atoi(ts[0]); err != nil {
-		return errors.New(fmt.Sprintf("time format error. hour is invalid. invalid value: %s. err: %v.", t, err))
-	}
-	if min, err = strconv.Atoi(ts[1]); err != nil {
-		return errors.New(fmt.Sprintf("time format error. minute is invalid. invalid value: %s. err: %v.", t, err))
-	}
-	if hour < 0 || hour > 23 || min < 0 || min > 59 {
-		return errors.New(fmt.Sprintf("time format error. hours should be 0-23, minute should be 0-59. invalid value: %s.", t))
-	}
-	return nil
 }

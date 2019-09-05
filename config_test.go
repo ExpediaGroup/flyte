@@ -360,11 +360,11 @@ var invalidTimes = []struct {
 	invalidValue string
 	errorMsg     string
 }{
-	{"1100", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. time is not in 'HH:MM' format. invalid value: 1100."},
-	{"AA:00", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. hour is invalid. invalid value: AA:00. err: strconv.Atoi: parsing \"AA\": invalid syntax."},
-	{"23:AA", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. minute is invalid. invalid value: 23:AA. err: strconv.Atoi: parsing \"AA\": invalid syntax."},
-	{"24:00", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. hours should be 0-23, minute should be 0-59. invalid value: 24:00."},
-	{"23:60", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: time format error. hours should be 0-23, minute should be 0-59. invalid value: 23:60."},
+	{"1100", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: parsing time \"1100\" as \"15:04\": cannot parse \"00\" as \":\""},
+	{"AA:00", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: parsing time \"AA:00\" as \"15:04\": cannot parse \"AA:00\" as \"15\""},
+	{"23:AA", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: parsing time \"23:AA\" as \"15:04\": cannot parse \"AA\" as \"04\""},
+	{"24:00", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: parsing time \"24:00\": hour out of range"},
+	{"23:60", "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM env is invalid, using default 23:00, error: parsing time \"23:60\": minute out of range"},
 }
 
 func TestConfigShouldSetDefaultDeleteDeadPacksTimeAndLogErrorIfTimeIsInInvalidFormat(t *testing.T) {

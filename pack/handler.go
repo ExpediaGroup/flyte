@@ -28,7 +28,6 @@ import (
 	"time"
 )
 
-var packRepo Repository = packMgoRepo{}
 var hateoasRegex, _ = regexp.Compile("up|self|/actionResult$|/takeAction$|/event$")
 
 func PostPack(w http.ResponseWriter, r *http.Request) {

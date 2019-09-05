@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"github.com/HotelsDotCom/flyte/collections"
 	"github.com/HotelsDotCom/flyte/httputil"
-	"gopkg.in/mgo.v2"
 	"time"
 )
 
@@ -62,5 +61,5 @@ type Repository interface {
 	Remove(id string) error
 	Get(id string) (*Pack, error)
 	FindAll() ([]Pack, error)
-	RemoveAllOlderThan(date time.Time) (info *mgo.ChangeInfo, err error)
+	RemoveAllOlderThan(date time.Time) (packsRemoved int, err error)
 }

@@ -156,10 +156,10 @@ func TestDeleteAllOlderThan_ShouldRemovePacksFromRepoOlderThanTheDatePassedIn(t 
 		LastSeen: oneMonthAgo,
 	})
 
-	info, err := packRepo.RemoveAllOlderThan(oneWeekAgo)
+	packsRemoved, err := packRepo.RemoveAllOlderThan(oneWeekAgo)
 	require.NoError(t, err)
 
-	assert.Equal(t, 2, info.Removed)
+	assert.Equal(t, 2, packsRemoved)
 	packs, _ := packRepo.FindAll()
 	assert.Equal(t, 1, len(packs))
 	assert.Equal(t, "Slack", packs[0].Id)

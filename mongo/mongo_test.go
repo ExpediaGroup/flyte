@@ -45,33 +45,33 @@ func Test_InitSession_ShouldFailFastWhenMongoURLIsMalformed(t *testing.T) {
 }
 
 
-//func Test_InitSession_ShouldKeepTryingToConnectToMongo(t *testing.T) {
-//	defer loggertest.Reset()
-//	defer resetMongoTimeouts(mongoDialTimeout, mongoDialRetryWait)
-//	loggertest.Init(loggertest.LogLevelError)
-//	mongoDialTimeout = 100 * time.Millisecond
-//	mongoDialRetryWait = 100 * time.Millisecond
-//	c := make(chan struct{})
-//	url := "localhost"
-//
-//	// when
-//	go func() {
-//		defer func(){c <- struct{}{}}()
-//		assert.NotPanics(t, func(){InitSession(url, 365 * 24 * 60 * 60)})
-//	}()
-//
-//	select {
-//	case <-time.After(10 * time.Second):
-//	case <-c:
-//	}
-//
-//	// then
-//	logMessages := loggertest.GetLogMessages()
-//	require.NotEmpty(t, logMessages)
-//	fmt.Println(len(logMessages))
-//	require.True(t, len(logMessages) > 1)
-//
-//	expectedError := fmt.Sprintf("Unable to connect to mongo on url=%s will retry in %s: no reachable servers", url, mongoDialRetryWait)
-//	assert.Equal(t, expectedError, logMessages[0].Message)
-//	assert.Equal(t, expectedError, logMessages[1].Message)
-//}
+func Test_InitSession_ShouldKeepTryingToConnectToMongo(t *testing.T) {
+	defer loggertest.Reset()
+	defer resetMongoTimeouts(mongoDialTimeout, mongoDialRetryWait)
+	loggertest.Init(loggertest.LogLevelError)
+	mongoDialTimeout = 100 * time.Millisecond
+	mongoDialRetryWait = 100 * time.Millisecond
+	c := make(chan struct{})
+	url := "localhost"
+
+	// when
+	go func() {
+		defer func(){c <- struct{}{}}()
+		assert.NotPanics(t, func(){InitSession(url, 365 * 24 * 60 * 60)})
+	}()
+
+	select {
+	case <-time.After(10 * time.Second):
+	case <-c:
+	}
+
+	// then
+	logMessages := loggertest.GetLogMessages()
+	require.NotEmpty(t, logMessages)
+	fmt.Println(len(logMessages))
+	require.True(t, len(logMessages) > 1)
+
+	expectedError := fmt.Sprintf("Unable to connect to mongo on url=%s will retry in %s: no reachable servers", url, mongoDialRetryWait)
+	assert.Equal(t, expectedError, logMessages[0].Message)
+	assert.Equal(t, expectedError, logMessages[1].Message)
+}

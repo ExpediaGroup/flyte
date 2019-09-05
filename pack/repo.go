@@ -75,10 +75,14 @@ func (r packMgoRepo) FindAll() ([]Pack, error) {
 	return ps, err
 }
 
-func (r packMgoRepo) RemoveAllOlderThan(date time.Time) (info *mgo.ChangeInfo, err error) {
+func (r packMgoRepo) RemoveAllOlderThan(date time.Time) (packsRemoved int, err error) {
 
 	s := mongo.GetSession()
 	defer s.Close()
 
-	return s.DB(mongo.DbName).C(mongo.PackCollectionId).RemoveAll(bson.M{"lastSeen": bson.M{"$lt": date}})
+	info, err := s.DB(mongo.DbName).C(mongo.PackCollectionId).RemoveAll(bson.M{"lastSeen": bson.M{"$lt": date}})
+	if err != nil {
+		return 0, err
+	}
+	return info.Removed, nil
 }
