@@ -133,6 +133,38 @@ func TestFindAll_ShouldReturnAllPacksFromRepo(t *testing.T) {
 	assert.WithinDuration(t, hipChatPack.LastSeen, packs[0].LastSeen, 1 * time.Second)
 }
 
+func TestDeleteAllOlderThan_ShouldRemovePacksFromRepoOlderThanTheDatePassedIn(t *testing.T) {
+	now := time.Now()
+	oneWeekAgo := now.AddDate(0, 0, -7)
+	eightDaysAgo := now.AddDate(0, 0, -8)
+	oneMonthAgo := now.AddDate(0, -1, 0)
+
+	mongoT.DropDatabase(t)
+	insertPack(t, Pack{
+		Id:     "Slack.env.prod",
+		Name:   "Slack",
+		LastSeen: now,
+	})
+	insertPack(t, Pack{
+		Id:     "Argo.env.prod",
+		Name:   "Argo",
+		LastSeen: eightDaysAgo,
+	})
+	insertPack(t, Pack{
+		Id:     "Bamboo.env.prod",
+		Name:   "Bamboo",
+		LastSeen: oneMonthAgo,
+	})
+
+	packsRemoved, err := packRepo.RemoveAllOlderThan(oneWeekAgo)
+	require.NoError(t, err)
+
+	assert.Equal(t, 2, packsRemoved)
+	packs, _ := packRepo.FindAll()
+	assert.Equal(t, 1, len(packs))
+	assert.Equal(t, "Slack", packs[0].Id)
+}
+
 func insertPack(t *testing.T, pack Pack) {
 	pack.generateId()
 	mongoT.UpsertId(t, mongo.PackCollectionId, pack.Id, pack)

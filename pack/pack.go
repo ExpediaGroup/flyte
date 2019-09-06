@@ -24,6 +24,9 @@ import (
 	"time"
 )
 
+var packRepo Repository = packMgoRepo{}
+var PackNotFoundErr = errors.New("pack not found")
+
 type Pack struct {
 	Id       string            `json:"id" bson:"_id"`
 	Name     string            `json:"name"`
@@ -58,6 +61,5 @@ type Repository interface {
 	Remove(id string) error
 	Get(id string) (*Pack, error)
 	FindAll() ([]Pack, error)
+	RemoveAllOlderThan(date time.Time) (packsRemoved int, err error)
 }
-
-var PackNotFoundErr = errors.New("pack not found")

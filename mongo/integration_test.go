@@ -1,4 +1,4 @@
-// +build db
+// +build slow
 
 /*
 Copyright (C) 2018 Expedia Group.

@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"github.com/HotelsDotCom/flyte/pack"
 	"github.com/HotelsDotCom/flyte/server"
 	"github.com/HotelsDotCom/go-logger"
 	"net/http"
@@ -25,6 +26,12 @@ import (
 func main() {
 
 	c := NewConfig()
+	if c.ShouldDeleteDeadPacks {
+		logger.Infof("daily removal of dead packs is scheduled to run at '%s' set with a grace period of '%v' seconds.", c.DeleteDeadPacksTime, c.PackGracePeriodUntilDeadInSeconds)
+
+		pack.ScheduleDailyRemovalOfDeadPacksAt(c.DeleteDeadPacksTime, c.PackGracePeriodUntilDeadInSeconds)
+	}
+
 	flyteServer := server.NewFlyteServer(c.Port, c.MongoHost, c.FlyteTTL)
 
 	if c.requireAuth() {
@@ -32,6 +39,7 @@ func main() {
 	}
 
 	logger.Infof("Serving flyteapi on %s with TLS %v", flyteServer.Addr, c.requireTLS())
+
 	var err error
 	if c.requireTLS() {
 		err = flyteServer.ListenAndServeTLS(c.TLSCertPath, c.TLSKeyPath)

@@ -22,32 +22,41 @@ import (
 	"math"
 	"os"
 	"strconv"
+	"time"
 )
 
 // lookupEnv wrapper used for testing
 var lookupEnv = os.LookupEnv
 
 const (
-	portEnvName            = "FLYTE_PORT"
-	tlsCertPathEnvName     = "FLYTE_TLS_CERT_PATH"
-	tlsKeyPathEnvName      = "FLYTE_TLS_KEY_PATH"
-	mgoHostEnvName         = "FLYTE_MGO_HOST"
-	authPolicyPathEnvName  = "FLYTE_AUTH_POLICY_PATH"
-	oidcIssuerURLName      = "FLYTE_OIDC_ISSUER_URL"
-	oidcIssuerClientIDName = "FLYTE_OIDC_ISSUER_CLIENT_ID"
-	flyteTTLEnvName        = "FLYTE_TTL_IN_SECONDS"
-	oneYearInSeconds       = "31557600"
+	portEnvName                              = "FLYTE_PORT"
+	tlsCertPathEnvName                       = "FLYTE_TLS_CERT_PATH"
+	tlsKeyPathEnvName                        = "FLYTE_TLS_KEY_PATH"
+	mgoHostEnvName                           = "FLYTE_MGO_HOST"
+	authPolicyPathEnvName                    = "FLYTE_AUTH_POLICY_PATH"
+	oidcIssuerURLName                        = "FLYTE_OIDC_ISSUER_URL"
+	oidcIssuerClientIDName                   = "FLYTE_OIDC_ISSUER_CLIENT_ID"
+	flyteTTLEnvName                          = "FLYTE_TTL_IN_SECONDS"
+	shouldDeleteDeadPacksEnvName             = "FLYTE_SHOULD_DELETE_DEAD_PACKS"
+	deleteDeadPacksTimeEnvName               = "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM"
+	packGracePeriodUntilDeadInSecondsEnvName = "FLYTE_PACK_GRACE_PERIOD_UNTIL_MARKED_DEAD_IN_SECONDS"
+	defaultDeleteDeadPacksTime               = "23:00"
+	oneWeekInSeconds                         = 604800
+	oneYearInSeconds                         = 31557600
 )
 
 type Config struct {
-	MongoHost          string
-	Port               string
-	TLSCertPath        string
-	TLSKeyPath         string
-	AuthPolicyPath     string
-	OidcIssuerURL      string
-	OidcIssuerClientID string
-	FlyteTTL           int
+	MongoHost                         string
+	Port                              string
+	TLSCertPath                       string
+	TLSKeyPath                        string
+	AuthPolicyPath                    string
+	OidcIssuerURL                     string
+	OidcIssuerClientID                string
+	FlyteTTL                          int
+	ShouldDeleteDeadPacks             bool
+	DeleteDeadPacksTime               string
+	PackGracePeriodUntilDeadInSeconds int
 }
 
 func NewConfig() Config {
@@ -60,6 +69,9 @@ func NewConfig() Config {
 	c.OidcIssuerURL = getEnvVar(oidcIssuerURLName)
 	c.OidcIssuerClientID = getEnvVar(oidcIssuerClientIDName)
 	c.FlyteTTL = getIntEnvVarWithDefault(flyteTTLEnvName, oneYearInSeconds)
+	c.ShouldDeleteDeadPacks = getBoolEnvVarWithDefault(shouldDeleteDeadPacksEnvName, false)
+	c.DeleteDeadPacksTime = getDeleteDeadPacksTimeEnvVarWithDefault(deleteDeadPacksTimeEnvName, defaultDeleteDeadPacksTime)
+	c.PackGracePeriodUntilDeadInSeconds = getIntEnvVarWithDefault(packGracePeriodUntilDeadInSecondsEnvName, oneWeekInSeconds)
 	return c
 }
 
@@ -73,21 +85,38 @@ func getEnvVarWithDefault(name, defaultVal string) string {
 	return val
 }
 
-func getIntEnvVarWithDefault(name string, defaultVal string) int {
+func getIntEnvVarWithDefault(name string, defaultVal int) int {
 	val, isSet := lookupEnv(name)
 	if !isSet {
-		val = defaultVal
 		logger.Infof(fmt.Sprintf("%s env not set, using default", name))
+		return defaultVal
 	}
 
 	intVal, err := strconv.Atoi(val)
 	if err != nil {
-		intVal, _ = strconv.Atoi(defaultVal)
 		logger.Errorf(fmt.Sprintf("Error converting %s to int, using default. Value of %s: %v", name, name, val))
+		return defaultVal
 	}
 
 	logger.Infof("Using %s=%v", name, intVal)
 	return intVal
+}
+
+func getBoolEnvVarWithDefault(name string, defaultVal bool) bool {
+	val, isSet := lookupEnv(name)
+	if !isSet {
+		logger.Infof(fmt.Sprintf("%s env not set, using default: %v", name, defaultVal))
+		return defaultVal
+	}
+
+	boolVal, err := strconv.ParseBool(val)
+	if err != nil {
+		logger.Errorf(fmt.Sprintf("Error converting %s to bool, using default: %v. Value of %s: %v", name, defaultVal, name, val))
+		return defaultVal
+	}
+
+	logger.Infof("Using %s=%v", name, boolVal)
+	return boolVal
 }
 
 func getPathVar(envName string) string {
@@ -141,4 +170,19 @@ func (c Config) requireTLS() bool {
 
 func (c Config) requireAuth() bool {
 	return c.AuthPolicyPath != "" && c.OidcIssuerURL != "" && c.OidcIssuerClientID != ""
+}
+
+func getDeleteDeadPacksTimeEnvVarWithDefault(name, defaultVal string) string {
+	val, isSet := lookupEnv(name)
+	if !isSet {
+		logger.Infof(fmt.Sprintf("%s env not set, using default %v", name, defaultVal))
+		return defaultVal
+	}
+	if _, err := time.Parse("15:04", val); err != nil {
+		logger.Errorf(fmt.Sprintf("%s env is invalid, using default %v, error: %v", name, defaultVal, err))
+		return defaultVal
+	}
+
+	logger.Infof("Using %s=%s", name, val)
+	return val
 }
