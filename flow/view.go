@@ -17,9 +17,9 @@ limitations under the License.
 package flow
 
 import (
-	"net/http"
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
+	"net/http"
 )
 
 type flowResponse struct {
