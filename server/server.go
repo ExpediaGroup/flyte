@@ -18,10 +18,10 @@ package server
 
 import (
 	"fmt"
-	"net/http"
 	"github.com/HotelsDotCom/flyte/auth"
 	"github.com/HotelsDotCom/flyte/mongo"
 	"github.com/HotelsDotCom/go-logger"
+	"net/http"
 )
 
 type FlyteServer struct {

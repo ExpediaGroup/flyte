@@ -57,6 +57,28 @@ func TestPostFlow_ShouldAddFlowToRepoForValidRequest(t *testing.T) {
 	assert.Equal(t, expectedFlow, actualFlow)
 }
 
+func TestPostFlow_ShouldReturn400WhenFlowIsEmpty(t *testing.T) {
+	defer loggertest.Reset()
+	loggertest.Init(loggertest.LogLevelError)
+
+	defer resetFlowRepo()
+	flowRepo = mockFlowRepo{
+		add: func(flow Flow) error {
+			return errors.New("as this flow has no content")
+		},
+	}
+	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(`{}`))
+	w := httptest.NewRecorder()
+	PostFlow(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+
+	logMessages := loggertest.GetLogMessages()
+	require.Len(t, logMessages, 1)
+	assert.Equal(t, "cannot add flow to repo as this flow has no content", logMessages[0].Message)
+}
+
 func TestPostFlow_ShouldReturn400ForInvalidRequest(t *testing.T) {
 
 	defer loggertest.Reset()
@@ -86,7 +108,7 @@ func TestPostFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(`{"name":"validFlow"}`))
+	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(redeployFlow))
 	w := httptest.NewRecorder()
 	PostFlow(w, req)
 
@@ -95,7 +117,7 @@ func TestPostFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
 
 	logMessages := loggertest.GetLogMessages()
 	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot add flow to repo flowName=validFlow: something went wrong", logMessages[0].Message)
+	assert.Equal(t, "Cannot add flow to repo flowName=redeploy_flow: something went wrong", logMessages[0].Message)
 }
 
 func TestGetFlows_ShouldReturnListOfFlowsWithLinks_WhenFlowsExist(t *testing.T) {

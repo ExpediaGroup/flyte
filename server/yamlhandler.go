@@ -18,11 +18,15 @@ package server
 
 import (
 	"bytes"
-	"github.com/ghodss/yaml"
-	"io/ioutil"
-	"net/http"
+	"fmt"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
+	"github.com/ghodss/yaml"
+	"github.com/xeipuuv/gojsonschema"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"path/filepath"
 )
 
 func YamlHandler(h http.HandlerFunc) http.HandlerFunc {
@@ -62,9 +66,51 @@ func convertYAMLRequestToJSONRequest(r *http.Request) error {
 	if err != nil {
 		return err
 	}
+
+	valid, err := validateJsonAgainstSchema(string(body))
+	if !valid {
+		logger.Errorf("cannot validate against json schema: %+v", err)
+		return err
+	}
+
 	r.Body = ioutil.NopCloser(bytes.NewReader(body))
 	r.ContentLength = int64(len(body))
 	r.Header.Set(httputil.HeaderContentType, httputil.MediaTypeJson)
 
 	return nil
+}
+
+func validateJsonAgainstSchema(data string) (bool, error) {
+	fileSchema, err := getJsonSchema("flow-schema.json")
+	if err != nil {
+		return false, err
+	}
+
+	sl := gojsonschema.NewSchemaLoader()
+	sl.Validate = true
+	loader := gojsonschema.NewReferenceLoader("file://" + fileSchema)
+	document := gojsonschema.NewStringLoader(data)
+	result, _ := gojsonschema.Validate(loader, document)
+
+	if result.Errors() != nil {
+		for _, desc := range result.Errors() {
+			return false, fmt.Errorf("- %s\n", desc.String())
+		}
+	}
+	return result.Valid(), nil
+}
+
+var fPath = filepath.Abs
+
+func getJsonSchema(file string) (string, error) {
+	fileSchema, err := fPath(file)
+	if err != nil {
+		return "", err
+	}
+
+	if _, err := os.Stat(fileSchema); os.IsNotExist(err) {
+		return "", err
+	}
+
+	return fileSchema, nil
 }

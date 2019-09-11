@@ -1,0 +1,33 @@
+{
+  "name": "string",
+  "description": "string",
+  "steps": [
+    {
+      "id": "string",
+      "event": {
+        "name": "string",
+        "pack": {
+          "name": "string",
+          "labels": {},
+          "required":["name"]
+        },
+        "required":["id"]
+      },
+      "dependsOn": [
+        "string"
+      ],
+      "context": {},
+      "criteria": "string",
+      "command": {
+        "name": "string",
+        "pack": {
+          "name": "string",
+          "labels": {}
+        },
+        "input": {}
+      },
+      "required": ["id", "description","steps"]
+    }
+  ],
+  "required": ["name","steps"]
+}

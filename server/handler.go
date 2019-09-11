@@ -17,8 +17,6 @@ limitations under the License.
 package server
 
 import (
-	"github.com/husobee/vestigo"
-	"net/http"
 	"github.com/HotelsDotCom/flyte/audit"
 	"github.com/HotelsDotCom/flyte/datastore"
 	"github.com/HotelsDotCom/flyte/execution"
@@ -27,6 +25,8 @@ import (
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/flyte/info"
 	"github.com/HotelsDotCom/flyte/pack"
+	"github.com/husobee/vestigo"
+	"net/http"
 )
 
 func Handler() http.Handler {

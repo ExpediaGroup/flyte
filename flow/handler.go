@@ -18,11 +18,12 @@ package flow
 
 import (
 	"encoding/json"
-	"github.com/husobee/vestigo"
-	"net/http"
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
+	"github.com/husobee/vestigo"
+	"net/http"
+	"reflect"
 )
 
 var flowRepo Repository = flowMgoRepo{}
@@ -31,8 +32,15 @@ func PostFlow(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	flow := Flow{}
+
 	if err := json.NewDecoder(r.Body).Decode(&flow); err != nil {
 		logger.Errorf("Cannot convert request to flow: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if flow.IsEmpty() {
+		logger.Errorf("cannot add flow to repo as this flow has no content")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -98,4 +106,8 @@ func DeleteFlow(w http.ResponseWriter, r *http.Request) {
 
 	logger.Infof("Flow flowName=%s deleted", flowName)
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (f Flow) IsEmpty() bool {
+	return reflect.DeepEqual(f, Flow{})
 }
