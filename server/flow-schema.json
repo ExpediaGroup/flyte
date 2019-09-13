@@ -1,33 +1,114 @@
 {
-  "name": "string",
-  "description": "string",
-  "steps": [
-    {
-      "id": "string",
-      "event": {
-        "name": "string",
-        "pack": {
-          "name": "string",
-          "labels": {},
-          "required":["name"]
-        },
-        "required":["id"]
-      },
-      "dependsOn": [
-        "string"
-      ],
-      "context": {},
-      "criteria": "string",
-      "command": {
-        "name": "string",
-        "pack": {
-          "name": "string",
-          "labels": {}
-        },
-        "input": {}
-      },
-      "required": ["id", "description","steps"]
-    }
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "name",
+    "steps"
   ],
-  "required": ["name","steps"]
+  "properties": {
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "title": "The Name Schema",
+      "examples": [
+        "validYaml"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "description": {
+      "$id": "#/properties/description",
+      "type": "string",
+      "title": "The Description Schema",
+      "default": "",
+      "examples": [
+        "Simple flow to test if flyte & slack pack are up and running."
+      ],
+      "pattern": "^(.*)$"
+    },
+    "steps": {
+      "$id": "#/properties/steps",
+      "type": "array",
+      "title": "The Steps Schema",
+      "items": {
+        "$id": "#/properties/steps/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "event"
+        ],
+        "properties": {
+          "event": {
+            "$id": "#/properties/steps/items/properties/event",
+            "type": "object",
+            "title": "The Event Schema",
+            "required": [
+              "packName",
+              "name"
+            ],
+            "properties": {
+              "packName": {
+                "$id": "#/properties/steps/items/properties/event/properties/packName",
+                "type": "string",
+                "title": "The Packname Schema",
+                "default": "",
+                "examples": [
+                  "Slack"
+                ],
+                "pattern": "^(.*)$"
+              },
+              "name": {
+                "$id": "#/properties/steps/items/properties/event/properties/name",
+                "type": "string",
+                "title": "The Name Schema",
+                "default": "",
+                "examples": [
+                  "ReceivedMessage"
+                ],
+                "pattern": "^(.*)$"
+              }
+            }
+          },
+          "context": {
+            "$id": "#/properties/steps/items/properties/context",
+            "type": "object",
+            "title": "The Context Schema",
+            "properties": {
+              "ChannelID": {
+                "$id": "#/properties/steps/items/properties/context/properties/ChannelID",
+                "type": "string",
+                "title": "The Channelid Schema",
+                "default": "",
+                "examples": [
+                  "{{ Event.Payload.channelId }}"
+                ],
+                "pattern": "^(.*)$"
+              },
+              "UserID": {
+                "$id": "#/properties/steps/items/properties/context/properties/UserID",
+                "type": "string",
+                "title": "The Userid Schema",
+                "default": "",
+                "examples": [
+                  "{{ Event.Payload.user.id }}"
+                ],
+                "pattern": "^(.*)$"
+              },
+              "Tts": {
+                "$id": "#/properties/steps/items/properties/context/properties/Tts",
+                "type": "string",
+                "title": "The Tts Schema",
+                "default": "",
+                "examples": [
+                  "{% if Event.Payload.threadTimestamp != '' %}{{ Event.Payload.threadTimestamp }}{% else %}{{ Event.Payload.timestamp }}{% endif %}"
+                ],
+                "pattern": "^(.*)$"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
