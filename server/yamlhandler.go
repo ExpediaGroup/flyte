@@ -18,7 +18,7 @@ package server
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
 	"github.com/ghodss/yaml"
@@ -62,6 +62,7 @@ func convertYAMLRequestToJSONRequest(r *http.Request) error {
 	if err != nil {
 		return err
 	}
+
 	body, err := yaml.YAMLToJSON(data)
 	if err != nil {
 		return err
@@ -69,7 +70,7 @@ func convertYAMLRequestToJSONRequest(r *http.Request) error {
 
 	valid, err := validateJsonAgainstSchema(string(body))
 	if !valid {
-		logger.Errorf("cannot validate against json schema: %+v", err)
+		//logger.Errorf("cannot validate against json schema: %+v", err)
 		return err
 	}
 
@@ -86,16 +87,12 @@ func validateJsonAgainstSchema(data string) (bool, error) {
 		return false, err
 	}
 
-	sl := gojsonschema.NewSchemaLoader()
-	sl.Validate = true
 	loader := gojsonschema.NewReferenceLoader("file://" + fileSchema)
 	document := gojsonschema.NewStringLoader(data)
 	result, _ := gojsonschema.Validate(loader, document)
 
 	if result.Errors() != nil {
-		for _, desc := range result.Errors() {
-			return false, fmt.Errorf("- %s\n", desc.String())
-		}
+		return false, errors.New(result.Errors()[0].String())
 	}
 	return result.Valid(), nil
 }
@@ -111,6 +108,5 @@ func getJsonSchema(file string) (string, error) {
 	if _, err := os.Stat(fileSchema); os.IsNotExist(err) {
 		return "", err
 	}
-
 	return fileSchema, nil
 }

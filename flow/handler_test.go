@@ -57,7 +57,7 @@ func TestPostFlow_ShouldAddFlowToRepoForValidRequest(t *testing.T) {
 	assert.Equal(t, expectedFlow, actualFlow)
 }
 
-func TestPostFlow_ShouldReturn400WhenFlowIsEmpty(t *testing.T) {
+func TestPostFlow_ShouldReturn500WhenFlowIsEmpty(t *testing.T) {
 	defer loggertest.Reset()
 	loggertest.Init(loggertest.LogLevelError)
 
@@ -72,11 +72,11 @@ func TestPostFlow_ShouldReturn400WhenFlowIsEmpty(t *testing.T) {
 	PostFlow(w, req)
 
 	resp := w.Result()
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 
 	logMessages := loggertest.GetLogMessages()
 	require.Len(t, logMessages, 1)
-	assert.Equal(t, "cannot add flow to repo as this flow has no content", logMessages[0].Message)
+	assert.Equal(t, "Cannot add flow to repo flowName=: as this flow has no content", logMessages[0].Message)
 }
 
 func TestPostFlow_ShouldReturn400ForInvalidRequest(t *testing.T) {
