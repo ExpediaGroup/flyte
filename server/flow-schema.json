@@ -84,26 +84,6 @@
                   "{{ Event.Payload.channelId }}"
                 ],
                 "pattern": "^(.*)$"
-              },
-              "UserID": {
-                "$id": "#/properties/steps/items/properties/context/properties/UserID",
-                "type": "string",
-                "title": "The Userid Schema",
-                "default": "",
-                "examples": [
-                  "{{ Event.Payload.user.id }}"
-                ],
-                "pattern": "^(.*)$"
-              },
-              "Tts": {
-                "$id": "#/properties/steps/items/properties/context/properties/Tts",
-                "type": "string",
-                "title": "The Tts Schema",
-                "default": "",
-                "examples": [
-                  "{% if Event.Payload.threadTimestamp != '' %}{{ Event.Payload.threadTimestamp }}{% else %}{{ Event.Payload.timestamp }}{% endif %}"
-                ],
-                "pattern": "^(.*)$"
               }
             }
           }
