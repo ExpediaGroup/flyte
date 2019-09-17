@@ -19,13 +19,16 @@ package flow
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/xeipuuv/gojsonschema"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 )
@@ -76,11 +79,10 @@ func TestPostFlow_ShouldReturn500WhenFlowIsEmpty(t *testing.T) {
 
 	logMessages := loggertest.GetLogMessages()
 	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot add flow to repo flowName=: as this flow has no content", logMessages[0].Message)
+	assert.Equal(t, "Cannot convert request to flow: (root): name is required", logMessages[0].Message)
 }
 
-func TestPostFlow_ShouldReturn400ForInvalidRequest(t *testing.T) {
-
+func TestPostFlow_ShouldReturn500ForInvalidRequest(t *testing.T) {
 	defer loggertest.Reset()
 	loggertest.Init(loggertest.LogLevelError)
 
@@ -89,7 +91,7 @@ func TestPostFlow_ShouldReturn400ForInvalidRequest(t *testing.T) {
 	PostFlow(w, req)
 
 	resp := w.Result()
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 
 	logMessages := loggertest.GetLogMessages()
 	require.Len(t, logMessages, 1)
@@ -118,6 +120,50 @@ func TestPostFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
 	logMessages := loggertest.GetLogMessages()
 	require.Len(t, logMessages, 1)
 	assert.Equal(t, "Cannot add flow to repo flowName=redeploy_flow: something went wrong", logMessages[0].Message)
+}
+
+func TestPostFlow_ShouldErrorIfUnableToSetAbsolutePath(t *testing.T) {
+	preFileAs := fileAs
+	defer func() { fileAs = preFileAs }()
+	fileAs = func(path string) (s string, e error) {
+		return "", errors.New("unable to generate absolute path")
+	}
+
+	defer loggertest.Reset()
+	loggertest.Init(loggertest.LogLevelError)
+
+	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(redeployFlow))
+	w := httptest.NewRecorder()
+	PostFlow(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+
+	logMessages := loggertest.GetLogMessages()
+	require.Len(t, logMessages, 1)
+	assert.Equal(t, "Cannot convert request to flow: unable to generate absolute path", logMessages[0].Message)
+}
+
+func TestPostFlow_ShouldErrorIfUnableToFindFile(t *testing.T) {
+	preValidate := validate
+	defer func() { validate = preValidate }()
+	validate = func(ls gojsonschema.JSONLoader, ld gojsonschema.JSONLoader) (result *gojsonschema.Result, e error) {
+		return nil, &os.PathError{Err: fmt.Errorf("file not found")}
+	}
+
+	defer loggertest.Reset()
+	loggertest.Init(loggertest.LogLevelError)
+
+	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(redeployFlow))
+	w := httptest.NewRecorder()
+	PostFlow(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+
+	logMessages := loggertest.GetLogMessages()
+	require.Len(t, logMessages, 1)
+	assert.Contains(t, logMessages[0].Message, "Cannot convert request to flow: file not found ")
 }
 
 func TestGetFlows_ShouldReturnListOfFlowsWithLinks_WhenFlowsExist(t *testing.T) {

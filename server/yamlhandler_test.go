@@ -21,7 +21,6 @@ import (
 	"errors"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger/loggertest"
-	"github.com/ghodss/yaml"
 	"github.com/husobee/vestigo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -68,9 +67,9 @@ func TestYamlHandler_shouldReturnBadRequest_whenRequestContainsInvalidYaml(t *te
 
 	assert.Equal(t, numInvocations, 0)
 
-	//logMessages := loggertest.GetLogMessages()
-	//require.Len(t, logMessages, 1)
-	//assert.Contains(t, logMessages[0].Message, "cannot process yaml request:")
+	logMessages := loggertest.GetLogMessages()
+	require.Len(t, logMessages, 1)
+	assert.Contains(t, logMessages[0].Message, "cannot process yaml request:")
 }
 
 func TestConvertYAMLRequestToJSONRequest_shouldError_whenRequestCannotBeRead(t *testing.T) {
@@ -81,39 +80,6 @@ func TestConvertYAMLRequestToJSONRequest_shouldError_whenRequestCannotBeRead(t *
 	err = convertYAMLRequestToJSONRequest(req)
 	assert.Error(t, err)
 	assert.Equal(t, "mockIoReader error", err.Error())
-}
-
-func TestValidateJsonShouldFailIfSchemaNotFound(t *testing.T) {
-	_, err := getJsonSchema("file.json")
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "no such file or directory")
-}
-
-func TestValidateJsonShouldFailIfFilePathFails(t *testing.T) {
-	prePath := fPath
-	defer func() { fPath = prePath }()
-	fPath = func(path string) (s string, e error) {
-		return "", errors.New("unable to generate file path")
-	}
-
-	_, err := getJsonSchema("file.json")
-	require.Error(t, err)
-	assert.EqualError(t, err, "unable to generate file path")
-}
-
-func TestValidateJsonAgainstSchemaFailsWithErrorIfFieldIsMissing(t *testing.T) {
-	body, _ := yaml.YAMLToJSON([]byte(invalidYaml))
-	b, err := validateJsonAgainstSchema(string(body))
-	require.False(t, b)
-	assert.Error(t, err)
-	assert.EqualError(t, err, "(root): name is required")
-}
-
-func TestValidateAgainstSchema(t *testing.T) {
-	body, _ := yaml.YAMLToJSON([]byte(validYaml))
-	b, err := validateJsonAgainstSchema(string(body))
-	require.True(t, b)
-	assert.NoError(t, err)
 }
 
 const multipleDataTypesJSON = `{

@@ -18,23 +18,41 @@ package flow
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/HotelsDotCom/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
+	"github.com/xeipuuv/gojsonschema"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 var flowRepo Repository = flowMgoRepo{}
 
+const SchemaFile = "flow-schema.json"
+
 func PostFlow(w http.ResponseWriter, r *http.Request) {
 
-	defer r.Body.Close()
 	flow := Flow{}
+	r.Body.Close()
+	var bodyBytes []byte
+	if r.Body != nil {
+		bodyBytes, _ = ioutil.ReadAll(r.Body)
+	}
 
-	if err := json.NewDecoder(r.Body).Decode(&flow); err != nil {
+	if err := validateJsonAgainstSchema(string(bodyBytes)); err != nil {
 		logger.Errorf("Cannot convert request to flow: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := json.Unmarshal(bodyBytes, &flow); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		logger.Errorf("Cannot convert request to flow: %v", err)
 		return
 	}
 
@@ -43,8 +61,6 @@ func PostFlow(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	logger.Infof("Flow flowName=%s added to repo", flow.Name)
 
 	w.Header().Set("Location", httputil.UriBuilder(r).Path(flytepath.FlowsPath, flow.Name).Build())
 	w.WriteHeader(http.StatusCreated)
@@ -99,4 +115,29 @@ func DeleteFlow(w http.ResponseWriter, r *http.Request) {
 
 	logger.Infof("Flow flowName=%s deleted", flowName)
 	w.WriteHeader(http.StatusNoContent)
+}
+
+var fileAs = filepath.Abs
+var validate = gojsonschema.Validate
+
+func validateJsonAgainstSchema(data string) error {
+	schema, err := fileAs(SchemaFile)
+	if err != nil {
+		return err
+	}
+	loader := gojsonschema.NewReferenceLoader("file://" + schema)
+	document := gojsonschema.NewStringLoader(data)
+	result, err := validate(loader, document)
+	if err != nil {
+		switch err.(type) {
+		case *os.PathError:
+			return fmt.Errorf("file not found %s", loader.JsonSource())
+		default:
+			return err
+		}
+	}
+	if result.Errors() != nil {
+		return errors.New(result.Errors()[0].String())
+	}
+	return nil
 }
