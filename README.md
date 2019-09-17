@@ -74,7 +74,7 @@ Once running, flyte will be available on http://localhost:8080 (TLS disabled), o
 
 #### From Source
 
-Pre-req: must have [dep](https://github.com/golang/dep) installed and Go 1.9 or higher.
+Pre-req: must have [modules](https://github.com/golang/go/wiki/Modules) installed and Go 1.11 or higher.
 
 Build & run:
 
@@ -87,7 +87,6 @@ Command starts mongo docker container and flyte go executable in the background.
 or manually...
 
 ```
-dep ensure
 go test ./... -tags="integration acceptance" //remove tags if only want to run unit tests
 docker run -d -p 27017:27017 --name mongo mongo:latest
 go build && ./flyte
