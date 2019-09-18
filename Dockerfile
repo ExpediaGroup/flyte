@@ -9,13 +9,13 @@ COPY . ./
 RUN dep ensure -vendor-only
 RUN go test ./...
 RUN CGO_ENABLED=0 go build
-
 # Run image
 FROM alpine:latest
 RUN apk add --no-cache ca-certificates
 RUN echo "hosts: files dns" > /etc/nsswitch.conf
 ENV APP=flyte
 WORKDIR /app
+COPY --from=build-env /go/src/github.com/HotelsDotCom/$APP/flow/flow-schema.json .
 COPY --from=build-env /go/src/github.com/HotelsDotCom/$APP/$APP $APP
 COPY --from=build-env /go/src/github.com/HotelsDotCom/$APP/swagger swagger
 EXPOSE 8080

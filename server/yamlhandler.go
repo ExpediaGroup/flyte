@@ -18,11 +18,11 @@ package server
 
 import (
 	"bytes"
+	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger"
 	"github.com/ghodss/yaml"
 	"io/ioutil"
 	"net/http"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 )
 
 func YamlHandler(h http.HandlerFunc) http.HandlerFunc {
@@ -58,10 +58,12 @@ func convertYAMLRequestToJSONRequest(r *http.Request) error {
 	if err != nil {
 		return err
 	}
+
 	body, err := yaml.YAMLToJSON(data)
 	if err != nil {
 		return err
 	}
+
 	r.Body = ioutil.NopCloser(bytes.NewReader(body))
 	r.ContentLength = int64(len(body))
 	r.Header.Set(httputil.HeaderContentType, httputil.MediaTypeJson)

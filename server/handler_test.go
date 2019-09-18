@@ -17,11 +17,11 @@ limitations under the License.
 package server
 
 import (
+	"github.com/HotelsDotCom/flyte/flytepath"
 	"github.com/docker/docker/pkg/testutil/assert"
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/flyte/flytepath"
 	"testing"
 )
 
