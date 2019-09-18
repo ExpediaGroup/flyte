@@ -64,12 +64,6 @@ func TestPostFlow_ShouldReturn500WhenFlowIsEmpty(t *testing.T) {
 	defer loggertest.Reset()
 	loggertest.Init(loggertest.LogLevelError)
 
-	defer resetFlowRepo()
-	flowRepo = mockFlowRepo{
-		add: func(flow Flow) error {
-			return errors.New("as this flow has no content")
-		},
-	}
 	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(`{}`))
 	w := httptest.NewRecorder()
 	PostFlow(w, req)
