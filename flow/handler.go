@@ -37,8 +37,8 @@ const SchemaFile = "flow-schema.json"
 
 func PostFlow(w http.ResponseWriter, r *http.Request) {
 
+	defer r.Body.Close()
 	flow := Flow{}
-	r.Body.Close()
 	var bodyBytes []byte
 	if r.Body != nil {
 		bodyBytes, _ = ioutil.ReadAll(r.Body)
