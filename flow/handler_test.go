@@ -60,6 +60,24 @@ func TestPostFlow_ShouldAddFlowToRepoForValidRequest(t *testing.T) {
 	assert.Equal(t, expectedFlow, actualFlow)
 }
 
+func TestPostFlow_TestValidJsonWithMissingField(t *testing.T) {
+	defer loggertest.Reset()
+	loggertest.Init(loggertest.LogLevelError)
+
+	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(validJsonWithMissingField))
+	httputil.SetProtocolAndHostIn(req)
+	w := httptest.NewRecorder()
+	PostFlow(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+
+	logMessages := loggertest.GetLogMessages()
+	require.Len(t, logMessages, 1)
+	assert.Contains(t, "Cannot convert request to flow: (root): name is required", logMessages[0].Message)
+
+}
+
 func TestPostFlow_ShouldReturn500WhenFlowIsEmpty(t *testing.T) {
 	defer loggertest.Reset()
 	loggertest.Init(loggertest.LogLevelError)
@@ -435,4 +453,30 @@ const redeployFlow = `{
             }
         }
     ]
+}`
+
+const validJsonWithMissingField = `{
+  "description": "Get some help on what you can do with argo and flyte",
+  "steps": [
+    {
+      "id": "receive_help_message_send_response",
+      "event": {
+        "packName": "Slack",
+        "name": "ReceivedMessage"
+      },
+      "context": {
+        "Tts": "{% if Event.Payload.threadTimestamp != '' %}{{ Event.Payload.threadTimestamp }}{% else %}{{ Event.Payload.timestamp }}{% endif %}"
+      },
+      "criteria": "{{ Event.Payload.message|match:'^flyte(\\\\s+)help$' }}",
+      "command": {
+        "packName": "Slack",
+        "name": "SendMessage",
+        "input": {
+          "channelId": "{{ Event.Payload.channelId }}",
+          "threadTimestamp": "{{ Context.Tts }}",
+          "message": "Hey <@{{vent.Payload.user.id }}>!"
+        }
+      }
+    }
+  ]
 }`
