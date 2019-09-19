@@ -124,7 +124,6 @@
               },
               "input": {
                 "$id": "#/properties/steps/items/properties/command/properties/input",
-                "type": "object",
                 "title": "The Input Schema",
                 "default": null
               }
