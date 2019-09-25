@@ -8,8 +8,6 @@ COPY go.mod go.sum ./
 COPY . .
 RUN go test ./...
 RUN go build
-ENTRYPOINT ["./flyte"]
-
 
 # Run image
 FROM alpine:latest
