@@ -2,7 +2,6 @@ build: test
 	go build
 
 build-all:
-	dep ensure
 	go test ./... -tags="integration acceptance slow"
 	go build
 
@@ -29,5 +28,4 @@ docker-stop: stop-mongo
 	docker rm -f flyte
 
 test:
-	dep ensure
 	go test ./... -tags="integration acceptance"
