@@ -18,16 +18,16 @@ package template
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"github.com/HotelsDotCom/cronexpr"
+	"github.com/HotelsDotCom/flyte/datastore"
 	"github.com/flosch/pongo2"
 	"math/rand"
 	"reflect"
 	"regexp"
-	"github.com/HotelsDotCom/flyte/datastore"
 	"strings"
 	"time"
-	"github.com/gorhill/cronexpr"
-	"encoding/json"
 )
 
 func init() {
@@ -149,7 +149,7 @@ func matchesCron(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.
 
 	ce, err := cronexpr.Parse(param.String())
 	if err != nil {
-		return pongo2.AsValue(false), &pongo2.Error{OrigError:err}
+		return pongo2.AsValue(false), &pongo2.Error{OrigError: err}
 	}
 
 	return pongo2.AsValue(ce.Matches(t)), nil
