@@ -11,7 +11,7 @@ The example will show you how to interact with the api, packs and flows. And how
 
 ## Requirements
 - Docker. [docker installation](https://docs.docker.com/engine/installation/)
-- Go version 1.9+ [go installation](https://golang.org/)
+- Go version 1.11+ [go installation](https://golang.org/)
 
 ## Set-up
 We utilise docker-compose,see [docker-compose](https://docs.docker.com/compose/)  to run this example. This will start the api and two versions
