@@ -1,0 +1,136 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "name",
+    "steps"
+  ],
+  "properties": {
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "title": "The Name Schema",
+      "default": "",
+      "examples": [
+        "flyte_help"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "description": {
+      "$id": "#/properties/description",
+      "type": "string",
+      "title": "The Description Schema",
+      "default": "",
+      "examples": [
+        "Get some help on what you can do with argo and flyte"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "steps": {
+      "$id": "#/properties/steps",
+      "type": "array",
+      "title": "The Steps Schema",
+      "items": {
+        "$id": "#/properties/steps/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "event",
+          "command"
+        ],
+        "properties": {
+          "event": {
+            "$id": "#/properties/steps/items/properties/event",
+            "type": "object",
+            "title": "The Event Schema",
+            "required": [
+              "name",
+              "packName"
+            ],
+            "properties": {
+              "name": {
+                "$id": "#/properties/steps/items/properties/event/properties/name",
+                "type": "string",
+                "title": "The Name Schema",
+                "default": "",
+                "examples": [
+                  "EventName"
+                ],
+                "pattern": "^(.*)$"
+              },
+              "packName": {
+                "$id": "#/properties/steps/items/properties/event/properties/packName",
+                "type": "string",
+                "title": "The Packname Schema",
+                "default": "",
+                "examples": [
+                  "Packname"
+                ],
+                "pattern": "^(.*)$"
+              }
+            }
+          },
+          "context": {
+            "$id": "#/properties/steps/items/properties/context",
+            "type": "object",
+            "title": "The Context Schema",
+            "default": "",
+            "examples": [
+              "{{context here}}"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "criteria": {
+            "$id": "#/properties/steps/items/properties/criteria",
+            "type": "string",
+            "title": "The Criteria Schema",
+            "default": "",
+            "examples": [
+              "{{criteria here  }}"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "command": {
+            "$id": "#/properties/steps/items/properties/command",
+            "type": "object",
+            "title": "The Command Schema",
+            "required": [
+              "name",
+              "packName"
+            ],
+            "properties": {
+              "name": {
+                "$id": "#/properties/steps/items/properties/command/properties/name",
+                "type": "string",
+                "title": "The Name Schema",
+                "default": "",
+                "examples": [
+                  "Command Name"
+                ],
+                "pattern": "^(.*)$"
+              },
+              "packName": {
+                "$id": "#/properties/steps/items/properties/command/properties/packName",
+                "type": "string",
+                "title": "The Packname Schema",
+                "default": "",
+                "examples": [
+                  "PackName"
+                ],
+                "pattern": "^(.*)$"
+              },
+              "input": {
+                "$id": "#/properties/steps/items/properties/command/properties/input",
+                "title": "The Input Schema",
+                "default": null
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
