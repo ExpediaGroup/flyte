@@ -4,7 +4,7 @@ Example 1 is a basic api, pack and flow set-up.
 #### Perform the set-up
 
 ```
-cd $GOPATH/src/github.com/HotelsDotCom/flyte/examples/example1
+cd examples/example1
 docker-compose up
 ```
 
@@ -15,8 +15,6 @@ can then be used by the flows to interact with.
 #### MessageSender Pack set-up
 Launch the messagepack pack by opening a new terminal and using
 ```
-cd $GOPATH/src/github.com/HotelsDotCom/flyte/examples/messagesender
-dep ensure
 go build -tags=examples
 export FLYTE_API="http://localhost:8080"
  ./messagesender

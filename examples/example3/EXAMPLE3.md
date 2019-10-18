@@ -3,7 +3,6 @@
 #### Perform the set-up
 
 ```
-cd $GOPATH/src/github.com/HotelsDotCom/flyte/examples/example3
 docker-compose up
 ```
 
@@ -14,7 +13,6 @@ can then be used by the flows to interact with.
 #### MessageSender Pack set-up
 Launch the messagepack pack by opening a new terminal and using
 ```
-cd $GOPATH/src/github.com/HotelsDotCom/flyte/examples/messagesender
 go build -tags=examples
 export FLYTE_API="http://localhost:8080"
  ./messagesender
