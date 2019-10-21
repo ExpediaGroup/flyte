@@ -11,6 +11,7 @@ RUN go build
 
 # Run image
 FROM alpine:3.10
+RUN apk add --no-cache ca-certificates
 RUN echo "hosts: files dns" > /etc/nsswitch.conf
 COPY --from=build-env /app/flyte .
 COPY --from=build-env /app/flow/flow-schema.json .
