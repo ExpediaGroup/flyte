@@ -1,5 +1,5 @@
 # Build image
-FROM golang:latest AS build-env
+FROM golang:1.12 AS build-env
 
 WORKDIR /app
 ENV GO111MODULE=on
@@ -10,7 +10,7 @@ RUN go test ./...
 RUN go build
 
 # Run image
-FROM alpine:latest
+FROM alpine:3.10
 RUN echo "hosts: files dns" > /etc/nsswitch.conf
 COPY --from=build-env /app/flyte .
 COPY --from=build-env /app/flow/flow-schema.json .
