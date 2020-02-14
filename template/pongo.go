@@ -30,12 +30,16 @@ import (
 	"time"
 )
 
+var whitespaceRegex = regexp.MustCompile(`\s+`)
+
 func init() {
 	pongo2.RegisterFilter("key", getValueByKey)
 	pongo2.RegisterFilter("match", match)
 	pongo2.RegisterFilter("kvp", keyValuePair)
 	pongo2.RegisterFilter("index", index)
 	pongo2.RegisterFilter("matchesCron", matchesCron)
+	pongo2.RegisterFilter("removedupwhitespaces", removeDupWhitespaces)
+	pongo2.RegisterFilter("safecopypaste", safeCopyPaste)
 
 	rand.Seed(time.Now().UTC().UnixNano())
 	AddStaticContextEntry("randomInt", randomInt)
@@ -89,6 +93,16 @@ func index(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error)
 		return in.Index(param.Integer()), nil
 	}
 	return pongo2.AsValue(""), nil
+}
+
+func removeDupWhitespaces(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	s := whitespaceRegex.ReplaceAllString(in.String(), " ")
+	return pongo2.AsValue(strings.TrimRight(s, " ")), nil
+}
+
+func safeCopyPaste(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	replaceNonBreakingSpace := strings.Replace(in.String(), "\u00A0", " ", -1)
+	return pongo2.AsValue(replaceNonBreakingSpace), nil
 }
 
 func randomInt(upperBound int) int {
