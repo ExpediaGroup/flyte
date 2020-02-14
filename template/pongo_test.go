@@ -124,29 +124,29 @@ func TestRemoveDupWhiteSpaces(t *testing.T) {
 		expectedOutput string
 	}{
 		{
-			name:           "Removes whitespace at the end of the string",
+			name:           "removes whitespace at the end of the string",
 			input:          "flyte param1      param2  param3    ",
 			expectedOutput: "flyte param1 param2 param3",
 		},
 		{
-			name:           "Removes all dup whitespaces",
+			name:           "removes all dup whitespaces",
 			input:          "flyte param1      param2  param3",
 			expectedOutput: "flyte param1 param2 param3",
 		},
 		{
-			name:           "Ignores whitespaces at the beginning of the string",
+			name:           "ignores whitespaces at the beginning of the string",
 			input:          " flyte param1 param2 param3",
 			expectedOutput: " flyte param1 param2 param3",
 		},
 		{
-			name:           "Ignores whitespaces when parameter is wrapped within quotes",
+			name:           "ignores whitespaces when parameter is wrapped within quotes",
 			input:          " flyte param1 param2 param3",
 			expectedOutput: " flyte param1 param2 param3",
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			out, err := Resolve(fmt.Sprintf("{{ \"%s\" | removedupwhitespaces }}", test.input), nil)
+			out, err := Resolve(fmt.Sprintf(`{{ "%s" | removedupwhitespaces }}`, test.input), nil)
 			require.NoError(t, err)
 			assert.Equal(t, test.expectedOutput, out)
 		})
@@ -172,7 +172,7 @@ func TestSafeCopyPaste(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			out, err := Resolve(fmt.Sprintf("{{ \"%s\" | safecopypaste }}", test.input), nil)
+			out, err := Resolve(fmt.Sprintf(`{{ "%s" | safecopypaste }}`, test.input), nil)
 			require.NoError(t, err)
 			assert.Equal(t, test.expectedOutput, out)
 		})
