@@ -36,6 +36,7 @@ func init() {
 	pongo2.RegisterFilter("kvp", keyValuePair)
 	pongo2.RegisterFilter("index", index)
 	pongo2.RegisterFilter("matchesCron", matchesCron)
+	pongo2.RegisterFilter("extractMatch", extractMatch)
 
 	rand.Seed(time.Now().UTC().UnixNano())
 	AddStaticContextEntry("randomInt", randomInt)
@@ -72,6 +73,16 @@ func getValueByKey(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 func match(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
 	match, _ := regexp.MatchString(param.String(), in.String())
 	return pongo2.AsValue(match), nil
+}
+
+func extractMatch(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	matcher, _ := regexp.Compile(param.String())
+	match := matcher.FindStringSubmatch(in.String())
+	if len(match) > 1 {
+		return pongo2.AsValue(match[1]), nil
+	} else {
+		return pongo2.AsValue(in.String()), nil
+	}
 }
 
 func keyValuePair(in *pongo2.Value, _ *pongo2.Value) (*pongo2.Value, *pongo2.Error) {

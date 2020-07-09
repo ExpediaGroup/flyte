@@ -123,6 +123,22 @@ func TestResolveShouldResolveValidPongoTemplates(t *testing.T) {
 			`pongo`,
 		},
 		{
+			`{{ "pongo version new"|extractMatch:'\\w+ \\w+ (\\w+)' }}`,
+			`new`,
+		},
+		{
+			`{{ "the good, the bad, and the-ugly"|extractMatch:'.* ([-a-zA-Z0-9_]+)' }}`,
+			`the-ugly`,
+		},
+		{
+			`{{ "How do you defeat a Quylthulg?"|extractMatch:'.* ([-a-zA-Z0-9_]+)\\W*' }}`,
+			`Quylthulg`,
+		},
+		{
+			`{{ "What is your name?"|extractMatch:'.* (\\w+)$' }}`,
+			`What is your name?`,
+		},
+		{
 			`Event Name {{Event.Name}}, Pack name {{Event.Pack.Name}}, Pack label {{Event.Pack.Labels.network}}`,
 			`Event Name InventoryUpdateSuccess, Pack name Flyte, Pack label lab`,
 		},
