@@ -115,3 +115,34 @@ func TestMatchesCronExpressionReturnsErrorWhenAnInvalidCronExpressionIsGiven(t *
 	assert.EqualError(t, err, "error while evaluating expression: '{{ \"2018-02-14T23:18:09."+
 		"0481031Z\" | matchesCron: \"not a cron expression\" }}': [Error | Line 1 Col 57 near 'matchesCron'] missing field(s)")
 }
+
+func TestMatchReturnsTrueForValidMatch(t *testing.T) {
+	matched, err := Resolve(`{{ "foobar" | match:'^[fo]+bar.*$' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "True", matched)
+}
+
+func TestMatchReturnsFalseForNoMatch(t *testing.T) {
+	matched, err := Resolve(`{{ "foobar" | match:'^Foobar$' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "False", matched)
+}
+
+func TestExtractMatchReturnsFirstGroupForMatch(t *testing.T) {
+	matched, err := Resolve(`{{ "foo bar baz bay" | extractMatch:'\\w+ \\w+ (\\w+) (\\w+)' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "baz", matched)
+}
+
+func TestExtractMatchReturnsFullInputForNoMatch(t *testing.T) {
+	failedMatch, err := Resolve(`{{ "foo bar baz" | extractMatch:'\\w+ \\w+ (\\d+)' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "foo bar baz", failedMatch)
+}
+
+func TestExtractMatchReturnsFullInputForNoCaptureGroup(t *testing.T) {
+	failedMatch, err := Resolve(`{{ "foo bar baz" | extractMatch:'\\w+ \\w+ \\w+' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "foo bar baz", failedMatch)
+}
+
