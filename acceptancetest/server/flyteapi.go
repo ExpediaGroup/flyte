@@ -18,16 +18,16 @@ package server
 
 import (
 	"fmt"
+	"github.com/ExpediaGroup/flyte/acceptancetest/urlutil"
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/mongo/mongotest"
+	"github.com/ExpediaGroup/flyte/server"
+	"github.com/HotelsDotCom/go-logger"
 	"io/ioutil"
 	"net"
 	"net/url"
 	"os"
-	"github.com/HotelsDotCom/flyte/mongo"
-	"github.com/HotelsDotCom/flyte/mongo/mongotest"
-	"github.com/HotelsDotCom/flyte/acceptancetest/urlutil"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/flyte/server"
-	"github.com/HotelsDotCom/go-logger"
 	"time"
 )
 

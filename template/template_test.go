@@ -222,7 +222,7 @@ func testContext() Context {
 				"_PreviousLabel": "CSVC.59.0.29",
 			},
 			"keyValuePairs": "bn=100,ENV=staging,CMP=flyte, LBL= 1.2.3",
-			"timestamp": "2018-02-14T23:18:09.0481031Z",
+			"timestamp":     "2018-02-14T23:18:09.0481031Z",
 		},
 	}
 	return Context{

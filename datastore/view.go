@@ -19,11 +19,11 @@ package datastore
 import (
 	"errors"
 	"fmt"
+	"github.com/ExpediaGroup/flyte/flytepath"
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/husobee/vestigo"
 	"io/ioutil"
 	"net/http"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/husobee/vestigo"
 )
 
 type dataItemResponse struct {

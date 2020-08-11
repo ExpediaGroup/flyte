@@ -21,12 +21,12 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"net/url"
-	"os"
 	"github.com/HotelsDotCom/flyte-client/client"
 	"github.com/HotelsDotCom/flyte-client/config"
 	"github.com/HotelsDotCom/flyte-client/flyte"
 	"github.com/HotelsDotCom/go-logger"
+	"net/url"
+	"os"
 	"strings"
 )
 

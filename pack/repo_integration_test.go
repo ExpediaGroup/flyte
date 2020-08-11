@@ -20,13 +20,13 @@ limitations under the License.
 package pack
 
 import (
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/mongo/mongotest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2/bson"
 	"os"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/flyte/mongo"
-	"github.com/HotelsDotCom/flyte/mongo/mongotest"
 	"testing"
 	"time"
 )
@@ -84,7 +84,7 @@ func TestAdd_ShouldAddPackIntoRepo(t *testing.T) {
 	assert.Equal(t, slackPack.Commands, p.Commands)
 	assert.Equal(t, slackPack.Events, p.Events)
 	assert.Equal(t, slackPack.Links, p.Links)
-	assert.WithinDuration(t, slackPack.LastSeen, p.LastSeen, 1 * time.Second)
+	assert.WithinDuration(t, slackPack.LastSeen, p.LastSeen, 1*time.Second)
 }
 
 func TestRemove_ShouldRemovePackFromRepo(t *testing.T) {
@@ -111,13 +111,13 @@ func TestGet_ShouldGetPackFromRepo(t *testing.T) {
 	assert.Equal(t, slackPack.Commands, p.Commands)
 	assert.Equal(t, slackPack.Events, p.Events)
 	assert.Equal(t, slackPack.Links, p.Links)
-	assert.WithinDuration(t, slackPack.LastSeen, p.LastSeen, 1 * time.Second)
+	assert.WithinDuration(t, slackPack.LastSeen, p.LastSeen, 1*time.Second)
 }
 
 func TestFindAll_ShouldReturnAllPacksFromRepo(t *testing.T) {
 	mongoT.DropDatabase(t)
 	insertPack(t, slackPack)
-	hipChatPack := Pack{Name: "Hipchat", Labels: map[string]string{"env": "dev"}, LastSeen:time.Now()}
+	hipChatPack := Pack{Name: "Hipchat", Labels: map[string]string{"env": "dev"}, LastSeen: time.Now()}
 	insertPack(t, hipChatPack)
 
 	packs, err := packRepo.FindAll()
@@ -126,11 +126,11 @@ func TestFindAll_ShouldReturnAllPacksFromRepo(t *testing.T) {
 	assert.Equal(t, 2, len(packs))
 	assert.Equal(t, slackPack.Name, packs[1].Name)
 	assert.Equal(t, slackPack.Labels, packs[1].Labels)
-	assert.WithinDuration(t, slackPack.LastSeen, packs[1].LastSeen, 1 * time.Second)
+	assert.WithinDuration(t, slackPack.LastSeen, packs[1].LastSeen, 1*time.Second)
 
 	assert.Equal(t, hipChatPack.Name, packs[0].Name)
 	assert.Equal(t, hipChatPack.Labels, packs[0].Labels)
-	assert.WithinDuration(t, hipChatPack.LastSeen, packs[0].LastSeen, 1 * time.Second)
+	assert.WithinDuration(t, hipChatPack.LastSeen, packs[0].LastSeen, 1*time.Second)
 }
 
 func TestDeleteAllOlderThan_ShouldRemovePacksFromRepoOlderThanTheDatePassedIn(t *testing.T) {
@@ -141,18 +141,18 @@ func TestDeleteAllOlderThan_ShouldRemovePacksFromRepoOlderThanTheDatePassedIn(t 
 
 	mongoT.DropDatabase(t)
 	insertPack(t, Pack{
-		Id:     "Slack.env.prod",
-		Name:   "Slack",
+		Id:       "Slack.env.prod",
+		Name:     "Slack",
 		LastSeen: now,
 	})
 	insertPack(t, Pack{
-		Id:     "Argo.env.prod",
-		Name:   "Argo",
+		Id:       "Argo.env.prod",
+		Name:     "Argo",
 		LastSeen: eightDaysAgo,
 	})
 	insertPack(t, Pack{
-		Id:     "Bamboo.env.prod",
-		Name:   "Bamboo",
+		Id:       "Bamboo.env.prod",
+		Name:     "Bamboo",
 		LastSeen: oneMonthAgo,
 	})
 

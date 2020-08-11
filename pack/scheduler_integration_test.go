@@ -41,7 +41,7 @@ func TestScheduleDailyRemovalOfDeadPacksAt_ShouldCallFunctionToRemovePacksAtExpe
 
 	// when we call the scheduler and give it time to run its job
 	s, sc := ScheduleDailyRemovalOfDeadPacksAt(oneMinFromNowFormatted, 1000)
-	time.Sleep(time.Duration(61)*time.Second)
+	time.Sleep(time.Duration(61) * time.Second)
 
 	// then we simply assert that the repo was called
 	assert.True(t, repoCalled)

@@ -17,7 +17,7 @@ limitations under the License.
 package pack
 
 import (
-	"github.com/HotelsDotCom/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"

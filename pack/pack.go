@@ -19,8 +19,8 @@ package pack
 import (
 	"errors"
 	"fmt"
-	"github.com/HotelsDotCom/flyte/collections"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/collections"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"time"
 )
 

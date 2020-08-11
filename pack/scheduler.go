@@ -23,8 +23,8 @@ import (
 )
 
 /**
-	time format should be "HH:MM" i.e. "23:00"
- */
+time format should be "HH:MM" i.e. "23:00"
+*/
 func ScheduleDailyRemovalOfDeadPacksAt(time string, packGracePeriodInSeconds int) (*gocron.Scheduler, chan bool) {
 	s := gocron.NewScheduler()
 	s.Every(1).Day().At(time).Do(removePacksOlderThan, packGracePeriodInSeconds)
@@ -47,11 +47,13 @@ func removePacksOlderThan(packGracePeriodInSeconds int) {
 }
 
 var getPastDateFrom = getPastDateFromFn
+
 func getPastDateFromFn(secondsInPast int) time.Time {
-	return currentDate().Add(time.Duration(-secondsInPast)*time.Second)
+	return currentDate().Add(time.Duration(-secondsInPast) * time.Second)
 }
 
 var currentDate = getCurrentDateFn
+
 func getCurrentDateFn() time.Time {
 	return time.Now()
 }

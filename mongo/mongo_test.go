@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-func resetMongoTimeouts(dial, retry time.Duration){
-	mongoDialTimeout      = dial
-	mongoDialRetryWait    = retry
+func resetMongoTimeouts(dial, retry time.Duration) {
+	mongoDialTimeout = dial
+	mongoDialRetryWait = retry
 }
 
 func Test_InitSession_ShouldFailFastWhenMongoURLIsMalformed(t *testing.T) {
@@ -26,8 +26,8 @@ func Test_InitSession_ShouldFailFastWhenMongoURLIsMalformed(t *testing.T) {
 
 	// when
 	go func() {
-		defer func(){c <- struct{}{}}()
-		assert.Panics(t, func(){InitSession(url, 365 * 24 * 60 * 60)})
+		defer func() { c <- struct{}{} }()
+		assert.Panics(t, func() { InitSession(url, 365*24*60*60) })
 	}()
 
 	select {
@@ -44,7 +44,6 @@ func Test_InitSession_ShouldFailFastWhenMongoURLIsMalformed(t *testing.T) {
 	assert.Equal(t, expectedError, logMessages[0].Message)
 }
 
-
 func Test_InitSession_ShouldKeepTryingToConnectToMongo(t *testing.T) {
 	defer loggertest.Reset()
 	defer resetMongoTimeouts(mongoDialTimeout, mongoDialRetryWait)
@@ -56,8 +55,8 @@ func Test_InitSession_ShouldKeepTryingToConnectToMongo(t *testing.T) {
 
 	// when
 	go func() {
-		defer func(){c <- struct{}{}}()
-		assert.NotPanics(t, func(){InitSession(url, 365 * 24 * 60 * 60)})
+		defer func() { c <- struct{}{} }()
+		assert.NotPanics(t, func() { InitSession(url, 365*24*60*60) })
 	}()
 
 	select {

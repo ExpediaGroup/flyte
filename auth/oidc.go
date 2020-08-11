@@ -20,12 +20,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/HotelsDotCom/go-logger"
 	"github.com/coreos/go-oidc"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/husobee/vestigo"
 	"net/http"
-	"github.com/HotelsDotCom/go-logger"
 	"time"
 )
 

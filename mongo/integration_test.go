@@ -19,16 +19,16 @@ limitations under the License.
 package mongo
 
 import (
-	"os"
-	"github.com/HotelsDotCom/flyte/mongo/mongotest"
+	"errors"
+	"github.com/ExpediaGroup/flyte/mongo/mongotest"
 	"github.com/HotelsDotCom/go-logger/loggertest"
-	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"time"
 	"gopkg.in/mgo.v2"
-	"errors"
 	"gopkg.in/mgo.v2/bson"
+	"os"
+	"testing"
+	"time"
 )
 
 const ttl = 365 * 24 * 60 * 60
@@ -68,8 +68,8 @@ func Test_InitSession_ShouldNotAffectDbIfIndexesAlreadyExist(t *testing.T) {
 
 	// and index added
 	mongoT.GetSession().DB(DbName).C(ActionCollectionId).EnsureIndex(mgo.Index{
-		Key: []string{"correlationId"},
-		Name: "actionCorrelationId",
+		Key:        []string{"correlationId"},
+		Name:       "actionCorrelationId",
 		Background: true,
 	})
 	indexes, _ := mongoT.GetSession().DB(DbName).C(ActionCollectionId).Indexes()
@@ -118,7 +118,7 @@ func Test_InitSession_ShouldCreateTTLIndexAndExpireRecords(t *testing.T) {
 	assertIndexesExist(t, indexes, ttlInSeconds)
 
 	// and sleep - set at 61 seconds as by default mongo checks expiry once a minute
-	time.Sleep(time.Duration(61)*time.Second)
+	time.Sleep(time.Duration(61) * time.Second)
 
 	// now records should be expired
 	assertActionsAreNoLongerInDb(t)
@@ -145,7 +145,7 @@ func Test_InitSession_ShouldUpdateTTLIndex(t *testing.T) {
 	assertIndexesExist(t, indexes2, newTTLInSeconds)
 
 	// and sleep - set at 61 seconds as by default mongo checks expiry once a minute
-	time.Sleep(time.Duration(61)*time.Second)
+	time.Sleep(time.Duration(61) * time.Second)
 
 	// now records should be not be expired as the TTL has been changed to longer than 60 seconds
 	assertActionsAreStillInDb(t)
@@ -250,21 +250,21 @@ func assertIndexesExist(t *testing.T, indexes []mgo.Index, ttl int) {
 func assertActionsAreNoLongerInDb(t *testing.T) {
 	var got Action
 	err := mongoT.FindOne(ActionCollectionId, bson.M{"_id": "1"}, &got)
-	assert.Equal(t,"not found", err.Error())
+	assert.Equal(t, "not found", err.Error())
 	err = mongoT.FindOne(ActionCollectionId, bson.M{"_id": "2"}, &got)
-	assert.Equal(t,"not found", err.Error())
+	assert.Equal(t, "not found", err.Error())
 	err = mongoT.FindOne(ActionCollectionId, bson.M{"_id": "3"}, &got)
-	assert.Equal(t,"not found", err.Error())
+	assert.Equal(t, "not found", err.Error())
 }
 
 func assertActionsAreStillInDb(t *testing.T) {
 	var got Action
 	mongoT.FindOne(ActionCollectionId, bson.M{"_id": "1"}, &got)
-	assert.Equal(t,"1", got.Id)
+	assert.Equal(t, "1", got.Id)
 	mongoT.FindOne(ActionCollectionId, bson.M{"_id": "2"}, &got)
-	assert.Equal(t,"2", got.Id)
+	assert.Equal(t, "2", got.Id)
 	mongoT.FindOne(ActionCollectionId, bson.M{"_id": "3"}, &got)
-	assert.Equal(t,"3", got.Id)
+	assert.Equal(t, "3", got.Id)
 }
 
 func newActionT(id, name, state string, stateTime time.Time) Action {
@@ -276,9 +276,9 @@ func newActionT(id, name, state string, stateTime time.Time) Action {
 }
 
 type Action struct {
-	Id         string            `bson:"_id"`
-	Name       string            `bson:"name"`
-	State      State             `bson:"state"`
+	Id    string `bson:"_id"`
+	Name  string `bson:"name"`
+	State State  `bson:"state"`
 }
 
 type State struct {

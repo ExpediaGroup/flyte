@@ -19,9 +19,9 @@ limitations under the License.
 package acceptancetest
 
 import (
-	"github.com/HotelsDotCom/flyte/acceptancetest/server"
-	"github.com/HotelsDotCom/flyte/acceptancetest/urlutil"
-	"github.com/HotelsDotCom/flyte/mongo/mongotest"
+	"github.com/ExpediaGroup/flyte/acceptancetest/server"
+	"github.com/ExpediaGroup/flyte/acceptancetest/urlutil"
+	"github.com/ExpediaGroup/flyte/mongo/mongotest"
 	"testing"
 	"time"
 )

@@ -20,14 +20,14 @@ package acceptancetest
 
 import (
 	"encoding/json"
-	"github.com/HotelsDotCom/flyte/pack"
+	"fmt"
+	"github.com/ExpediaGroup/flyte/pack"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
-	"testing"
 	"strings"
-	"fmt"
+	"testing"
 	"time"
 )
 
@@ -59,7 +59,7 @@ func AddPack(t *testing.T) {
 	var got pack.Pack
 	err = json.Unmarshal(body, &got)
 	require.NoError(t, err)
-	assert.WithinDuration(t, time.Now(), got.LastSeen, 5 * time.Second)
+	assert.WithinDuration(t, time.Now(), got.LastSeen, 5*time.Second)
 
 	packResponse := fmt.Sprintf(slackPackResponse, flyteApi.RootURL().String())
 

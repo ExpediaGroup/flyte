@@ -19,10 +19,10 @@ package datastore
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
 	"net/http"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 	"strings"
 )
 

@@ -19,7 +19,7 @@ limitations under the License.
 package execution
 
 import (
-	"github.com/HotelsDotCom/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/mongo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2/bson"
@@ -66,5 +66,5 @@ func TestUpdateLastSeen_ShouldRecordLastSeenWithCurrentDate(t *testing.T) {
 	lastSeen := p["lastSeen"]
 	require.NotNil(t, lastSeen)
 
-	assert.WithinDuration(t, before, lastSeen.(time.Time), 1 * time.Second)
+	assert.WithinDuration(t, before, lastSeen.(time.Time), 1*time.Second)
 }

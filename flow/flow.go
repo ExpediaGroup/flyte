@@ -18,7 +18,7 @@ package flow
 
 import (
 	"errors"
-	"github.com/HotelsDotCom/flyte/json"
+	"github.com/ExpediaGroup/flyte/json"
 )
 
 // Flow uses two different collections, one contains latest flows (one per name)
