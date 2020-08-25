@@ -17,9 +17,9 @@ limitations under the License.
 package audit
 
 import (
-	"gopkg.in/mgo.v2/bson"
-	"github.com/HotelsDotCom/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/mongo"
 	"github.com/HotelsDotCom/go-logger"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type flowMgoRepo struct{}

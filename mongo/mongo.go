@@ -32,9 +32,9 @@ const (
 )
 
 var (
-	session *mgo.Session
-	mongoDialTimeout      = 5 * time.Second
-	mongoDialRetryWait    = 30 * time.Second
+	session            *mgo.Session
+	mongoDialTimeout   = 5 * time.Second
+	mongoDialRetryWait = 30 * time.Second
 )
 
 func GetSession() *mgo.Session {

@@ -18,8 +18,8 @@ package server
 
 import (
 	"fmt"
-	"github.com/HotelsDotCom/flyte/auth"
-	"github.com/HotelsDotCom/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/auth"
+	"github.com/ExpediaGroup/flyte/mongo"
 	"github.com/HotelsDotCom/go-logger"
 	"net/http"
 )

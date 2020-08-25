@@ -19,6 +19,7 @@ package httputil
 import (
 	"encoding/json"
 	"errors"
+	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/ghodss/yaml"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -26,7 +27,6 @@ import (
 	"math"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"testing"
 )
 

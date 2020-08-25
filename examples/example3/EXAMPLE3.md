@@ -31,7 +31,7 @@ api_1     | [INFO] 2017/11/07 13:53:31 handler.go:114: Pack registered: PackId=M
 
 ### Loading Flows
 
-flow3 is flow1 and flow2 with crieria and labels [Pack Labels](https://github.com/HotelsDotCom/flyte/blob/master/README.md#pack-labels), again you can view your flow in the browser [flow3](http://localhost:8080/v1/flows/flow3)
+flow3 is flow1 and flow2 with crieria and labels [Pack Labels](https://github.com/ExpediaGroup/flyte/blob/master/README.md#pack-labels), again you can view your flow in the browser [flow3](http://localhost:8080/v1/flows/flow3)
 
 ```
 curl -v -X POST http://localhost:8080/v1/flows -H 'content-type: application/x-yaml' -T flow3.yaml

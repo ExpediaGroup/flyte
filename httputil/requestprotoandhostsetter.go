@@ -48,7 +48,7 @@ func getHost(r *http.Request) string {
 	host := r.Header.Get("X-Flyte-Host")
 	if host == "" {
 		host = r.Header.Get("X-Forwarded-Host")
-		if host == ""{
+		if host == "" {
 			host = r.Host
 		}
 	}

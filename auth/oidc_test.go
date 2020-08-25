@@ -20,13 +20,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/coreos/go-oidc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/square/go-jose.v2"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"testing"
 )
 

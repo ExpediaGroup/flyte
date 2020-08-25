@@ -17,10 +17,10 @@ limitations under the License.
 package audit
 
 import (
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
 	"net/http"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 )
 
 var flowRepo Repository = flowMgoRepo{}

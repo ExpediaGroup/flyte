@@ -17,14 +17,14 @@ limitations under the License.
 package server
 
 import (
-	"github.com/HotelsDotCom/flyte/audit"
-	"github.com/HotelsDotCom/flyte/datastore"
-	"github.com/HotelsDotCom/flyte/execution"
-	"github.com/HotelsDotCom/flyte/flow"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/flyte/info"
-	"github.com/HotelsDotCom/flyte/pack"
+	"github.com/ExpediaGroup/flyte/audit"
+	"github.com/ExpediaGroup/flyte/datastore"
+	"github.com/ExpediaGroup/flyte/execution"
+	"github.com/ExpediaGroup/flyte/flow"
+	"github.com/ExpediaGroup/flyte/flytepath"
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/info"
+	"github.com/ExpediaGroup/flyte/pack"
 	"github.com/husobee/vestigo"
 	"net/http"
 )

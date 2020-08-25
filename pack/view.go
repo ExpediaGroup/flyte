@@ -17,8 +17,8 @@ limitations under the License.
 package pack
 
 import (
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/flytepath"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"net/http"
 	"time"
 )
@@ -30,9 +30,9 @@ type packResponse struct {
 
 func (p *packResponse) setStatus() {
 	d := time.Since(p.LastSeen)
-	if d < 10 * time.Minute {
+	if d < 10*time.Minute {
 		p.Status = "live"
-	} else if d < 24 * time.Hour {
+	} else if d < 24*time.Hour {
 		p.Status = "warning"
 	} else {
 		p.Status = "critical"

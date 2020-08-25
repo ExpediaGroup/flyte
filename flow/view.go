@@ -17,8 +17,8 @@ limitations under the License.
 package flow
 
 import (
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/flytepath"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"net/http"
 )
 

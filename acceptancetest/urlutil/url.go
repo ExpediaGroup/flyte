@@ -18,7 +18,7 @@ package urlutil
 
 import (
 	"fmt"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"strings"
 )
 

@@ -19,7 +19,7 @@ package server
 import (
 	"bytes"
 	"errors"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/husobee/vestigo"
 	"github.com/stretchr/testify/assert"

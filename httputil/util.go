@@ -18,9 +18,9 @@ package httputil
 
 import (
 	"encoding/json"
+	"github.com/HotelsDotCom/go-logger"
 	"github.com/ghodss/yaml"
 	"net/http"
-	"github.com/HotelsDotCom/go-logger"
 )
 
 func WriteResponse(w http.ResponseWriter, r *http.Request, v interface{}) {

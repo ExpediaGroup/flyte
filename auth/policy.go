@@ -18,11 +18,11 @@ package auth
 
 import (
 	"fmt"
+	"github.com/ExpediaGroup/flyte/collections"
+	"github.com/HotelsDotCom/go-logger"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-yaml/yaml"
 	"io/ioutil"
-	"github.com/HotelsDotCom/flyte/collections"
-	"github.com/HotelsDotCom/go-logger"
 	"strconv"
 	"strings"
 )

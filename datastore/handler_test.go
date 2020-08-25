@@ -21,6 +21,10 @@ import (
 	encodingjson "encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ExpediaGroup/flyte/flytepath"
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger/loggertest"
+	"github.com/husobee/vestigo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -29,11 +33,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/textproto"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"testing"
-	"github.com/husobee/vestigo"
-	"github.com/HotelsDotCom/flyte/flytepath"
 )
 
 func TestGetItems(t *testing.T) {

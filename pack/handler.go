@@ -19,8 +19,8 @@ package pack
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/flytepath"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
 	"net/http"

@@ -145,4 +145,3 @@ func TestExtractMatchReturnsFullInputForNoCaptureGroup(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "foo bar baz", failedMatch)
 }
-

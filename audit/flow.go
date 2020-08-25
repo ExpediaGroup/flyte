@@ -17,7 +17,7 @@ limitations under the License.
 package audit
 
 import (
-	"github.com/HotelsDotCom/flyte/json"
+	"github.com/ExpediaGroup/flyte/json"
 	"time"
 )
 

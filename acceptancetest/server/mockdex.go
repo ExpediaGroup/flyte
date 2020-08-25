@@ -19,6 +19,7 @@ package server
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/HotelsDotCom/go-logger"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/husobee/vestigo"
 	"github.com/stretchr/testify/require"
@@ -26,7 +27,6 @@ import (
 	"math/big"
 	"net/http"
 	"net/http/httptest"
-	"github.com/HotelsDotCom/go-logger"
 	"testing"
 )
 

@@ -19,8 +19,8 @@ limitations under the License.
 package flow
 
 import (
-	"github.com/HotelsDotCom/flyte/mongo"
-	"github.com/HotelsDotCom/flyte/mongo/mongotest"
+	"github.com/ExpediaGroup/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/mongo/mongotest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2"

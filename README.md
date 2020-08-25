@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/HotelsDotCom/flyte.svg?branch=master)](https://travis-ci.org/HotelsDotCom/flyte)
+[![Build Status](https://travis-ci.org/ExpediaGroup/flyte.svg?branch=master)](https://travis-ci.org/ExpediaGroup/flyte)
 [![Docker Stars](https://img.shields.io/docker/stars/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
 
 <p align="center">
-  <img align="center" src="https://github.com/HotelsDotCom/flyte/blob/master/docs/images/flyte_logo_compact.png" width="300">
+  <img align="center" src="https://github.com/ExpediaGroup/flyte/blob/master/docs/images/flyte_logo_compact.png" width="300">
 </p>
 
 ## Table of contents
@@ -19,7 +19,7 @@
 
 Flyte binds together the tools you use into easily defined, automated workflows. It is a request-based, decoupled automation engine which allows you to define flows to enable integrated behaviour across these disparate tools.
 
-Flyte has chat-ops enabling integrations for Slack, as well as some other out-of-the-box [integrations](https://github.com/HotelsDotCom?utf8=%E2%9C%93&q=flyte+pack&type=&language=). These integrations, or packs can be added to and extended easily by using Flyte's RESTful API.
+Flyte has chat-ops enabling integrations for Slack, as well as some other out-of-the-box [integrations](https://github.com/ExpediaGroup?utf8=%E2%9C%93&q=flyte+pack&type=&language=). These integrations, or packs can be added to and extended easily by using Flyte's RESTful API.
 
 Some of the applications already in use include chat-ops based inventory management, host/container administration and orchestration, and deployment of applications into Kubernetes.
 
@@ -36,7 +36,7 @@ The Flyte-API acts as the orchestrator and is backed by a (MongoDB) database ser
 
     You can find more info about flows [here](docs/quickstart.md).
     
-- **Packs** are self-contained apps that are responsible for executing flow actions and sending events to the flyte-api. For instance, [flyte-slack-pack](https://github.com/HotelsDotCom/flyte-slack) consumes events/messages from a slack channel but also sends messages via Slack. 
+- **Packs** are self-contained apps that are responsible for executing flow actions and sending events to the flyte-api. For instance, [flyte-slack-pack](https://github.com/ExpediaGroup/flyte-slack) consumes events/messages from a slack channel but also sends messages via Slack. 
 - **DataStores** are basically configuration properties shared between flows. For instance, list of environments, urls, etc.
 
 ![component diagram](docs/images/component_diag.png)

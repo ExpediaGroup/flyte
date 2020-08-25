@@ -1,6 +1,7 @@
-module github.com/HotelsDotCom/flyte
+module github.com/ExpediaGroup/flyte
 
-go 1.12
+go 1.14
+
 
 require (
 	github.com/HotelsDotCom/cronexpr v0.0.0-20180305142311-fcf95785ff88

@@ -19,14 +19,14 @@ limitations under the License.
 package datastore
 
 import (
-	"testing"
-	"os"
-	"github.com/stretchr/testify/require"
-	"github.com/HotelsDotCom/flyte/mongo/mongotest"
-	"github.com/HotelsDotCom/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/mongo/mongotest"
 	"github.com/stretchr/testify/assert"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2/bson"
+	"os"
+	"testing"
 )
 
 var mongoT *mongotest.MongoT

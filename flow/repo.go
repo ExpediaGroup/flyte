@@ -18,7 +18,7 @@ package flow
 
 import (
 	"fmt"
-	"github.com/HotelsDotCom/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
