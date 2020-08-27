@@ -1,6 +1,6 @@
 # Contributing
 
-flyte is [Apache 2.0 licensed](LICENSE) and accept contributions via
+Flyte is [Apache 2.0 licensed](LICENSE) and accept contributions via
 GitHub pull requests.  
 
 We appreciate your contributions. If you would like to contribute, please refer to the following:  
