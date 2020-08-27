@@ -27,12 +27,12 @@ Automation is done using flows which essentially take form of "if this happens i
 
 ### How it works
 
-The Flyte-API acts as the orchestrator and is backed by a (MongoDB) database server in which Flows, Pack references and Datastore entries are stored. Before continuing with the high level architecture diagram, lets introduce some of the key concepts of Flyte:
+The Flyte-API acts as the orchestrator and is backed by a (MongoDB) database server in which Flows, Packs references and Datastore entries are stored. Before continuing with the high level architecture diagram, lets introduce some of the key concepts of Flyte:
 
 - **Flows** are a list of steps that define a particular use case - for example triggering the deploy of an app when a user types the message "deploy foo-app 1.2.0" in a particular chat room. Each step in a flow consists of:
-    - an **Event** that triggers it (e.g. an instant message being observed in a particular chat room).
-    - a **Criteria** that must be satisfied for the step to run (e.g: message matches certain regex).
-    - an **Action** to be executed if the criteria matches.
+    - An **Event** that triggers it (e.g. an instant message being observed in a particular chat room).
+    - A **Criteria** that must be satisfied for the step to run (e.g: message matches certain regex).
+    - An **Action** to be executed if the criteria matches.
 
     You can find more info about flows [here](docs/quickstart.md).
     
