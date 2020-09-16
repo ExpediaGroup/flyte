@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/HotelsDotCom/flyte.svg?branch=master)](https://travis-ci.org/HotelsDotCom/flyte)
+[![Build Status](https://travis-ci.org/ExpediaGroup/flyte.svg?branch=master)](https://travis-ci.org/ExpediaGroup/flyte)
 [![Docker Stars](https://img.shields.io/docker/stars/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
 
 <p align="center">
-  <img align="center" src="https://github.com/HotelsDotCom/flyte/blob/master/docs/images/flyte_logo_compact.png" width="300">
+  <img align="center" src="https://github.com/ExpediaGroup/flyte/blob/master/docs/images/flyte_logo_compact.png" width="300">
 </p>
 
 ## Table of contents
@@ -19,7 +19,7 @@
 
 Flyte binds together the tools you use into easily defined, automated workflows. It is a request-based, decoupled automation engine which allows you to define flows to enable integrated behaviour across these disparate tools.
 
-Flyte has chat-ops enabling integrations for Slack, as well as some other out-of-the-box [integrations](https://github.com/HotelsDotCom?utf8=%E2%9C%93&q=flyte+pack&type=&language=). These integrations, or packs can be added to and extended easily by using Flyte's RESTful API.
+Flyte has chat-ops enabling integrations for Slack, as well as some other out-of-the-box [integrations](https://github.com/ExpediaGroup?utf8=%E2%9C%93&q=flyte+pack&type=&language=). These integrations, or packs can be added to and extended easily by using Flyte's RESTful API.
 
 Some of the applications already in use include chat-ops based inventory management, host/container administration and orchestration, and deployment of applications into Kubernetes.
 
@@ -27,16 +27,16 @@ Automation is done using flows which essentially take form of "if this happens i
 
 ### How it works
 
-The Flyte-API acts as the orchestrator and is backed by a (MongoDB) database server in which Flows, Pack references and Datastore entries are stored. Before continuing with the high level architecture diagram, lets introduce some of the key concepts of Flyte:
+The Flyte-API acts as the orchestrator and is backed by a (MongoDB) database server in which Flows, Packs references and Datastore entries are stored. Before continuing with the high level architecture diagram, lets introduce some of the key concepts of Flyte:
 
 - **Flows** are a list of steps that define a particular use case - for example triggering the deploy of an app when a user types the message "deploy foo-app 1.2.0" in a particular chat room. Each step in a flow consists of:
-    - an **Event** that triggers it (e.g. an instant message being observed in a particular chat room).
-    - a **Criteria** that must be satisfied for the step to run (e.g: message matches certain regex).
-    - an **Action** to be executed if the criteria matches.
+    - An **Event** that triggers it (e.g. an instant message being observed in a particular chat room).
+    - A **Criteria** that must be satisfied for the step to run (e.g: message matches certain regex).
+    - An **Action** to be executed if the criteria matches.
 
     You can find more info about flows [here](docs/quickstart.md).
     
-- **Packs** are self-contained apps that are responsible for executing flow actions and sending events to the flyte-api. For instance, [flyte-slack-pack](https://github.com/HotelsDotCom/flyte-slack) consumes events/messages from a slack channel but also sends messages via Slack. 
+- **Packs** are self-contained apps that are responsible for executing flow actions and sending events to the flyte-api. For instance, [flyte-slack-pack](https://github.com/ExpediaGroup/flyte-slack) consumes events/messages from a slack channel but also sends messages via Slack. 
 - **DataStores** are basically configuration properties shared between flows. For instance, list of environments, urls, etc.
 
 ![component diagram](docs/images/component_diag.png)

@@ -17,10 +17,10 @@ limitations under the License.
 package execution
 
 import (
+	"github.com/ExpediaGroup/flyte/collections"
+	"github.com/ExpediaGroup/flyte/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/HotelsDotCom/flyte/collections"
-	"github.com/HotelsDotCom/flyte/mongo"
 )
 
 type actionMgoRepo struct{}

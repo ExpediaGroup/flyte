@@ -18,9 +18,9 @@ package execution
 
 import (
 	"fmt"
+	"github.com/ExpediaGroup/flyte/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/HotelsDotCom/flyte/mongo"
 )
 
 type flowMgoRepo struct{}

@@ -19,12 +19,12 @@ limitations under the License.
 package acceptancetest
 
 import (
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"testing"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/stretchr/testify/require"
 )
 
 const datastoreItem = `
@@ -100,7 +100,7 @@ func StoreAlreadyExistingItem(t *testing.T) {
 
 	// add the same item
 	form := map[string]string{"description": "new rubbish"}
-	resp, err := httpClient.PutMultipart(flyteApi.DatastoreURL() + "/techops", form, []byte(datastoreItem), httputil.MediaTypeJson)
+	resp, err := httpClient.PutMultipart(flyteApi.DatastoreURL()+"/techops", form, []byte(datastoreItem), httputil.MediaTypeJson)
 	if err != nil {
 		t.Fatalf("Error registering datastore item: %s", err)
 	}
@@ -137,7 +137,7 @@ func DeleteNonExistantItem(t *testing.T) {
 
 func addDatastoreItem(t *testing.T) *url.URL {
 	form := map[string]string{"description": "some rubbish"}
-	loc := flyteApi.DatastoreURL() +"/techops"
+	loc := flyteApi.DatastoreURL() + "/techops"
 	_, err := httpClient.PutMultipart(loc, form, []byte(datastoreItem), httputil.MediaTypeJson)
 	if err != nil {
 		t.Fatalf("Error registering datastore item: %s", err)

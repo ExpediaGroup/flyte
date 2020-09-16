@@ -180,3 +180,32 @@ func TestSafeCopyPaste(t *testing.T) {
 }
 
 
+func TestMatchReturnsTrueForValidMatch(t *testing.T) {
+	matched, err := Resolve(`{{ "foobar" | match:'^[fo]+bar.*$' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "True", matched)
+}
+
+func TestMatchReturnsFalseForNoMatch(t *testing.T) {
+	matched, err := Resolve(`{{ "foobar" | match:'^Foobar$' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "False", matched)
+}
+
+func TestExtractMatchReturnsFirstGroupForMatch(t *testing.T) {
+	matched, err := Resolve(`{{ "foo bar baz bay" | extractMatch:'\\w+ \\w+ (\\w+) (\\w+)' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "baz", matched)
+}
+
+func TestExtractMatchReturnsFullInputForNoMatch(t *testing.T) {
+	failedMatch, err := Resolve(`{{ "foo bar baz" | extractMatch:'\\w+ \\w+ (\\d+)' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "foo bar baz", failedMatch)
+}
+
+func TestExtractMatchReturnsFullInputForNoCaptureGroup(t *testing.T) {
+	failedMatch, err := Resolve(`{{ "foo bar baz" | extractMatch:'\\w+ \\w+ \\w+' }}`, nil)
+	require.NoError(t, err)
+	require.Equal(t, "foo bar baz", failedMatch)
+}

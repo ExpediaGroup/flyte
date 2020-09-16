@@ -18,7 +18,7 @@ package server
 
 import (
 	"bytes"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
 	"github.com/ghodss/yaml"
 	"io/ioutil"

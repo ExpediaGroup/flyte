@@ -17,12 +17,12 @@ limitations under the License.
 package mongotest
 
 import (
+	"github.com/HotelsDotCom/go-docker-client"
+	"github.com/HotelsDotCom/go-logger"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2"
 	"log"
 	"net"
-	"github.com/HotelsDotCom/go-docker-client"
-	"github.com/HotelsDotCom/go-logger"
 	"strconv"
 	"testing"
 )

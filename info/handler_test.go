@@ -17,7 +17,7 @@ limitations under the License.
 package info
 
 import (
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"net/http"

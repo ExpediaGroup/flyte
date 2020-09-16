@@ -18,7 +18,7 @@ package execution
 
 import (
 	"errors"
-	"github.com/HotelsDotCom/flyte/collections"
+	"github.com/ExpediaGroup/flyte/collections"
 	"github.com/HotelsDotCom/go-logger"
 )
 
@@ -65,7 +65,7 @@ func takeActionFn(pack Pack, actionName string) (*Action, error) {
 }
 
 func (p Pack) UpdateLastSeen() {
-		updateLastSeen(p)
+	updateLastSeen(p)
 }
 
 var updateLastSeen = updateLastSeenFn

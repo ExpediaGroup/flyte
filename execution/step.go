@@ -18,10 +18,10 @@ package execution
 
 import (
 	"fmt"
+	"github.com/ExpediaGroup/flyte/collections"
+	"github.com/ExpediaGroup/flyte/json"
+	"github.com/ExpediaGroup/flyte/template"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/HotelsDotCom/flyte/collections"
-	"github.com/HotelsDotCom/flyte/json"
-	"github.com/HotelsDotCom/flyte/template"
 	"strconv"
 	"time"
 )

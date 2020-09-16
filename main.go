@@ -17,8 +17,8 @@ limitations under the License.
 package main
 
 import (
-	"github.com/HotelsDotCom/flyte/pack"
-	"github.com/HotelsDotCom/flyte/server"
+	"github.com/ExpediaGroup/flyte/pack"
+	"github.com/ExpediaGroup/flyte/server"
 	"github.com/HotelsDotCom/go-logger"
 	"net/http"
 )

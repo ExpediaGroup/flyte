@@ -17,12 +17,12 @@ limitations under the License.
 package info
 
 import (
+	"github.com/ExpediaGroup/flyte/flytepath"
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/mongo"
+	"github.com/HotelsDotCom/go-logger"
 	"io/ioutil"
 	"net/http"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/flyte/mongo"
-	"github.com/HotelsDotCom/go-logger"
 )
 
 var swaggerFileLocation = "swagger/v1.yml"

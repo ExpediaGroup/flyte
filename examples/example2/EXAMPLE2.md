@@ -4,7 +4,7 @@ Example 2 is a basic api, pack setup with criteria added to the flow.
 #### Perform the set-up
 
 ```
-cd $GOPATH/src/github.com/HotelsDotCom/flyte/examples/example2
+cd $GOPATH/src/github.com/ExpediaGroup/flyte/examples/example2
 docker-compose up
 ```
 
@@ -32,7 +32,7 @@ api_1     | [INFO] 2017/11/07 13:53:31 handler.go:114: Pack registered: PackId=M
 ```
 
 ### Loading Flows
-flow2 is flow1 with criteria added [Criteria](https://github.com/HotelsDotCom/flyte/blob/master/README.md#criteria), again you can view your flow in the browser [flow2](http://localhost:8080/v1/flows/flow2)
+flow2 is flow1 with criteria added [Criteria](https://github.com/ExpediaGroup/flyte/blob/master/README.md#criteria), again you can view your flow in the browser [flow2](http://localhost:8080/v1/flows/flow2)
 
 ```
 curl -v -X POST http://localhost:8080/v1/flows -H 'content-type: application/x-yaml' -T flow2.yaml

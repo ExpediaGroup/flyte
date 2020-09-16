@@ -19,9 +19,9 @@ limitations under the License.
 package execution
 
 import (
+	"github.com/ExpediaGroup/flyte/mongo"
+	"github.com/ExpediaGroup/flyte/mongo/mongotest"
 	"os"
-	"github.com/HotelsDotCom/flyte/mongo"
-	"github.com/HotelsDotCom/flyte/mongo/mongotest"
 	"testing"
 )
 

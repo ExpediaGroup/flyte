@@ -17,10 +17,10 @@ limitations under the License.
 package execution
 
 import (
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
 	"net/http"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 )
 
 func PostEvent(w http.ResponseWriter, r *http.Request) {

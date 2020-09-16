@@ -3,11 +3,11 @@
 ## What is a Pack?
 
 A **Pack** is a self-contained app that is responsible for executing flow actions and sending events to the flyte-api. 
-For instance, [flyte-slack](https://github.com/HotelsDotCom/flyte-slack) pack consumes events/messages from a slack channel but also sends messages via Slack. 
+For instance, [flyte-slack](https://github.com/ExpediaGroup/flyte-slack) pack consumes events/messages from a slack channel but also sends messages via Slack. 
 
 ## Discovering Packs
 
-There are already some [packs available](https://github.com/HotelsDotCom?utf8=%E2%9C%93&q=flyte+pack&type=&language=) in Github. Check them out before creating your own one.
+There are already some [packs available](https://github.com/ExpediaGroup?utf8=%E2%9C%93&q=flyte+pack&type=&language=) in Github. Check them out before creating your own one.
 
 As a developer you can check what packs are registered in your Flyte API instance by querying your packs endpoint:
 
@@ -15,14 +15,14 @@ As a developer you can check what packs are registered in your Flyte API instanc
 
 ## Installing a Pack
 
-Installing a pack is simple, you only need to provide a valid Flyte API endpoint to your pack (and a JWT if [security](security/security.md) is enabled), and [flyte-client](https://github.com/HotelsDotCom/flyte-client) will automatically register your pack definition to Flyte API.
+Installing a pack is simple, you only need to provide a valid Flyte API endpoint to your pack (and a JWT if [security](security/security.md) is enabled), and [flyte-client](https://github.com/ExpediaGroup/flyte-client) will automatically register your pack definition to Flyte API.
 
 ## Developing a Pack
 
 So you need to create a new pack? Great! Here's how to do it.
 
 Packs are self-contained apps and language agnostic, so you can write your packs using a programming language of your choice.
-However, if you planning to use golang, Flyte provides a [flyte-client](https://github.com/HotelsDotCom/flyte-client) to make the writing of flyte packs simpler.
+However, if you planning to use golang, Flyte provides a [flyte-client](https://github.com/ExpediaGroup/flyte-client) to make the writing of flyte packs simpler.
 
 ## Automatic removal of unused or 'dead' packs
 
@@ -39,7 +39,7 @@ The scheduler will start it's cleanup for the first time after midnight on the d
 
 ### Using flyte-client
 
-[Flyte-client](https://github.com/HotelsDotCom/flyte-client) is a Go library designed to make the writing of flyte packs simple. 
+[Flyte-client](https://github.com/ExpediaGroup/flyte-client) is a Go library designed to make the writing of flyte packs simple. 
 
 The client handles: 
 
@@ -49,7 +49,7 @@ The client handles:
 
 This allows the pack writer to concentrate solely on the functionality of their pack.
 
-You can find more information and code examples [here](https://github.com/HotelsDotCom/flyte-client).
+You can find more information and code examples [here](https://github.com/ExpediaGroup/flyte-client).
 
 
 ### Using a programming language of your choice

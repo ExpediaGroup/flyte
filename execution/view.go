@@ -18,11 +18,11 @@ package execution
 
 import (
 	encodingjson "encoding/json"
+	"github.com/ExpediaGroup/flyte/flytepath"
+	"github.com/ExpediaGroup/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/json"
 	"io"
 	"net/http"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
-	"github.com/HotelsDotCom/flyte/json"
 )
 
 func toEvent(pack Pack, reader io.Reader) (*Event, error) {

@@ -19,10 +19,10 @@ limitations under the License.
 package execution
 
 import (
+	"github.com/ExpediaGroup/flyte/mongo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/HotelsDotCom/flyte/mongo"
 	"testing"
 )
 

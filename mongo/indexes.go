@@ -17,10 +17,10 @@ limitations under the License.
 package mongo
 
 import (
-	"gopkg.in/mgo.v2"
 	"github.com/HotelsDotCom/go-logger"
-	"time"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 func EnsureIndexExists(collectionId, indexName string, indexKey []string) {
@@ -29,12 +29,12 @@ func EnsureIndexExists(collectionId, indexName string, indexKey []string) {
 
 func ensureIndex(collection, indexName string, indexKey []string, ttl int) {
 	index := mgo.Index{
-		Name: indexName,
-		Key: indexKey,
+		Name:       indexName,
+		Key:        indexKey,
 		Background: true,
 	}
 	if ttl > 0 {
-		index.ExpireAfter = time.Duration(ttl)*time.Second
+		index.ExpireAfter = time.Duration(ttl) * time.Second
 	}
 
 	err := ensure(collection, index)
@@ -44,7 +44,8 @@ func ensureIndex(collection, indexName string, indexKey []string, ttl int) {
 }
 
 var ensure = ensureIndexFn
-func ensureIndexFn(collection string, index mgo.Index) error  {
+
+func ensureIndexFn(collection string, index mgo.Index) error {
 	s := GetSession()
 	defer s.Close()
 
@@ -76,6 +77,7 @@ func indexExists(collectionId, indexName string) (bool, mgo.Index) {
 }
 
 var getIndexes = getIndexesFn
+
 func getIndexesFn(collectionId string) (indexes []mgo.Index, err error) {
 	s := GetSession()
 	defer s.Close()
@@ -92,11 +94,12 @@ func indexTTLHasChanged(currentTTL time.Duration, ttl int) bool {
 
 func updateTTL(collection, indexName string, ttl int) {
 	if err := update(collection, indexName, ttl); err != nil {
-		logger.Errorf("Error updating TTL for '%s' index. TTL: '%v'. Error: '%+v", indexName, ttl, err )
+		logger.Errorf("Error updating TTL for '%s' index. TTL: '%v'. Error: '%+v", indexName, ttl, err)
 	}
 }
 
 var update = updateTTLFn
+
 func updateTTLFn(collection string, indexName string, ttl int) error {
 	s := GetSession()
 	defer s.Close()

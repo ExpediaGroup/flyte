@@ -19,7 +19,7 @@ package pack
 import (
 	"encoding/json"
 	"errors"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -542,10 +542,10 @@ var emptyPacksResponse = strings.Replace(strings.Replace(`
 // --- mocks & helpers ---
 
 type mockPackRepo struct {
-	add     func(pack Pack) error
-	remove  func(id string) error
-	get     func(id string) (*Pack, error)
-	findAll func() ([]Pack, error)
+	add                func(pack Pack) error
+	remove             func(id string) error
+	get                func(id string) (*Pack, error)
+	findAll            func() ([]Pack, error)
 	removeAllOlderThan func(date time.Time) (packsRemoved int, err error)
 }
 

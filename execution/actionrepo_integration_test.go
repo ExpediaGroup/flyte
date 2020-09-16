@@ -19,11 +19,11 @@ limitations under the License.
 package execution
 
 import (
+	"github.com/ExpediaGroup/flyte/mongo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/HotelsDotCom/flyte/mongo"
 	"testing"
 	"time"
 )
@@ -45,10 +45,10 @@ func TestAdd_ShouldAddNewActionIncludingFlowNameToTheRepo(t *testing.T) {
 
 	mongoT.DropDatabase(t)
 	want := Action{
-		Id:    "1",
-		Name:  "actionA",
+		Id:       "1",
+		Name:     "actionA",
 		FlowName: "flowA",
-		State: State{Value: stateNew, Time: time.Now().Round(time.Millisecond)},
+		State:    State{Value: stateNew, Time: time.Now().Round(time.Millisecond)},
 	}
 
 	err := actionRepo.Add(want)

@@ -213,7 +213,7 @@ The template has a few context objects provided to it that you can make use of:
 would return the 'bar' element stored in the context.
 
 
-There are a number of [custom functions](https://github.com/HotelsDotCom/flyte/blob/master/template/pongo.go#L41) available to use in templates:
+There are a number of [custom functions](https://github.com/ExpediaGroup/flyte/blob/master/template/pongo.go#L41) available to use in templates:
 
 *   `randomInt(upperBound)` - creates a random integer in the range [0, upperBound)
 *   `randomAlpha(length)` - creates a random string of the specified length containing the characters \[A-Za-z]
@@ -228,7 +228,7 @@ There are a number of [custom functions](https://github.com/HotelsDotCom/flyte/b
 
 The criteria should adhere to pongo template language and should evaluate to true or false. 
 
-There are a number of [custom filters](https://github.com/HotelsDotCom/flyte/blob/master/template/pongo.go#L34) available to use:
+There are a number of [custom filters](https://github.com/ExpediaGroup/flyte/blob/master/template/pongo.go#L34) available to use:
 
 *   `kvp` - parses comma separated key=value pairs from a single string piped to the filter into a map\[string]string
 *   `key` - retrieves the specified element from a piped in map

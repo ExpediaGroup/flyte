@@ -17,10 +17,10 @@ limitations under the License.
 package audit
 
 import (
-	"net/http"
-	"github.com/HotelsDotCom/flyte/flytepath"
-	"github.com/HotelsDotCom/flyte/httputil"
+	"github.com/ExpediaGroup/flyte/flytepath"
+	"github.com/ExpediaGroup/flyte/httputil"
 	"github.com/HotelsDotCom/go-logger"
+	"net/http"
 	"strconv"
 	"strings"
 )
