@@ -179,7 +179,6 @@ func TestSafeCopyPaste(t *testing.T) {
 	}
 }
 
-
 func TestMatchReturnsTrueForValidMatch(t *testing.T) {
 	matched, err := Resolve(`{{ "foobar" | match:'^[fo]+bar.*$' }}`, nil)
 	require.NoError(t, err)
