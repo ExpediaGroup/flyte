@@ -17,6 +17,7 @@ limitations under the License.
 package template
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -114,6 +115,68 @@ func TestMatchesCronExpressionReturnsErrorWhenAnInvalidCronExpressionIsGiven(t *
 	require.Error(t, err)
 	assert.EqualError(t, err, "error while evaluating expression: '{{ \"2018-02-14T23:18:09."+
 		"0481031Z\" | matchesCron: \"not a cron expression\" }}': [Error | Line 1 Col 57 near 'matchesCron'] missing field(s)")
+}
+
+func TestRemoveDupWhiteSpaces(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          string
+		expectedOutput string
+	}{
+		{
+			name:           "removes whitespace at the end of the string",
+			input:          "flyte param1      param2  param3    ",
+			expectedOutput: "flyte param1 param2 param3",
+		},
+		{
+			name:           "removes all dup whitespaces",
+			input:          "flyte param1      param2  param3",
+			expectedOutput: "flyte param1 param2 param3",
+		},
+		{
+			name:           "ignores whitespaces at the beginning of the string",
+			input:          " flyte param1 param2 param3",
+			expectedOutput: " flyte param1 param2 param3",
+		},
+		{
+			name:           "ignores whitespaces when parameter is wrapped within quotes",
+			input:          " flyte param1 param2 param3",
+			expectedOutput: " flyte param1 param2 param3",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			out, err := Resolve(fmt.Sprintf(`{{ "%s" | removedupwhitespaces }}`, test.input), nil)
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedOutput, out)
+		})
+	}
+}
+
+func TestSafeCopyPaste(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          string
+		expectedOutput string
+	}{
+		{
+			name:           "removes no-breaking space after copy and paste",
+			input:          "flyte param1\u00A0param2 param3",
+			expectedOutput: "flyte\u0020param1\u0020param2\u0020param3",
+		},
+		{
+			name:           "ignores regular unicode whitespace",
+			input:          "flyte\u0020param1\u0020param2\u0020param3",
+			expectedOutput: "flyte\u0020param1\u0020param2\u0020param3",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			out, err := Resolve(fmt.Sprintf(`{{ "%s" | safecopypaste }}`, test.input), nil)
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedOutput, out)
+		})
+	}
 }
 
 func TestMatchReturnsTrueForValidMatch(t *testing.T) {
