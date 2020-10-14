@@ -40,7 +40,7 @@ func main() {
 
 	packDef := flyte.PackDef{
 		Name:      "MessageSender",
-		HelpURL:   getUrl("https://github.com/HotelsDotCom/flyte/examples/README.md"),
+		HelpURL:   getUrl("https://github.com/ExpediaGroup/flyte/blob/master/examples/README.md"),
 		EventDefs: []flyte.EventDef{EventSuccessEventDef},
 		Labels:    conf.Labels,
 	}
