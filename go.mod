@@ -2,7 +2,6 @@ module github.com/ExpediaGroup/flyte
 
 go 1.14
 
-
 require (
 	github.com/HotelsDotCom/cronexpr v0.0.0-20180305142311-fcf95785ff88
 	github.com/HotelsDotCom/flyte-client v0.0.0-20190711101542-5955dbb4e00d

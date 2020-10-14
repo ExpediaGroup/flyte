@@ -36,7 +36,9 @@ func Handler() http.Handler {
 	// --- swagger ---
 	swaggerUi := http.FileServer(http.Dir("swagger/swagger-ui"))
 	router.Handle("/swagger", http.StripPrefix("/swagger", swaggerUi))
-	router.Handle("/swagger/:dir/:file", http.StripPrefix("/swagger", swaggerUi))
+	router.Handle("/swagger/:file", http.StripPrefix("/swagger", swaggerUi))
+	swaggerConfig := http.FileServer(http.Dir("swagger"))
+	router.Handle("/swagger-config/:file", http.StripPrefix("/swagger-config", swaggerConfig))
 
 	// --- info ---
 	router.Get(flytepath.IndexPath, info.Index)

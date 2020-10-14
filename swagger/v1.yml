@@ -4,7 +4,7 @@ info:
   description: Self service platform automation API
   contact:
     name: FLYTE Team
-    url: https://github.com/HotelsDotCom/flyte
+    url: https://github.com/ExpediaGroup/flyte
   version: '1'
 consumes:
   - application/json
@@ -670,4 +670,4 @@ tags:
   - name: flowAudit
 
 externalDocs:
-  url: https://github.com/HotelsDotCom/flyte
+  url: https://github.com/ExpediaGroup/flyte
