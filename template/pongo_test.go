@@ -114,7 +114,7 @@ func TestMatchesCronExpressionReturnsErrorWhenAnInvalidCronExpressionIsGiven(t *
 	_, err := Resolve(`{{ "2018-02-14T23:18:09.0481031Z" | matchesCron: "not a cron expression" }}`, nil)
 	require.Error(t, err)
 	assert.EqualError(t, err, "error while evaluating expression: '{{ \"2018-02-14T23:18:09."+
-		"0481031Z\" | matchesCron: \"not a cron expression\" }}': [Error | Line 1 Col 57 near 'matchesCron'] missing field(s)")
+		"0481031Z\" | matchesCron: \"not a cron expression\" }}': [Error | Line 1 Col 57 near 'matchesCron'] Invalid Cron Expression")
 }
 
 func TestRemoveDupWhiteSpaces(t *testing.T) {

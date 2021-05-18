@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ExpediaGroup/flyte/datastore"
-	"github.com/HotelsDotCom/cronexpr"
+	"github.com/adhocore/gronx"
 	"github.com/flosch/pongo2"
 	"math/rand"
 	"reflect"
@@ -171,13 +171,13 @@ func matchesCron(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.
 	if err != nil {
 		panic("invalid date: '" + in.String() + "'")
 	}
-
-	ce, err := cronexpr.Parse(param.String())
-	if err != nil {
-		return pongo2.AsValue(false), &pongo2.Error{OrigError: err}
+	gron := gronx.New()
+	isValid := gron.IsValid(param.String())
+	if !isValid {
+		return pongo2.AsValue(false), &pongo2.Error{OrigError: fmt.Errorf("Invalid Cron Expression")}
 	}
-
-	return pongo2.AsValue(ce.Matches(t)), nil
+	matches, err := gron.IsDue(param.String(), t)
+	return pongo2.AsValue(matches), nil
 }
 
 func unmarshalJson(in string) map[string]interface{} {
