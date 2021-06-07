@@ -3,11 +3,11 @@ module github.com/ExpediaGroup/flyte
 go 1.14
 
 require (
-	github.com/HotelsDotCom/cronexpr v0.0.0-20180305142311-fcf95785ff88
 	github.com/HotelsDotCom/flyte-client v0.0.0-20190711101542-5955dbb4e00d
 	github.com/HotelsDotCom/go-docker-client v0.0.0-20180420134002-88a97a35bbf0
 	github.com/HotelsDotCom/go-logger v0.0.0-20180518131502-802095993e48
 	github.com/Microsoft/go-winio v0.4.14 // indirect
+	github.com/adhocore/gronx v0.2.4 // indirect
 	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.1+incompatible // indirect
