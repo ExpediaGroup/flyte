@@ -45,13 +45,14 @@ func TestHandleEvent_ShouldTriggerHandleEventForAllCandidateFlows(t *testing.T) 
 	var wg sync.WaitGroup
 	wg.Add(2)
 	flowEventHandler = func(f *Flow, e Event) {
-		defer wg.Done()
 		if e.Name == "MessageSent" {
 			switch f.UUID {
 			case "flowA":
+				defer wg.Done()
 				calledFlowA = true
 				return
 			case "flowB":
+				defer wg.Done()
 				calledFlowB = true
 				return
 			}
@@ -64,7 +65,7 @@ func TestHandleEvent_ShouldTriggerHandleEventForAllCandidateFlows(t *testing.T) 
 	flowService{}.HandleEvent(expectedEvent)
 
 	//Then
-	waitWithTimeout(wg, 500*time.Millisecond)
+	waitWithTimeout(wg, 1000*time.Millisecond)
 	assert.True(t, calledFlowA, "Should have called event handler on the flowA")
 	assert.True(t, calledFlowB, "Should have called event handler on the flowB")
 	assert.Equal(t, expectedEvent, actualEvent)

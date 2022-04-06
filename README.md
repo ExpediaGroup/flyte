@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/ExpediaGroup/flyte.svg?branch=master)](https://travis-ci.org/ExpediaGroup/flyte)
-[![Docker Stars](https://img.shields.io/docker/stars/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/hotelsdotcom/flyte.svg)](https://hub.docker.com/r/hotelsdotcom/flyte/)
+[![Build Status](https://github.com/ExpediaGroup/flyte/workflows/Build/badge.svg?branch=master&event=push)](https://github.com/ExpediaGroup/flyte/actions?query=workflow:"Build"branch:"master")
+[![Docker Stars](https://img.shields.io/docker/stars/expediagroup/flyte.svg)](https://hub.docker.com/r/expediagroup/flyte)
+[![Docker Pulls](https://img.shields.io/docker/pulls/expediagroup/flyte.svg)](https://hub.docker.com/r/expediagroup/flyte/)
 
 <p align="center">
   <img align="center" src="https://github.com/ExpediaGroup/flyte/blob/master/docs/images/flyte_logo_compact.png" width="300">
