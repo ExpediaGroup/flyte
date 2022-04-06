@@ -28,4 +28,4 @@ docker-stop: stop-mongo
 	docker rm -f flyte
 
 test:
-	go test ./... -tags="integration acceptance"
+	go test ./...
