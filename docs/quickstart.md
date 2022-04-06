@@ -36,7 +36,7 @@ In this section we are going to build a simple flow that will return the UK bank
 1. Start Flyte api:
     
         docker run -d --name flyte --rm -p 8080:8080 -e FLYTE_MGO_HOST=mongo \
-               --link mongo:mongo hotelsdotcom/flyte:latest
+               --link mongo:mongo expediagroup/flyte:latest
 
 1. Start [Slack pack](https://github.com/ExpediaGroup/flyte-slack):
 
@@ -44,7 +44,7 @@ In this section we are going to build a simple flow that will return the UK bank
             -e FLYTE_API=http://flyte:8080 \
             -e FLYTE_SLACK_TOKEN=<SLACK-TOKEN> \
             -e FLYTE_SLACK_DEFAULT_JOIN_CHANNEL=<ROOM-ID> \
-            --link flyte:flyte hotelsdotcom/flyte-slack:latest
+            --link flyte:flyte expediagroup/flyte-slack:latest
 
     Replace `<SLACK-TOKEN>` and  `<ROOM-ID>` placeholders with your own values. Slack pack will require them to listen to messages in that channel and reply to them if they match the criteria.
     
