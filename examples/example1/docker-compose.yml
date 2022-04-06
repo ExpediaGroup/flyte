@@ -8,7 +8,7 @@ services:
   api:
     depends_on:
       - 'mongo'
-    image: 'hotelsdotcom/flyte:1.29'
+    image: 'expediagroup/flyte:1.1'
     environment:
       FLYTE_MGO_HOST: "mongo:27017"
     ports:
