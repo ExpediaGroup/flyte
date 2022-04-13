@@ -31,14 +31,14 @@ func TestCompleteAction_ShouldFinishAction_WhenItExistsAndIsInPendingState(t *te
 	packRepo = mockPackRepo{}
 
 	defer resetActionRepo()
-	completedAction := Action{State: State{Value: stateSuccess}, Result: Event{Name: "resultEvent"}}
 	actualUpdateAction := Action{}
 	calledGet := false
+	state1 := State{Value: statePending}
 	actionRepo = mockActionRepo{
 		get: func(actionId string) (*Action, error) {
 			calledGet = true
 			if actionId == "existingPendingAction" {
-				return &Action{State: State{Value: statePending}}, nil
+				return &Action{State: state1, States: []State{state1}}, nil
 			}
 			return nil, ActionNotFoundErr
 		},
@@ -57,8 +57,8 @@ func TestCompleteAction_ShouldFinishAction_WhenItExistsAndIsInPendingState(t *te
 	//Then
 	assert.WithinDuration(t, time.Now(), got.State.Time, 10*time.Second)
 	assert.Equal(t, *got, actualUpdateAction)
-	got.State.Time = time.Time{}
-	got.prevState = State{}
+	state2 := State{ Value: stateSuccess, Time: got.State.Time }
+	completedAction := Action{State: state2, States: []State{state1, state2}, prevState: state1, Result: Event{Name: "resultEvent"}}
 	assert.Equal(t, completedAction, *got)
 }
 
@@ -69,9 +69,10 @@ func TestCompleteAction_ShouldSetActionStateToFatalForFatalResult(t *testing.T) 
 	packRepo = mockPackRepo{}
 
 	defer resetActionRepo()
+	state1 := State{Value: statePending}
 	actionRepo = mockActionRepo{
 		get: func(actionId string) (*Action, error) {
-			return &Action{State: State{Value: statePending}}, nil
+			return &Action{State: state1, States: []State{state1}}, nil
 		},
 		update: func(action Action) error {
 			return nil
@@ -84,9 +85,8 @@ func TestCompleteAction_ShouldSetActionStateToFatalForFatalResult(t *testing.T) 
 	require.NotNil(t, got)
 
 	//Then
-	expectedAction := Action{State: State{Value: stateFatal}, Result: Event{Name: fatalEventName}}
-	got.State.Time = time.Time{}
-	got.prevState = State{}
+	state2 := State{Value: stateFatal, Time: got.State.Time}
+	expectedAction := Action{State: state2, States: []State{state1, state2}, prevState: state1, Result: Event{Name: fatalEventName}}
 	assert.Equal(t, expectedAction, *got)
 }
 
@@ -210,13 +210,13 @@ func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHadNewActionWithThe
 
 	defer resetActionRepo()
 	calledFindNew := false
-	pendingAction := Action{State: State{Value: statePending}}
 	actualUpdateAction := Action{}
+	state1 := State{Value: stateNew}
 	actionRepo = mockActionRepo{
 		findNew: func(pack Pack, name string) (*Action, error) {
 			calledFindNew = true
 			if pack.Id == "packA" && name == "specificName" {
-				return &Action{State: State{Value: stateNew}}, nil
+				return &Action{State: state1, States: []State{state1}}, nil
 			}
 			return nil, ActionNotFoundErr
 		},
@@ -234,8 +234,9 @@ func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHadNewActionWithThe
 	//Then
 	assert.WithinDuration(t, time.Now(), got.State.Time, 10*time.Second)
 	assert.Equal(t, *got, actualUpdateAction)
-	got.State.Time = time.Time{}
-	got.prevState = State{}
+
+	state2 := State{Value: statePending, Time: got.State.Time}
+	pendingAction := Action{State: state2, States: []State{state1, state2}, prevState: state1}
 	assert.Equal(t, pendingAction, *got)
 }
 
@@ -246,9 +247,10 @@ func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHasAnyNewActionAndN
 	packRepo = mockPackRepo{}
 
 	defer resetActionRepo()
+	state1 := State{Value: stateNew}
 	actionRepo = mockActionRepo{
 		findNew: func(pack Pack, name string) (*Action, error) {
-			return &Action{State: State{Value: stateNew}}, nil
+			return &Action{State: state1, States: []State{state1}}, nil
 		},
 		update: func(action Action) error {
 			return nil
@@ -261,9 +263,8 @@ func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHasAnyNewActionAndN
 
 	//Then
 	assert.WithinDuration(t, time.Now(), got.State.Time, 10*time.Second)
-	got.State.Time = time.Time{}
-	got.prevState = State{}
-	expectedAction := Action{State: State{Value: statePending}}
+	state2 := State{Value: statePending, Time: got.State.Time}
+	expectedAction := Action{State: state2, States: []State{state1, state2}, prevState: state1}
 	assert.Equal(t, expectedAction, *got)
 }
 

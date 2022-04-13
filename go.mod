@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/HotelsDotCom/flyte-client v0.0.0-20190711101542-5955dbb4e00d
-	github.com/HotelsDotCom/go-docker-client v0.0.0-20180420134002-88a97a35bbf0
 	github.com/HotelsDotCom/go-logger v0.0.0-20180518131502-802095993e48
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/adhocore/gronx v0.2.4
@@ -12,7 +11,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
-	github.com/docker/go-connections v0.3.0 // indirect
+	github.com/docker/go-connections v0.3.0
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/flosch/pongo2 v0.0.0-20190707114632-bbf5a6c351f4
 	github.com/ghodss/yaml v1.0.0
@@ -29,7 +28,7 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.1.0
 	golang.org/x/crypto v0.0.0-20190909091759-094676da4a83 // indirect
-	golang.org/x/net v0.0.0-20190909003024-a7b16738d86b // indirect
+	golang.org/x/net v0.0.0-20190909003024-a7b16738d86b
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	golang.org/x/sys v0.0.0-20190910064555-bbd175535a8b // indirect
 	google.golang.org/appengine v1.6.2 // indirect

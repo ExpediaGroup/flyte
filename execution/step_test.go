@@ -60,6 +60,11 @@ func TestStepExecute_ShouldReturnAction(t *testing.T) {
 	assert.NotNil(t, got)
 	assert.NotEmpty(t, got.Id)
 
+	state := State{
+		Value: stateNew,
+		Time:  got.State.Time,
+	}
+
 	want := Action{
 		Id:         got.Id,
 		Name:       "actionA",
@@ -70,10 +75,8 @@ func TestStepExecute_ShouldReturnAction(t *testing.T) {
 			"contextEnv":       "dev",
 			"eventEnv":         "dev",
 		},
-		State: State{
-			Value: stateNew,
-			Time:  got.State.Time,
-		},
+		State: state,
+		States: []State{state},
 
 		Context: map[string]string{
 			"parentContextEnv": "dev",

@@ -123,13 +123,16 @@ func (c Command) createAction(e Event, ctx map[string]string) (*Action, error) {
 		return nil, err
 	}
 
+	state := State{Value: stateNew, Time: time.Now()}
+
 	return &Action{
 		Id:         bson.NewObjectId().Hex(),
 		Name:       c.Name,
 		PackName:   c.PackName,
 		PackLabels: packLabels,
 		Input:      input,
-		State:      State{Value: stateNew, Time: time.Now()},
+		State:      state,
+		States:     []State{state},
 		Trigger:    e,
 		Context:    ctx,
 	}, nil

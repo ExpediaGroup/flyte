@@ -17,7 +17,7 @@ limitations under the License.
 package mongotest
 
 import (
-	"github.com/HotelsDotCom/go-docker-client"
+	"github.com/ExpediaGroup/flyte/docker"
 	"github.com/HotelsDotCom/go-logger"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2"
@@ -72,7 +72,7 @@ func (m *MongoT) startMongoContainer(p string) {
 		log.Fatal(err)
 	}
 
-	c, err := d.Run("", "mongo", nil, []string{p})
+	c, err := d.Run("", "docker.io/library/mongo:3.6", nil, []string{p})
 	if err != nil {
 		log.Fatal(err)
 	}

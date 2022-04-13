@@ -30,6 +30,7 @@ type Action struct {
 	PackLabels map[string]string `bson:"packLabels,omitempty"`
 	Input      json.Json         `bson:"input,omitempty"`
 	State      State             `bson:"state"`
+	States     []State           `bson:"states"`
 	prevState  State             `bson:"_"`
 
 	CorrelationId string `bson:"correlationId"`
@@ -73,6 +74,7 @@ func (a Action) hasFinished() bool {
 func (a *Action) setState(state string) {
 	a.prevState = a.State
 	a.State = State{Value: state, Time: time.Now()}
+	a.States = append(a.States, a.State)
 }
 
 type State struct {
@@ -88,9 +90,9 @@ const (
 )
 
 type Event struct {
-	Name    string    `json:"event" bson:"name"`
-	Pack    Pack      `json:"pack" bson:"pack"`
-	Payload json.Json `json:"payload" bson:"payload,omitempty"`
+	Name       string    `json:"event" bson:"name"`
+	Pack       Pack      `json:"pack" bson:"pack"`
+	Payload    json.Json `json:"payload" bson:"payload,omitempty"`
 }
 
 func (e Event) isFatal() bool {
