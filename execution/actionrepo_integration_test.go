@@ -32,6 +32,7 @@ func TestAdd_ShouldAddNewActionToTheRepo(t *testing.T) {
 
 	mongoT.DropDatabase(t)
 	want := newActionT("1", "actionA", stateNew, time.Now())
+	want.States = []State{want.State}
 
 	err := actionRepo.Add(want)
 	require.NoError(t, err)
@@ -44,11 +45,13 @@ func TestAdd_ShouldAddNewActionToTheRepo(t *testing.T) {
 func TestAdd_ShouldAddNewActionIncludingFlowNameToTheRepo(t *testing.T) {
 
 	mongoT.DropDatabase(t)
+	state := State{Value: stateNew, Time: time.Now().Round(time.Millisecond)}
 	want := Action{
 		Id:       "1",
 		Name:     "actionA",
 		FlowName: "flowA",
-		State:    State{Value: stateNew, Time: time.Now().Round(time.Millisecond)},
+		State:    state,
+		States:   []State{state},
 	}
 
 	err := actionRepo.Add(want)
@@ -76,6 +79,7 @@ func TestFindNew_ShouldReturnOldestActionWhichCanBeHandledByPack(t *testing.T) {
 	mongoT.DropDatabase(t)
 	mongoT.Insert(t, mongo.ActionCollectionId, newPackActionT("packA", "1", "actionA", stateNew, time.Now()))
 	want := newPackActionT("packA", "2", "actionA", stateNew, time.Now().Add(-1*time.Hour))
+	want.States = []State{want.State}
 	mongoT.Insert(t, mongo.ActionCollectionId, want)
 	mongoT.Insert(t, mongo.ActionCollectionId, newPackActionT("packA", "3", "actionA", statePending, time.Now().Add(-2*time.Hour)))
 
@@ -100,6 +104,7 @@ func TestFindNew_ShouldReturnOldestPackNewActionWithMatchingName(t *testing.T) {
 
 	mongoT.DropDatabase(t)
 	want := newPackActionT("packA", "1", "actionA", stateNew, time.Now())
+	want.States = []State{want.State}
 	mongoT.Insert(t, mongo.ActionCollectionId, want)
 
 	got, err := actionRepo.FindNew(Pack{Name: "packA"}, "actionA")
@@ -123,6 +128,7 @@ func TestFindNew_ShouldReturnAnyOldestPackNewActionWhenNameIsNotSpecified(t *tes
 
 	mongoT.DropDatabase(t)
 	want := newPackActionT("packA", "1", "actionB", stateNew, time.Now())
+	want.States = []State{want.State}
 	mongoT.Insert(t, mongo.ActionCollectionId, want)
 
 	got, err := actionRepo.FindNew(Pack{Name: "packA"}, "")
@@ -136,6 +142,7 @@ func TestFindNew_ShouldReturnActionWithOldestNewState(t *testing.T) {
 	mongoT.DropDatabase(t)
 	mongoT.Insert(t, mongo.ActionCollectionId, newPackActionT("packA", "1", "actionA", stateNew, time.Now()))
 	want := newPackActionT("packA", "2", "actionA", stateNew, time.Now().Add(-1*time.Hour))
+	want.States = []State{want.State}
 	mongoT.Insert(t, mongo.ActionCollectionId, want)
 	mongoT.Insert(t, mongo.ActionCollectionId, newPackActionT("packA", "3", "actionA", stateNew, time.Now()))
 
@@ -208,6 +215,7 @@ func TestGet_ShouldReturnPackActionBySpecifiedIdIfOneExists(t *testing.T) {
 
 	mongoT.DropDatabase(t)
 	want := newActionT("matchingActionId", "actionA", stateNew, time.Now())
+	want.States = []State{want.State}
 	mongoT.Insert(t, mongo.ActionCollectionId, want)
 
 	got, err := actionRepo.Get("matchingActionId")
@@ -232,10 +240,12 @@ func TestUpdate_ShouldUpdateActionWhenPreviousStateIsCorrect(t *testing.T) {
 
 	mongoT.DropDatabase(t)
 	action := newActionT("1", "actionA", stateNew, time.Now())
+	action.States = []State{action.State}
 	mongoT.Insert(t, mongo.ActionCollectionId, action)
 
 	action.prevState.Value = stateNew
 	action.State.Value = statePending
+	action.States = append(action.States, action.State)
 	err := actionRepo.Update(action)
 	require.NoError(t, err)
 

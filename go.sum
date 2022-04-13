@@ -1,8 +1,6 @@
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/HotelsDotCom/flyte-client v0.0.0-20190711101542-5955dbb4e00d h1:ETPfj3VFBDhNd2HG6lPQV1Ffoa5lRjMcxiqCIIKWe/k=
 github.com/HotelsDotCom/flyte-client v0.0.0-20190711101542-5955dbb4e00d/go.mod h1:JOi5h1FIz9nT+e1DBXjcMrHD5TMx9vYL1HjlRjFUP9k=
-github.com/HotelsDotCom/go-docker-client v0.0.0-20180420134002-88a97a35bbf0 h1:SS4GysYGecTv+mvf619MWqVksMeap0Nbb1a5FTuKoe8=
-github.com/HotelsDotCom/go-docker-client v0.0.0-20180420134002-88a97a35bbf0/go.mod h1:lrrhb1l2sRDhimivJfB3rqwofV3ujEYIxyI6Wthb6qc=
 github.com/HotelsDotCom/go-logger v0.0.0-20180518131502-802095993e48 h1:lHzYGC5ri5crlQR/uPoNK6b813H3G7Rp/+v6k2qbiUM=
 github.com/HotelsDotCom/go-logger v0.0.0-20180518131502-802095993e48/go.mod h1:rvobSJoTaXXfnosmzN6/TT7EGplWZoZZB2GSO1xGG9g=
 github.com/Microsoft/go-winio v0.4.14 h1:+hMXMk01us9KgxGb7ftKQt2Xpf5hH/yky+TDA+qxleU=
