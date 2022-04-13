@@ -53,12 +53,16 @@ func TestFindFlows_ShouldReturnFlowsSortedByActionWithLatestStateTimestamp(t *te
 	mongoT.DropDatabase(t)
 	actionA := newActionT("flowA", "", "stepA", time.Now().Add(-2*time.Hour))
 	actionA.FlowUUID = "defA"
+	actionA.States = []State{actionA.State}
 	actionB := newActionT("flowA", "", "stepB", time.Now().Add(-1*time.Hour))
 	actionB.FlowUUID = "defA"
+	actionB.States = []State{}
 	actionC := newActionT("flowB", "", "stepA", time.Now())
 	actionC.FlowUUID = "defB"
+	actionC.States = []State{}
 	actionD := newActionT("flowC", "", "stepA", time.Now().Add(-3*time.Hour))
 	actionD.FlowUUID = "defA"
+	actionD.States = []State{}
 	mongoT.Insert(t, mongo.ActionCollectionId, actionA)
 	mongoT.Insert(t, mongo.ActionCollectionId, actionB)
 	mongoT.Insert(t, mongo.ActionCollectionId, actionC)
@@ -327,8 +331,10 @@ func TestGetFlow_ShouldReturnFlowWithAllCorrelatedActions(t *testing.T) {
 	mongoT.DropDatabase(t)
 	actionA := newActionT("flowA", "", "stepA", time.Now().Add(-2*time.Hour))
 	actionA.FlowUUID = "defA"
+	actionA.States = []State{}
 	actionB := newActionT("flowA", "", "stepB", time.Now().Add(-1*time.Hour))
 	actionB.FlowUUID = "defA"
+	actionB.States = []State{}
 	mongoT.Insert(t, mongo.ActionCollectionId, actionA)
 	mongoT.Insert(t, mongo.ActionCollectionId, actionB)
 	mongoT.Insert(t, mongo.HistoryCollectionId, Flow{UUID: "defA", Steps: []Step{{Id: "stepA"}, {Id: "stepB"}}})

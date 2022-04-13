@@ -38,7 +38,7 @@ func TestGetFlows_ShouldReturnListOfFlowsWithLinks_WhenFlowsExist(t *testing.T) 
 				UUID:          "flowDefAV1",
 				CorrelationId: "flowA",
 				Steps:         []Step{{Id: "stepA", Event: EventDef{Name: "eventA", PackName: "packA"}}},
-				Actions:       map[string]Action{"stepA": {Name: filter.actionName, StepId: "stepA"}},
+				Actions:       map[string]Action{"stepA": {Name: filter.actionName, StepId: "stepA", States: []State{{}}}},
 			}
 			flowB := Flow{
 				Name:          "flowDefA",
@@ -64,8 +64,8 @@ func TestGetFlows_ShouldReturnListOfFlowsWithLinks_WhenFlowsExist(t *testing.T) 
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, httputil.ContentTypeJson, resp.Header.Get(httputil.HeaderContentType))
-	expectedBody := `{"flows":[{"name":"flowDefA","uuid":"flowDefAV1","correlationId":"flowA","steps":[{"id":"stepA","event":{"name":"eventA","packName":"packA"},"command":{"name":"","packName":"","input":null}}],"actions":{"stepA":{"id":"","name":"actionA","packName":"","state":{"value":"","time":"0001-01-01T00:00:00Z"},"correlationId":"","flowName":"","flowUUID":"","stepId":"stepA","trigger":{"event":"","pack":{"id":"","name":""}},"result":{"event":"","pack":{"id":"","name":""}}}},"links":[{"href":"http://example.com/v1/audit/flows/flowA","rel":"self"}]},{"name":"flowDefA","uuid":"flowDefAV2","correlationId":"flowB","steps":[{"id":"stepA","event":{"name":"eventA","packName":"packA"},"command":{"name":"","packName":"","input":null}}],"actions":{"stepA":{"id":"","name":"actionA","packName":"","state":{"value":"","time":"0001-01-01T00:00:00Z"},"correlationId":"","flowName":"","flowUUID":"","stepId":"stepA","trigger":{"event":"","pack":{"id":"","name":""}},"result":{"event":"","pack":{"id":"","name":""}}}},"links":[{"href":"http://example.com/v1/audit/flows/flowB","rel":"self"}]}],"links":[{"href":"http://example.com/v1/audit/flows","rel":"self"},{"href":"http://example.com/v1","rel":"up"},{"href":"http://example.com/swagger#/flowExecs","rel":"help"}]}`
-	assert.Equal(t, expectedBody, string(body))
+	expectedBody := `{"flows":[{"name":"flowDefA","uuid":"flowDefAV1","correlationId":"flowA","steps":[{"id":"stepA","event":{"name":"eventA","packName":"packA"},"command":{"name":"","packName":"","input":null}}],"actions":{"stepA":{"id":"","name":"actionA","packName":"","state":{"value":"","time":"0001-01-01T00:00:00Z"},"states":[{"value":"","time":"0001-01-01T00:00:00Z"}],"correlationId":"","flowName":"","flowUUID":"","stepId":"stepA","trigger":{"event":"","pack":{"id":"","name":""}},"result":{"event":"","pack":{"id":"","name":""}}}},"links":[{"href":"http://example.com/v1/audit/flows/flowA","rel":"self"}]},{"name":"flowDefA","uuid":"flowDefAV2","correlationId":"flowB","steps":[{"id":"stepA","event":{"name":"eventA","packName":"packA"},"command":{"name":"","packName":"","input":null}}],"actions":{"stepA":{"id":"","name":"actionA","packName":"","state":{"value":"","time":"0001-01-01T00:00:00Z"},"correlationId":"","flowName":"","flowUUID":"","stepId":"stepA","trigger":{"event":"","pack":{"id":"","name":""}},"result":{"event":"","pack":{"id":"","name":""}}}},"links":[{"href":"http://example.com/v1/audit/flows/flowB","rel":"self"}]}],"links":[{"href":"http://example.com/v1/audit/flows","rel":"self"},{"href":"http://example.com/v1","rel":"up"},{"href":"http://example.com/swagger#/flowExecs","rel":"help"}]}`
+	assert.JSONEq(t, expectedBody, string(body))
 }
 
 func TestGetFlows_ShouldReturnListOfFlowsFilteredByFlowName(t *testing.T) {

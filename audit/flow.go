@@ -58,6 +58,7 @@ type Action struct {
 	PackLabels map[string]string `json:"packLabels,omitempty" bson:"packLabels,omitempty"`
 	Input      json.Json         `json:"input,omitempty" bson:"input,omitempty"`
 	State      State             `json:"state" bson:"state"`
+	States     []State           `json:"states,omitempty" bson:"states"`
 
 	CorrelationId string `json:"correlationId" bson:"correlationId"`
 	FlowName      string `json:"flowName" bson:"flowName"`
