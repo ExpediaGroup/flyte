@@ -21,9 +21,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/HotelsDotCom/flyte-client/client"
-	"github.com/HotelsDotCom/flyte-client/config"
-	"github.com/HotelsDotCom/flyte-client/flyte"
+	"github.com/ExpediaGroup/flyte-client/client"
+	"github.com/ExpediaGroup/flyte-client/config"
+	"github.com/ExpediaGroup/flyte-client/flyte"
 	"github.com/HotelsDotCom/go-logger"
 	"net/url"
 	"os"

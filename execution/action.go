@@ -73,7 +73,7 @@ func (a Action) hasFinished() bool {
 
 func (a *Action) setState(state string) {
 	a.prevState = a.State
-	a.State = State{Value: state, Time: time.Now()}
+	a.State = State{Value: state, Time: time.Now().UTC()}
 	a.States = append(a.States, a.State)
 }
 
@@ -93,6 +93,8 @@ type Event struct {
 	Name       string    `json:"event" bson:"name"`
 	Pack       Pack      `json:"pack" bson:"pack"`
 	Payload    json.Json `json:"payload" bson:"payload,omitempty"`
+	CreatedAt  time.Time `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
+	ReceivedAt time.Time `json:"receivedAt,omitempty" bson:"receivedAt,omitempty"`
 }
 
 func (e Event) isFatal() bool {

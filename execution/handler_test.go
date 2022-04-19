@@ -63,14 +63,22 @@ func TestPostEvent_ShouldHandleValidEvent(t *testing.T) {
 
 	//When
 	w := httptest.NewRecorder()
-	PostEvent(w, httptest.NewRequest(http.MethodPost, "/v1/packs/Slack/events?:packId=Slack", eventBody()))
+	before := time.Now()
+	eb := strings.NewReader(`{"event": "MessageReceived", "payload": {"channelId": "123456"}, "createdAt": "2022-01-02T15:04:05Z"}`)
+	PostEvent(w, httptest.NewRequest(http.MethodPost, "/v1/packs/Slack/events?:packId=Slack", eb))
 
 	//Then
 	resp := w.Result()
 	assert.Equal(t, http.StatusAccepted, resp.StatusCode)
 	waitWithTimeout(wg, 500*time.Millisecond)
 	expectedEvent := Event{Name: "MessageReceived", Pack: Pack{Id: "Slack"}, Payload: map[string]interface{}{"channelId": "123456"}}
+	expectedEvent.ReceivedAt = actualEvent.ReceivedAt
+	created, err := time.Parse("2006-01-02T15:04:05Z", "2022-01-02T15:04:05Z")
+	require.NoError(t, err)
+	expectedEvent.CreatedAt = created
 	assert.Equal(t, expectedEvent, actualEvent)
+	assert.True(t, actualEvent.ReceivedAt.Before(time.Now()))
+	assert.True(t, actualEvent.ReceivedAt.After(before))
 
 	assert.Equal(t, "Slack", recPackId)
 }
@@ -198,6 +206,8 @@ func TestCompleteAction_ShouldCompleteActionAndHandleIt(t *testing.T) {
 	assert.Equal(t, http.StatusAccepted, resp.StatusCode)
 	waitWithTimeout(wg, 500*time.Millisecond)
 	event := Event{Name: "MessageReceived", Pack: pack, Payload: map[string]interface{}{"channelId": "123456"}}
+	event.ReceivedAt = actualEvent.ReceivedAt
+	event.CreatedAt = event.ReceivedAt
 	action := Action{Id: "123", PackName: pack.Name, Result: event, State: State{Value: stateSuccess}}
 	assert.Equal(t, event, actualEvent)
 	assert.Equal(t, action, actualAction)
@@ -344,10 +354,6 @@ func TestCompleteAction_ShouldReturn500WhenThereIsErrorCompletingAction(t *testi
 	//Then
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Error completing actionId=123 with result=&{Name:MessageReceived Pack:{Id:Slack Name: Labels:map[]} Payload:map[channelId:123456]}: it's a disaster, run run run", logMessages[0].Message)
 }
 
 func TestTakeAction_ShouldReturnActionWhenPackHasAnyNewActionsAndNameIsNotSpecified(t *testing.T) {

@@ -123,7 +123,7 @@ func (c Command) createAction(e Event, ctx map[string]string) (*Action, error) {
 		return nil, err
 	}
 
-	state := State{Value: stateNew, Time: time.Now()}
+	state := State{Value: stateNew, Time: time.Now().UTC()}
 
 	return &Action{
 		Id:         bson.NewObjectId().Hex(),
