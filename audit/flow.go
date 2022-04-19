@@ -82,9 +82,11 @@ type State struct {
 }
 
 type Event struct {
-	Name    string    `json:"event" bson:"name"`
-	Pack    Pack      `json:"pack" bson:"pack"`
-	Payload json.Json `json:"payload,omitempty" bson:"payload,omitempty"`
+	Name       string    `json:"event" bson:"name"`
+	Pack       Pack      `json:"pack" bson:"pack"`
+	Payload    json.Json `json:"payload,omitempty" bson:"payload,omitempty"`
+	CreatedAt  time.Time `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
+	ReceivedAt time.Time `json:"receivedAt,omitempty" bson:"receivedAt,omitempty"`
 }
 
 type Repository interface {

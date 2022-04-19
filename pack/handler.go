@@ -48,7 +48,7 @@ func PostPack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pack.generateId()
-	pack.LastSeen = time.Now()
+	pack.LastSeen = time.Now().UTC()
 
 	if err := packRepo.Add(*pack); err != nil {
 		logger.Errorf("Cannot save packName=%s, packLabels=%+v: %v", pack.Name, pack.Labels, err)

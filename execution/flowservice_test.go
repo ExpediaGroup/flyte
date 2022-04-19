@@ -65,7 +65,8 @@ func TestHandleEvent_ShouldTriggerHandleEventForAllCandidateFlows(t *testing.T) 
 	flowService{}.HandleEvent(expectedEvent)
 
 	//Then
-	waitWithTimeout(wg, 1000*time.Millisecond)
+	//waitWithTimeout(wg, 1000*time.Millisecond)
+	wg.Wait()
 	assert.True(t, calledFlowA, "Should have called event handler on the flowA")
 	assert.True(t, calledFlowB, "Should have called event handler on the flowB")
 	assert.Equal(t, expectedEvent, actualEvent)

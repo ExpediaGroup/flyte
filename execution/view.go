@@ -23,6 +23,7 @@ import (
 	"github.com/ExpediaGroup/flyte/json"
 	"io"
 	"net/http"
+	"time"
 )
 
 func toEvent(pack Pack, reader io.Reader) (*Event, error) {
@@ -30,6 +31,10 @@ func toEvent(pack Pack, reader io.Reader) (*Event, error) {
 	event := &Event{Pack: pack}
 	if err := encodingjson.NewDecoder(reader).Decode(event); err != nil {
 		return nil, err
+	}
+	event.ReceivedAt = time.Now().UTC()
+	if (event.CreatedAt == time.Time{}){
+		event.CreatedAt = event.ReceivedAt
 	}
 	return event, nil
 }

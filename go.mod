@@ -3,7 +3,7 @@ module github.com/ExpediaGroup/flyte
 go 1.14
 
 require (
-	github.com/HotelsDotCom/flyte-client v0.0.0-20190711101542-5955dbb4e00d
+	github.com/ExpediaGroup/flyte-client v1.2.0
 	github.com/HotelsDotCom/go-logger v0.0.0-20180518131502-802095993e48
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/adhocore/gronx v0.2.4

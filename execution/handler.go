@@ -49,6 +49,7 @@ func PostEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
 	logger.Infof("Received Event: EventName=%s Pack=%+v", event.Name, pack)
 	logger.Debugf("Event Contents: Event=%+v", event)
 
