@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ExpediaGroup/flyte/json"
+	"github.com/HotelsDotCom/go-logger"
 	"time"
 )
 
@@ -49,7 +50,15 @@ func (a *Action) take() error {
 		return fmt.Errorf("action is not in %s state, cannot set to %s", stateNew, statePending)
 	}
 	a.setState(statePending)
-	return actionRepo.Update(*a)
+	err := actionRepo.Update(*a)
+	if err != nil {
+		return err
+	}
+	err = auditRepo.Update(*a)
+	if err != nil {
+		logger.Errorf("Error updating audit for action=%+v: %v", *a, err)
+	}
+	return nil
 }
 
 func (a *Action) finish(e Event) error {
@@ -64,7 +73,15 @@ func (a *Action) finish(e Event) error {
 		a.setState(stateSuccess)
 	}
 	a.Result = e
-	return actionRepo.Update(*a)
+	err := actionRepo.Update(*a)
+	if err != nil {
+		return err
+	}
+	err = auditRepo.Update(*a)
+	if err != nil {
+		logger.Errorf("Error updating audit for action=%+v: %v", *a, err)
+	}
+	return nil
 }
 
 func (a Action) hasFinished() bool {
@@ -112,5 +129,12 @@ type ActionRepository interface {
 }
 
 var actionRepo ActionRepository = actionMgoRepo{}
+
+type AuditRepository interface {
+	Add(action Action) error
+	Update(action Action) error
+}
+
+var auditRepo AuditRepository = auditMgoRepo{}
 
 var ActionNotFoundErr = errors.New("action not found")

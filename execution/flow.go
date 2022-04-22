@@ -66,6 +66,9 @@ func (f *Flow) addAction(stepId string, a Action) error {
 	if err := actionRepo.Add(a); err != nil {
 		return err
 	}
+	if err := auditRepo.Add(a); err != nil {
+		logger.Errorf("Error saving audit for action=%+v: %v", a, err)
+	}
 	f.actions[stepId] = a
 	return nil
 }

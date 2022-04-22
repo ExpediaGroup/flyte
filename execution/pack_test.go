@@ -47,6 +47,14 @@ func TestCompleteAction_ShouldFinishAction_WhenItExistsAndIsInPendingState(t *te
 			return nil
 		},
 	}
+	defer resetAuditRepo()
+	auditedAction := Action{}
+	auditRepo = mockAuditRepo{
+		update: func(action Action) error {
+			auditedAction = action
+			return nil
+		},
+	}
 
 	//When
 	got, err := Pack{Id: "packA"}.CompleteAction("existingPendingAction", Event{Name: "resultEvent"})
@@ -57,6 +65,7 @@ func TestCompleteAction_ShouldFinishAction_WhenItExistsAndIsInPendingState(t *te
 	//Then
 	assert.WithinDuration(t, time.Now(), got.State.Time, 10*time.Second)
 	assert.Equal(t, *got, actualUpdateAction)
+	assert.Equal(t, *got, auditedAction)
 	state2 := State{ Value: stateSuccess, Time: got.State.Time }
 	completedAction := Action{State: state2, States: []State{state1, state2}, prevState: state1, Result: Event{Name: "resultEvent"}}
 	assert.Equal(t, completedAction, *got)
@@ -74,6 +83,12 @@ func TestCompleteAction_ShouldSetActionStateToFatalForFatalResult(t *testing.T) 
 		get: func(actionId string) (*Action, error) {
 			return &Action{State: state1, States: []State{state1}}, nil
 		},
+		update: func(action Action) error {
+			return nil
+		},
+	}
+	defer resetAuditRepo()
+	auditRepo = mockAuditRepo{
 		update: func(action Action) error {
 			return nil
 		},
@@ -226,6 +241,15 @@ func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHadNewActionWithThe
 		},
 	}
 
+	defer resetAuditRepo()
+	auditedAction := Action{}
+	auditRepo = mockAuditRepo{
+		update: func(action Action) error {
+			auditedAction = action
+			return nil
+		},
+	}
+
 	//When
 	got, err := Pack{Id: "packA"}.TakeAction("specificName")
 	require.NoError(t, err)
@@ -234,6 +258,7 @@ func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHadNewActionWithThe
 	//Then
 	assert.WithinDuration(t, time.Now(), got.State.Time, 10*time.Second)
 	assert.Equal(t, *got, actualUpdateAction)
+	assert.Equal(t, *got, auditedAction)
 
 	state2 := State{Value: statePending, Time: got.State.Time}
 	pendingAction := Action{State: state2, States: []State{state1, state2}, prevState: state1}
@@ -252,6 +277,13 @@ func TestTakeAction_ShouldReturnActionInPendingState_WhenPackHasAnyNewActionAndN
 		findNew: func(pack Pack, name string) (*Action, error) {
 			return &Action{State: state1, States: []State{state1}}, nil
 		},
+		update: func(action Action) error {
+			return nil
+		},
+	}
+
+	defer resetAuditRepo()
+	auditRepo = mockAuditRepo{
 		update: func(action Action) error {
 			return nil
 		},
@@ -405,3 +437,18 @@ func (r mockActionRepo) FindCorrelated(correlationId string) ([]Action, error) {
 }
 
 func resetActionRepo() { actionRepo = actionMgoRepo{} }
+
+type mockAuditRepo struct {
+	add            func(a Action) error
+	update         func(a Action) error
+}
+
+func (r mockAuditRepo) Add(a Action) error {
+	return r.add(a)
+}
+
+func (r mockAuditRepo) Update(a Action) error {
+	return r.update(a)
+}
+
+func resetAuditRepo() { auditRepo = auditMgoRepo{} }

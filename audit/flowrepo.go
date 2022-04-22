@@ -64,7 +64,7 @@ func findCorrelationIds(filter flowsFilter) ([]string, error) {
 	defer s.Close()
 
 	var bsonIds []bson.M
-	pipe := s.DB(mongo.DbName).C(mongo.ActionCollectionId).Pipe([]bson.M{
+	pipe := s.DB(mongo.DbName).C(mongo.AuditCollectionId).Pipe([]bson.M{
 		{"$match": filter.toQuery()},
 		{"$group": bson.M{"_id": "$correlationId", "time": bson.M{"$max": "$state.time"}}},
 		{"$sort": bson.M{"time": -1}},
@@ -90,7 +90,7 @@ func findActionsByCorrelationIds(correlationIds []string) ([]Action, error) {
 
 	var actions []Action
 	return actions, s.DB(mongo.DbName).
-		C(mongo.ActionCollectionId).
+		C(mongo.AuditCollectionId).
 		Find(bson.M{"correlationId": bson.M{"$in": correlationIds}}).
 		All(&actions)
 }
