@@ -63,10 +63,10 @@ func TestFindFlows_ShouldReturnFlowsSortedByActionWithLatestStateTimestamp(t *te
 	actionD := newActionT("flowC", "", "stepA", time.Now().Add(-3*time.Hour))
 	actionD.FlowUUID = "defA"
 	actionD.States = []State{}
-	mongoT.Insert(t, mongo.ActionCollectionId, actionA)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionB)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionC)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionD)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionA)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionB)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionC)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionD)
 	mongoT.Insert(t, mongo.HistoryCollectionId, Flow{UUID: "defA", Steps: []Step{{Id: "stepA"}, {Id: "stepB"}}})
 	mongoT.Insert(t, mongo.HistoryCollectionId, Flow{UUID: "defB", Steps: []Step{{Id: "stepA"}}})
 
@@ -86,9 +86,9 @@ func TestFindFlows_ShouldReturnFlowsSortedByActionWithLatestStateTimestamp(t *te
 func TestFindFlows_ShouldReturnEmptySliceIfThereAreNoFlowsMatchingCriteria(t *testing.T) {
 
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "someActionA", "stepA", time.Now().Add(-1*time.Hour)))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "someActionB", "stepA", time.Now().Add(-2*time.Hour)))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "someActionC", "stepB", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "someActionA", "stepA", time.Now().Add(-1*time.Hour)))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "someActionB", "stepA", time.Now().Add(-2*time.Hour)))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "someActionC", "stepB", time.Now()))
 
 	filter := flowsFilter{
 		actionName: "nonExistingActions",
@@ -103,9 +103,9 @@ func TestFindFlows_ShouldReturnEmptySliceIfThereAreNoFlowsMatchingCriteria(t *te
 func TestFindCorrelationIds_ShouldReturnDistinctCorrelationIdsSortedByActionWithLatestStateTimestamp(t *testing.T) {
 
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "", "", time.Now().Add(-1*time.Hour)))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "", "", time.Now().Add(-2*time.Hour)))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "", "", time.Now().Add(-1*time.Hour)))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "", "", time.Now().Add(-2*time.Hour)))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "", "", time.Now()))
 
 	got, err := findCorrelationIds(flowsFilter{limit: 50})
 	require.NoError(t, err)
@@ -123,9 +123,9 @@ func TestFindCorrelationIds_ShouldFilterByFlowName(t *testing.T) {
 	actionB.FlowName = "notThis"
 	actionC := newActionT("flowC", "", "", time.Now().Add(-1*time.Hour))
 	actionC.FlowName = "onlyThis"
-	mongoT.Insert(t, mongo.ActionCollectionId, actionA)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionB)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionC)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionA)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionB)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionC)
 
 	filter := flowsFilter{
 		flowName: "onlyThis",
@@ -141,9 +141,9 @@ func TestFindCorrelationIds_ShouldFilterByFlowName(t *testing.T) {
 func TestFindCorrelationIds_ShouldFilterByStepId(t *testing.T) {
 
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "", "ayePet", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "", "neeWayMan", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowC", "", "ayePet", time.Now().Add(-1*time.Hour)))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "", "ayePet", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "", "neeWayMan", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowC", "", "ayePet", time.Now().Add(-1*time.Hour)))
 
 	filter := flowsFilter{
 		stepId: "ayePet",
@@ -159,9 +159,9 @@ func TestFindCorrelationIds_ShouldFilterByStepId(t *testing.T) {
 func TestFindCorrelationIds_ShouldFilterByActionName(t *testing.T) {
 
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "cannyAction", "", time.Now().Add(-1*time.Hour)))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "cannyAction", "", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowC", "notCannyAction", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "cannyAction", "", time.Now().Add(-1*time.Hour)))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "cannyAction", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowC", "notCannyAction", "", time.Now()))
 
 	filter := flowsFilter{
 		actionName: "cannyAction",
@@ -183,9 +183,9 @@ func TestFindCorrelationIds_ShouldFilterByActionPackName(t *testing.T) {
 	actionB.PackName = "huh"
 	actionC := newActionT("flowC", "", "", time.Now().Add(-1*time.Hour))
 	actionC.PackName = "huh"
-	mongoT.Insert(t, mongo.ActionCollectionId, actionA)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionB)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionC)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionA)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionB)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionC)
 
 	filter := flowsFilter{
 		actionPackName: "huh",
@@ -207,9 +207,9 @@ func TestFindCorrelationIds_ShouldFilterByActionPackLabels(t *testing.T) {
 	actionB := newActionT("flowB", "", "", time.Now())
 	actionC := newActionT("flowC", "", "", time.Now().Add(-1*time.Hour))
 	actionC.PackLabels = labels
-	mongoT.Insert(t, mongo.ActionCollectionId, actionA)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionB)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionC)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionA)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionB)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionC)
 
 	filter := flowsFilter{
 		actionPackLabels: labels,
@@ -225,9 +225,9 @@ func TestFindCorrelationIds_ShouldFilterByActionPackLabels(t *testing.T) {
 func TestFindCorrelationIds_ShouldSkipFirstNItems(t *testing.T) {
 
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "cannyAction", "", time.Now().Add(-1*time.Hour)))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "cannyAction", "", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowC", "notCannyAction", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "cannyAction", "", time.Now().Add(-1*time.Hour)))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "cannyAction", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowC", "notCannyAction", "", time.Now()))
 
 	filter := flowsFilter{
 		actionName: "cannyAction",
@@ -244,9 +244,9 @@ func TestFindCorrelationIds_ShouldSkipFirstNItems(t *testing.T) {
 func TestFindCorrelationIds_ShouldReturnNumberOfItemsSpecifiedByLimit(t *testing.T) {
 
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "", "", time.Now().Add(-2*time.Hour)))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "", "", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowC", "", "", time.Now().Add(-1*time.Hour)))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "", "", time.Now().Add(-2*time.Hour)))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowC", "", "", time.Now().Add(-1*time.Hour)))
 
 	filter := flowsFilter{
 		limit: 1,
@@ -261,8 +261,8 @@ func TestFindCorrelationIds_ShouldReturnNumberOfItemsSpecifiedByLimit(t *testing
 func TestFindCorrelationIds_ShouldReturnEmptySliceIfThereAreNoMatchingActions(t *testing.T) {
 
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "neeWayMan", "", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "neeWayMan", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "neeWayMan", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "neeWayMan", "", time.Now()))
 
 	filter := flowsFilter{
 		actionName: "ayePet",
@@ -277,10 +277,10 @@ func TestFindCorrelationIds_ShouldReturnEmptySliceIfThereAreNoMatchingActions(t 
 func TestFindActionsByCorrelationIds_ShouldReturnAllMatchingActions(t *testing.T) {
 
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "", "", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "", "", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowC", "", "", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowC", "", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "", "", time.Now()))
 
 	got, err := findActionsByCorrelationIds([]string{"flowA", "flowB"})
 	require.NoError(t, err)
@@ -291,8 +291,8 @@ func TestFindActionsByCorrelationIds_ShouldReturnAllMatchingActions(t *testing.T
 func TestFindActionsByCorrelationIds_ShouldReturnEmptySliceIfThereAreNoMatchingActions(t *testing.T) {
 
 	mongoT.DropDatabase(t)
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowA", "", "", time.Now()))
-	mongoT.Insert(t, mongo.ActionCollectionId, newActionT("flowB", "", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowA", "", "", time.Now()))
+	mongoT.Insert(t, mongo.AuditCollectionId, newActionT("flowB", "", "", time.Now()))
 
 	got, err := findActionsByCorrelationIds([]string{"flowC", "flowD"})
 	require.NoError(t, err)
@@ -335,8 +335,8 @@ func TestGetFlow_ShouldReturnFlowWithAllCorrelatedActions(t *testing.T) {
 	actionB := newActionT("flowA", "", "stepB", time.Now().Add(-1*time.Hour))
 	actionB.FlowUUID = "defA"
 	actionB.States = []State{}
-	mongoT.Insert(t, mongo.ActionCollectionId, actionA)
-	mongoT.Insert(t, mongo.ActionCollectionId, actionB)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionA)
+	mongoT.Insert(t, mongo.AuditCollectionId, actionB)
 	mongoT.Insert(t, mongo.HistoryCollectionId, Flow{UUID: "defA", Steps: []Step{{Id: "stepA"}, {Id: "stepB"}}})
 
 	got, err := flowRepo.Get("flowA")

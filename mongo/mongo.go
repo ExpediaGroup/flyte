@@ -28,6 +28,7 @@ const (
 	FlowCollectionId      = "flow"
 	HistoryCollectionId   = "flowHistory"
 	ActionCollectionId    = "action"
+	AuditCollectionId     = "audit"
 	DatastoreCollectionId = "datastore"
 )
 
@@ -35,6 +36,7 @@ var (
 	session            *mgo.Session
 	mongoDialTimeout   = 5 * time.Second
 	mongoDialRetryWait = 30 * time.Second
+	auditTTL           = 183 * 24 * 60 * 60
 )
 
 func GetSession() *mgo.Session {
@@ -63,6 +65,8 @@ func InitSession(url string, ttl int) {
 	EnsureIndexExists(ActionCollectionId, "actionCorrelationId", []string{"correlationId"})
 	EnsureIndexExists(ActionCollectionId, "actionCompound", []string{"packName", "state.value", "name", "state.time"})
 	EnsureTTLIndexExists(ActionCollectionId, "actionTTL", []string{"state.time"}, ttl)
+	EnsureIndexExists(AuditCollectionId, "auditCorrelationId", []string{"correlationId"})
+	EnsureTTLIndexExists(AuditCollectionId, "auditTTL", []string{"state.time"}, auditTTL)
 }
 
 func dial(url string) *mgo.Session {

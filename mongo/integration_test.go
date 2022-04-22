@@ -222,6 +222,44 @@ func Test_InitSession_ShouldLogErrorWhenTryingToGetIndexesIfErrorIsReturned(t *t
 	assert.Equal(t, "Error getting indexes for 'action' collection. Error: 'some error'", logMessages[0].Message)
 }
 
+func Test_InitSession_ShouldCreateTTLIndexForAuditAndExpireRecords(t *testing.T) {
+	// given
+	mongoT.DropDatabase(t)
+	mongoT.Insert(t, AuditCollectionId, newActionT("1", "actionA", "NEW", time.Now()))
+	mongoT.Insert(t, AuditCollectionId, newActionT("2", "actionB", "NEW", time.Now()))
+	mongoT.Insert(t, AuditCollectionId, newActionT("3", "actionC", "NEW", time.Now()))
+
+	prevAuditTTL := auditTTL
+	defer func() {auditTTL = prevAuditTTL}()
+	auditTTL = 10
+
+	// when
+	InitSession(mongoT.GetUrl(), 10)
+	var got Action
+	err := mongoT.FindOne(AuditCollectionId, bson.M{"_id": "1"}, &got)
+	assert.NoError(t, err)
+	assert.Equal(t, "1", got.Id)
+
+	// then ensure all is as expected
+	indexes, _ := mongoT.GetSession().DB(DbName).C(AuditCollectionId).Indexes()
+	require.True(t, len(indexes) == 3)
+	assert.Contains(t, indexes[0].Key, "_id")
+	assert.Contains(t, indexes[1].Key, "correlationId")
+	assert.Contains(t, indexes[2].Key, "state.time")
+	assert.Equal(t, time.Duration(auditTTL)*time.Second, indexes[2].ExpireAfter)
+
+	// and sleep - set at 61 seconds as by default mongo checks expiry once a minute
+	time.Sleep(time.Duration(61) * time.Second)
+
+	// now records should be expired
+	err = mongoT.FindOne(AuditCollectionId, bson.M{"_id": "1"}, &got)
+	assert.Equal(t, "not found", err.Error())
+	err = mongoT.FindOne(AuditCollectionId, bson.M{"_id": "2"}, &got)
+	assert.Equal(t, "not found", err.Error())
+	err = mongoT.FindOne(AuditCollectionId, bson.M{"_id": "3"}, &got)
+	assert.Equal(t, "not found", err.Error())
+}
+
 func cleanDbPopulatedWithActions(t *testing.T) {
 	mongoT.DropDatabase(t)
 	mongoT.Insert(t, ActionCollectionId, newActionT("1", "actionA", "NEW", time.Now()))

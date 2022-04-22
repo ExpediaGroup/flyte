@@ -39,6 +39,16 @@ func TestFlowHandleEvent_ShouldExecuteAllCandidateSteps(t *testing.T) {
 		},
 	}
 
+	defer resetAuditRepo()
+	auditCounter := 0
+	auditRepo = mockAuditRepo{
+		add: func(a Action) error {
+			auditCounter++
+			return nil
+
+		},
+	}
+
 	candidateA := newStepT("candidateA", "eventOK", "packOK")
 	nonCandidate := newStepT("nonCandidate", "eventNotOK", "packOK")
 	candidateB := newStepT("candidateB", "eventOK", "packOK")
@@ -55,6 +65,7 @@ func TestFlowHandleEvent_ShouldExecuteAllCandidateSteps(t *testing.T) {
 	assert.Equal(t, Action{Id: candidateB.Id, StepId: candidateB.Id}, flow.actions[candidateB.Id])
 
 	assert.Equal(t, 2, addCounter)
+	assert.Equal(t, 2, auditCounter)
 }
 
 func TestFlowHandleEvent_ShouldCreateActionWhichIncludesFlowName(t *testing.T) {
@@ -67,6 +78,13 @@ func TestFlowHandleEvent_ShouldCreateActionWhichIncludesFlowName(t *testing.T) {
 		},
 	}
 	defer resetActionRepo()
+
+	defer resetAuditRepo()
+	auditRepo = mockAuditRepo{
+		add: func(a Action) error {
+			return nil
+		},
+	}
 
 	stepA := newStepT("stepA", "eventOK", "packOK")
 	flow := Flow{
@@ -95,7 +113,12 @@ func TestFlowHandleEvent_ShouldLogCreatedActions(t *testing.T) {
 			return nil
 		},
 	}
-
+	defer resetAuditRepo()
+	auditRepo = mockAuditRepo{
+		add: func(a Action) error {
+			return nil
+		},
+	}
 	flow := newFlowT(newStepT("stepA", "eventOK", "packOK"))
 
 	flow.HandleEvent(Event{Name: "eventOK", Pack: Pack{Name: "packOK"}})
