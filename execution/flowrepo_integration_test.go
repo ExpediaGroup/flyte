@@ -74,6 +74,8 @@ func TestGetByAction_ShouldReturnErrorWhenFlowDoesNotExist(t *testing.T) {
 func TestFindCandidatesByTriggerEvent_ShouldReturnListOfFlowMatchingTriggerEventNameAndPackName(t *testing.T) {
 
 	mongoT.DropDatabase(t)
+	flowsCache = nil
+	defer func() {flowsCache = nil}()
 
 	flowA := Flow{UUID: "flowA", Steps: []Step{{Event: EventDef{Name: "eventOK", PackName: "packOK"}}}}
 	flowB := Flow{UUID: "flowB", Steps: []Step{{Event: EventDef{Name: "eventNotOK", PackName: "packNotOk"}}, {Event: EventDef{Name: "eventOK", PackName: "packOK"}}}}
@@ -103,6 +105,8 @@ func TestFindCandidatesByTriggerEvent_ShouldReturnListOfFlowMatchingTriggerEvent
 func TestFindCandidatesByTriggerEvent_ShouldReturnEmptyListIfThereAreNoCandidateFlows(t *testing.T) {
 
 	mongoT.DropDatabase(t)
+	flowsCache = nil
+	defer func() {flowsCache = nil}()
 
 	flowA := Flow{UUID: "flowA", Steps: []Step{{Event: EventDef{Name: "eventOK", PackName: "packNotOK"}}}}
 	flowB := Flow{UUID: "flowB", Steps: []Step{{Event: EventDef{Name: "eventNotOK", PackName: "packOK"}}}}

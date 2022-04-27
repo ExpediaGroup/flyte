@@ -19,8 +19,11 @@ package execution
 import (
 	"fmt"
 	"github.com/ExpediaGroup/flyte/mongo"
+	"github.com/HotelsDotCom/go-logger"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"sync"
+	"time"
 )
 
 type flowMgoRepo struct{}
@@ -51,32 +54,65 @@ func (r flowMgoRepo) GetByAction(action Action) (*Flow, error) {
 	return flow, nil
 }
 
-func (r flowMgoRepo) FindByEvent(e Event) ([]Flow, error) {
+var flowsCache map[string][]Flow
 
+func PurgeFlowsCache(){
+	flowsCache = nil
+}
+
+func refreshFlowsCache() {
 	s := mongo.GetSession()
 	defer s.Close()
 
-	flowQuery := bson.M{
-		"steps": bson.M{
-			"$elemMatch": bson.M{
-				"event.packName": e.Pack.Name,
-				"event.name":     e.Name,
-				"dependsOn": bson.M{
-					"$exists": false,
-				},
-			},
-		},
-	}
-
 	flows := []Flow{}
-	if err := s.DB(mongo.DbName).C(mongo.FlowCollectionId).Find(flowQuery).All(&flows); err != nil {
-		return flows, err
+	if err := s.DB(mongo.DbName).C(mongo.FlowCollectionId).Find(bson.D{}).All(&flows); err != nil {
+		logger.Errorf("Error refreshing flows cache: %v", err)
+		return
 	}
 
-	for i := range flows {
-		flows[i].correlationId = bson.NewObjectId().Hex()
-		flows[i].context = map[string]string{}
-		flows[i].actions = map[string]Action{}
+	cache := map[string][]Flow{}
+	for _, flow := range flows {
+		for _, s := range flow.Steps {
+			if len(s.DependsOn) > 0 {
+				continue
+			}
+			k := s.Event.PackName + "|" + s.Event.Name
+			cache[k] = append(cache[k], flow)
+		}
+	}
+	flowsCache = cache
+	logger.Infof("refreshed flow cache; flows in the cache: %d", len(flows))
+	return
+}
+
+var mu sync.Mutex
+
+func initFlowsCache() {
+	mu.Lock()
+	defer mu.Unlock()
+	if flowsCache != nil {
+		return
+	}
+	refreshFlowsCache()
+	go func() {
+		for {
+			time.Sleep(1 * time.Minute)
+			refreshFlowsCache()
+		}
+	}()
+}
+
+func (r flowMgoRepo) FindByEvent(e Event) ([]Flow, error) {
+	if flowsCache == nil {
+		initFlowsCache()
+	}
+	k := e.Pack.Name + "|" + e.Name
+	flows := []Flow{}
+	for _, f := range flowsCache[k] {
+		f.correlationId = bson.NewObjectId().Hex()
+		f.context = map[string]string{}
+		f.actions = map[string]Action{}
+		flows = append(flows, f)
 	}
 	return flows, nil
 }
