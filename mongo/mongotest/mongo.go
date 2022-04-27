@@ -25,6 +25,7 @@ import (
 	"net"
 	"strconv"
 	"testing"
+	"time"
 )
 
 type MongoT struct {
@@ -76,6 +77,7 @@ func (m *MongoT) startMongoContainer(p string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	time.Sleep(1*time.Minute)
 	m.container = c
 }
 

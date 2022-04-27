@@ -21,6 +21,7 @@ package acceptancetest
 import (
 	"github.com/ExpediaGroup/flyte/acceptancetest/server"
 	"github.com/ExpediaGroup/flyte/acceptancetest/urlutil"
+	"github.com/ExpediaGroup/flyte/execution"
 	"github.com/ExpediaGroup/flyte/mongo/mongotest"
 	"testing"
 	"time"
@@ -84,4 +85,5 @@ func tearDown() {
 
 func ResetFlyteApi(t *testing.T) {
 	mongoT.DropDatabase(t)
+	execution.PurgeFlowsCache()
 }

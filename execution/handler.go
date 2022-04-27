@@ -53,7 +53,7 @@ func PostEvent(w http.ResponseWriter, r *http.Request) {
 	logger.Infof("Received Event: EventName=%s Pack=%+v", event.Name, pack)
 	logger.Debugf("Event Contents: Event=%+v", event)
 
-	go flowSvc.HandleEvent(*event)
+	flowSvc.HandleEvent(*event)
 	w.WriteHeader(http.StatusAccepted)
 }
 
@@ -102,7 +102,7 @@ func CompleteAction(w http.ResponseWriter, r *http.Request) {
 
 	logger.Infof("Action with actionId=%s has been completed, new state=%s", action.Id, action.State.Value)
 
-	go flowSvc.HandleEvent(*result)
+	flowSvc.HandleEvent(*result)
 	go flowSvc.HandleAction(*action)
 	w.WriteHeader(http.StatusAccepted)
 }
