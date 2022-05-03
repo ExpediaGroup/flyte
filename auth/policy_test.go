@@ -17,9 +17,10 @@ limitations under the License.
 package auth
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/golang-jwt/jwt"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestClaimsFulfilled(t *testing.T) {

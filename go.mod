@@ -8,7 +8,6 @@ require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/adhocore/gronx v0.2.4
 	github.com/coreos/go-oidc v2.1.0+incompatible
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.3.0
@@ -16,6 +15,7 @@ require (
 	github.com/flosch/pongo2 v0.0.0-20190707114632-bbf5a6c351f4
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-yaml/yaml v2.1.0+incompatible
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/husobee/vestigo v1.1.0
 	github.com/jasonlvhit/gocron v0.0.0-20190920201010-985d45da66c5
