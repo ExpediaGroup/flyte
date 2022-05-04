@@ -77,7 +77,7 @@ paths:
     get:
       tags:
         - pack
-      summary: pack
+      summary: get pack
       operationId: pack
       parameters:
         - $ref: '#/parameters/packId'
@@ -86,6 +86,16 @@ paths:
           description: registered pack
           schema:
             $ref: '#/definitions/pack'
+    delete:
+      tags:
+        - pack
+      summary: delete pack
+      operationId: removePack
+      parameters:
+        - $ref: '#/parameters/packId'
+      responses:
+        '204':
+          description: pack deleted
   '/v1/packs/{packId}/events':
     post:
       tags:
