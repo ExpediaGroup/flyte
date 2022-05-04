@@ -18,17 +18,13 @@ package auth
 
 import (
 	"fmt"
-
 	"github.com/ExpediaGroup/flyte/collections"
 	"github.com/HotelsDotCom/go-logger"
-
+	"github.com/go-yaml/yaml"
 	"github.com/golang-jwt/jwt"
-
 	"io/ioutil"
 	"strconv"
 	"strings"
-
-	"github.com/go-yaml/yaml"
 )
 
 type pathPolicy struct {

@@ -19,19 +19,15 @@ package server
 import (
 	"encoding/base64"
 	"fmt"
-
 	"github.com/HotelsDotCom/go-logger"
-
 	"github.com/golang-jwt/jwt"
-
+	"github.com/husobee/vestigo"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/husobee/vestigo"
-	"github.com/stretchr/testify/require"
 )
 
 const privateKeyPath = "./testdata/private.pem"

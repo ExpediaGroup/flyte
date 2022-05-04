@@ -20,17 +20,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
 	"github.com/HotelsDotCom/go-logger"
 	"github.com/coreos/go-oidc"
-
 	"github.com/golang-jwt/jwt"
 	"github.com/golang-jwt/jwt/request"
-
+	"github.com/husobee/vestigo"
 	"net/http"
 	"time"
-
-	"github.com/husobee/vestigo"
 )
 
 func NewAuthHandler(h http.Handler, issuerURL, clientID, policyPath string) (http.Handler, error) {

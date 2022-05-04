@@ -18,18 +18,17 @@ package server
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net"
-	"net/url"
-	"os"
-	"time"
-
 	"github.com/ExpediaGroup/flyte/acceptancetest/urlutil"
 	"github.com/ExpediaGroup/flyte/httputil"
 	"github.com/ExpediaGroup/flyte/mongo"
 	"github.com/ExpediaGroup/flyte/mongo/mongotest"
 	"github.com/ExpediaGroup/flyte/server"
 	"github.com/HotelsDotCom/go-logger"
+	"io/ioutil"
+	"net"
+	"net/url"
+	"os"
+	"time"
 )
 
 const ttl = 365 * 24 * 60 * 60
