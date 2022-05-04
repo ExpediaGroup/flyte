@@ -20,7 +20,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/HotelsDotCom/go-logger"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/husobee/vestigo"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
