@@ -66,6 +66,7 @@ func NewConfig() Config {
 	c := Config{}
 	c.LogLevel = getLogLevel()
 	zerolog.SetGlobalLevel(c.LogLevel)
+	log.Output(os.Stdout)
 
 	c.MongoHost = getEnvVarWithDefault(mgoHostEnvName, "localhost:27017")
 	c.TLSCertPath = getPathVar(tlsCertPathEnvName)
