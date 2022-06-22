@@ -19,9 +19,7 @@ limitations under the License.
 package mongo
 
 import (
-	"errors"
 	"github.com/ExpediaGroup/flyte/mongo/mongotest"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2"
@@ -81,27 +79,6 @@ func Test_InitSession_ShouldNotAffectDbIfIndexesAlreadyExist(t *testing.T) {
 	// then expected indexes still exist
 	indexes, _ = mongoT.GetSession().DB(DbName).C(ActionCollectionId).Indexes()
 	assertIndexesExist(t, indexes, ttl)
-}
-
-func Test_InitSession_ShouldLogErrorMessageWhenErrorEnsuringIndexesExist(t *testing.T) {
-	// given
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	cleanDbPopulatedWithActions(t)
-	defaultIndexOnlyExists(t)
-
-	defer resetEnsureIndexes()
-	ensure = func(collection string, index mgo.Index) error {
-		return errors.New("some error")
-	}
-
-	// when
-	InitSession(mongoT.GetUrl(), ttl)
-
-	// then...
-	logMessages := loggertest.GetLogMessages()
-	assert.Equal(t, "Error ensuring index: '[correlationId]', collection: 'action', error: 'some error'", logMessages[0].Message)
 }
 
 func Test_InitSession_ShouldCreateTTLIndexAndExpireRecords(t *testing.T) {
@@ -169,57 +146,6 @@ func Test_InitSession_ShouldNotUpdateTTLIndex(t *testing.T) {
 	// then indexes should be unchanged
 	indexes2, _ := mongoT.GetSession().DB(DbName).C(ActionCollectionId).Indexes()
 	assertIndexesExist(t, indexes2, ttlInSeconds)
-}
-
-func Test_InitSession_ShouldLogWhenErrorWhenTryingToUpdateTTLIndex(t *testing.T) {
-	// given
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	cleanDbPopulatedWithActions(t)
-	defaultIndexOnlyExists(t)
-	ttlInSeconds := 1
-
-	InitSession(mongoT.GetUrl(), ttlInSeconds)
-
-	// and all is as expected
-	indexes, _ := mongoT.GetSession().DB(DbName).C(ActionCollectionId).Indexes()
-	assertIndexesExist(t, indexes, ttlInSeconds)
-
-	// when updating TTL fails with an error...
-	defer resetUpdateTTL()
-	update = func(collection string, indexName string, ttl int) error {
-		return errors.New("some error")
-	}
-
-	newTTLInSeconds := 2
-	InitSession(mongoT.GetUrl(), newTTLInSeconds)
-
-	// then
-	logMessages := loggertest.GetLogMessages()
-	assert.Equal(t, "Error updating TTL for 'actionTTL' index. TTL: '2'. Error: 'some error", logMessages[0].Message)
-}
-
-func Test_InitSession_ShouldLogErrorWhenTryingToGetIndexesIfErrorIsReturned(t *testing.T) {
-	// given
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	cleanDbPopulatedWithActions(t)
-	defaultIndexOnlyExists(t)
-	ttlInSeconds := 1
-
-	defer resetGetIndexes()
-	getIndexes = func(collectionId string) (indexes []mgo.Index, err error) {
-		return []mgo.Index{}, errors.New("some error")
-	}
-
-	// when
-	InitSession(mongoT.GetUrl(), ttlInSeconds)
-
-	// then
-	logMessages := loggertest.GetLogMessages()
-	assert.Equal(t, "Error getting indexes for 'action' collection. Error: 'some error'", logMessages[0].Message)
 }
 
 func Test_InitSession_ShouldCreateTTLIndexForAuditAndExpireRecords(t *testing.T) {

@@ -17,13 +17,13 @@ limitations under the License.
 package docker
 
 import (
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/net/context"
 	"io"
 	"io/ioutil"
@@ -126,7 +126,7 @@ func (d *docker) imagePull(imagePath string) error {
 	out, err := d.cli.ImagePull(d.ctx, imagePath, types.ImagePullOptions{})
 
 	if err != nil {
-		logger.Errorf("unable to pull image: %s", err)
+		log.Err(err).Msg("unable to pull image")
 		if out != nil {
 			out.Close()
 		}
@@ -134,10 +134,10 @@ func (d *docker) imagePull(imagePath string) error {
 	}
 	defer out.Close()
 
-	logger.Infof("Pulling and reading image, may take several minutes: %s", imagePath)
+	log.Info().Msgf("Pulling and reading image, may take several minutes: %s", imagePath)
 	_, err = io.Copy(ioutil.Discard, out)
 	if err != nil {
-		logger.Errorf("unable to pull image: %s", err)
+		log.Err(err).Msg("unable to pull image")
 		return err
 	}
 

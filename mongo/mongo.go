@@ -17,7 +17,7 @@ limitations under the License.
 package mongo
 
 import (
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/mgo.v2"
 	"time"
 )
@@ -41,7 +41,7 @@ var (
 
 func GetSession() *mgo.Session {
 	if session == nil {
-		logger.Fatal("Mongo session has not been initialised.")
+		log.Fatal().Msg("Mongo session has not been initialised.")
 	}
 	return session.Copy()
 }
@@ -57,7 +57,7 @@ func InitSession(url string, ttl int) {
 	_, err := mgo.ParseURL(url)
 
 	if err != nil {
-		logger.Fatalf("Invalid mongo url=%s: %v", url, err)
+		log.Fatal().Err(err).Msgf("Invalid mongo url=%s", url)
 	}
 
 	session = dial(url)
@@ -73,7 +73,7 @@ func dial(url string) *mgo.Session {
 
 	s, err := mgo.DialWithTimeout(url, mongoDialTimeout)
 	if err != nil {
-		logger.Errorf("Unable to connect to mongo on url=%s will retry in %s: %v", url, mongoDialRetryWait.String(), err)
+		log.Err(err).Msgf("Unable to connect to mongo on url=%s will retry in %s", url, mongoDialRetryWait.String())
 		time.Sleep(mongoDialRetryWait)
 		return dial(url)
 	}

@@ -18,7 +18,7 @@ package audit
 
 import (
 	"github.com/ExpediaGroup/flyte/mongo"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -102,7 +102,7 @@ func groupActionsIntoFlows(actions []Action) map[string]Flow {
 		if _, ok := flowsMap[action.CorrelationId]; !ok {
 			flow, err := getFlow(action.FlowUUID)
 			if err != nil {
-				logger.Error(err)
+				log.Err(err).Send()
 				continue
 			}
 			flow.Actions = map[string]Action{}

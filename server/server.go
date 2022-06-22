@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"github.com/ExpediaGroup/flyte/auth"
 	"github.com/ExpediaGroup/flyte/mongo"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -42,9 +42,9 @@ func NewFlyteServer(port, mgoHost string, ttl int) *FlyteServer {
 func (f *FlyteServer) EnableAuth(authPolicyPath, oidcIssuerURL, oidcClientID string) {
 	authHandler, err := auth.NewAuthHandler(f.Handler, oidcIssuerURL, oidcClientID, authPolicyPath)
 	if err != nil {
-		logger.Fatalf("failed to enable auth: %v", err)
+		log.Fatal().Err(err).Msg("failed to enable auth")
 	}
 
 	f.Handler = authHandler
-	logger.Infof("Enabled auth using auth policy file %q and OIDC issuer uri %q and OIDC issuer client id %q", authPolicyPath, oidcIssuerURL, oidcClientID)
+	log.Info().Msgf("Enabled auth using auth policy file %q and OIDC issuer uri %q and OIDC issuer client id %q", authPolicyPath, oidcIssuerURL, oidcClientID)
 }

@@ -23,7 +23,7 @@ import (
 	"github.com/ExpediaGroup/flyte/mongo"
 	"github.com/ExpediaGroup/flyte/mongo/mongotest"
 	"github.com/ExpediaGroup/flyte/server"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net"
 	"net/url"
@@ -53,7 +53,7 @@ type Flyte struct {
 func StartFlyte(mgoHost, oidcIssuerUri string) *Flyte {
 	flyte, err := startFlyte(mgoHost, oidcIssuerUri)
 	if err != nil {
-		logger.Fatalf("Unable to start flyte: %v", err)
+		log.Fatal().Msgf("Unable to start flyte: %v", err)
 	}
 	return flyte
 }
@@ -128,7 +128,7 @@ func (f *Flyte) startFlyteApi(mgoHost, oidcIssuerUri string) (map[string][]httpu
 		time.Sleep(2 * time.Second)
 
 		if err = client.GetStruct(baseURL.String(), &links); err == nil {
-			logger.Infof("Flyte api started at %s", f.rootURL)
+			log.Info().Msgf("Flyte api started at %s", f.rootURL)
 			return links, nil
 		}
 	}

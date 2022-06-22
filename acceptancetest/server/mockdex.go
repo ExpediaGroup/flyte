@@ -19,9 +19,9 @@ package server
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/golang-jwt/jwt"
 	"github.com/husobee/vestigo"
+	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"math/big"
@@ -46,7 +46,7 @@ func StartDex() *MockDex {
 
 	dex := &MockDex{}
 	if err := dex.key.initialise(); err != nil {
-		logger.Fatalf("Unable to start mock dex: %v", err)
+		log.Fatal().Msgf("Unable to start mock dex: %v", err)
 	}
 
 	router := vestigo.NewRouter()

@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/coreos/go-oidc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -44,10 +43,6 @@ func TestShouldReturn200_WhenUserRequestsUnprotectedResourceWithoutNeedForAuthor
 }
 
 func TestShouldReturn401WithHeader_WhenUserRequestsProtectedResourceWithoutIdToken(t *testing.T) {
-
-	loggertest.Init(loggertest.LogLevelInfo)
-	defer loggertest.Reset()
-
 	handler, cleanupFunc := createTestAuthHandler(t, simpleHandler)
 	defer cleanupFunc()
 	w := httptest.NewRecorder()
@@ -58,16 +53,9 @@ func TestShouldReturn401WithHeader_WhenUserRequestsProtectedResourceWithoutIdTok
 
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	assert.Equal(t, `Bearer realm="token"`, resp.Header.Get("WWW-Authenticate"))
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, `could not authorize: no token present in request`, logMessages[0].Message)
 }
 
 func TestShouldReturn401WithHeader_WhenUserRequestsProtectedResourceWithInvalidIdToken(t *testing.T) {
-
-	loggertest.Init(loggertest.LogLevelInfo)
-	defer loggertest.Reset()
-
 	handler, cleanupFunc := createTestAuthHandler(t, simpleHandler)
 	defer cleanupFunc()
 	w := httptest.NewRecorder()
@@ -80,16 +68,9 @@ func TestShouldReturn401WithHeader_WhenUserRequestsProtectedResourceWithInvalidI
 
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	assert.Equal(t, `Bearer realm="token", error="invalid_token"`, resp.Header.Get("WWW-Authenticate"))
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, logMessages[0].Message, `could not authorize: oidc: malformed jwt:`)
 }
 
 func TestShouldReturn401_WhenUserRequestsProtectedResourceWithExpiredIdToken(t *testing.T) {
-
-	loggertest.Init(loggertest.LogLevelInfo)
-	defer loggertest.Reset()
-
 	handler, cleanupFunc := createTestAuthHandler(t, simpleHandler)
 	defer cleanupFunc()
 	w := httptest.NewRecorder()
@@ -101,16 +82,9 @@ func TestShouldReturn401_WhenUserRequestsProtectedResourceWithExpiredIdToken(t *
 
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	assert.Equal(t, `Bearer realm="token", error="invalid_token"`, resp.Header.Get("WWW-Authenticate"))
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, logMessages[0].Message, `could not authorize: oidc: token is expired`)
 }
 
 func TestShouldReturn401_WhenUserRequestsProtectedResourceWithValidIdTokenButNoMatchingClaims(t *testing.T) {
-
-	loggertest.Init(loggertest.LogLevelInfo)
-	defer loggertest.Reset()
-
 	handler, cleanupFunc := createTestAuthHandler(t, simpleHandler)
 	defer cleanupFunc()
 	w := httptest.NewRecorder()
@@ -121,9 +95,6 @@ func TestShouldReturn401_WhenUserRequestsProtectedResourceWithValidIdTokenButNoM
 	resp := w.Result()
 
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, `token claims do not satisfy required claims`, logMessages[0].Message)
 }
 
 func TestShouldReturn200_WhenUserRequestsProtectedResourceWithValidIdTokenAndMatchingClaims(t *testing.T) {

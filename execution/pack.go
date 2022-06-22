@@ -19,7 +19,7 @@ package execution
 import (
 	"errors"
 	"github.com/ExpediaGroup/flyte/collections"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 )
 
 type Pack struct {
@@ -42,7 +42,7 @@ func completeActionFn(pack Pack, actionId string, result Event) (*Action, error)
 	}
 
 	if action.PackName != pack.Name || !collections.ContainsAll(pack.Labels, action.PackLabels) {
-		logger.Errorf("pack=%+v trying to complete actionId=%s which which it cannot handle", pack, action.Id)
+		log.Error().Msgf("pack=%+v trying to complete actionId=%s which which it cannot handle", pack, action.Id)
 		return nil, nil
 	}
 	return action, action.finish(result)
@@ -73,7 +73,7 @@ var updateLastSeen = updateLastSeenFn
 func updateLastSeenFn(pack Pack) {
 	err := packRepo.UpdateLastSeen(pack.Id)
 	if err != nil {
-		logger.Infof("error recording last seen record for a pack id %s: %v", pack.Id, err)
+		log.Err(err).Msgf("error recording last seen record for a pack id %s", pack.Id)
 	}
 }
 

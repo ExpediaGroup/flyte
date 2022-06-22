@@ -18,10 +18,9 @@ package mongotest
 
 import (
 	"github.com/ExpediaGroup/flyte/docker"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/mgo.v2"
-	"log"
 	"net"
 	"strconv"
 	"testing"
@@ -39,7 +38,7 @@ type MongoT struct {
 func NewMongoT(dbName string) *MongoT {
 	port, err := getFreePort()
 	if err != nil {
-		logger.Fatalf("Unable to find free port for mongo: %v", err)
+		log.Fatal().Err(err).Msg("Unable to find free port for mongo")
 	}
 	return &MongoT{
 		host:   "localhost",
@@ -53,7 +52,7 @@ func (m *MongoT) Start() {
 
 	session, err := mgo.Dial(m.GetUrl())
 	if err != nil {
-		logger.Fatalf("Unable to connect to mongo on url=%s: %v", m.GetUrl(), err)
+		log.Fatal().Err(err).Msgf("Unable to connect to mongo on url=%s", m.GetUrl())
 	}
 
 	m.session = session
@@ -70,12 +69,12 @@ func (m MongoT) GetUrl() string {
 func (m *MongoT) startMongoContainer(p string) {
 	d, err := docker.NewDocker()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	c, err := d.Run("", "docker.io/library/mongo:3.6", nil, []string{p})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Send()
 	}
 	time.Sleep(1*time.Minute)
 	m.container = c
@@ -88,7 +87,7 @@ func (m *MongoT) Teardown() {
 
 	if m.container != nil {
 		if err := m.container.StopAndRemove(); err != nil {
-			log.Fatal(err)
+			log.Fatal().Err(err).Send()
 		}
 	}
 }

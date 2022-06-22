@@ -17,11 +17,12 @@ limitations under the License.
 package main
 
 import (
-	"fmt"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"math"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -40,6 +41,7 @@ const (
 	shouldDeleteDeadPacksEnvName             = "FLYTE_SHOULD_DELETE_DEAD_PACKS"
 	deleteDeadPacksTimeEnvName               = "FLYTE_DELETE_DEAD_PACKS_AT_HH_COLON_MM"
 	packGracePeriodUntilDeadInSecondsEnvName = "FLYTE_PACK_GRACE_PERIOD_UNTIL_MARKED_DEAD_IN_SECONDS"
+	logLevelEnvName                          = "LOGLEVEL"
 	defaultDeleteDeadPacksTime               = "23:00"
 	oneWeekInSeconds                         = 604800
 	oneYearInSeconds                         = 31557600
@@ -57,10 +59,14 @@ type Config struct {
 	ShouldDeleteDeadPacks             bool
 	DeleteDeadPacksTime               string
 	PackGracePeriodUntilDeadInSeconds int
+	LogLevel                          zerolog.Level
 }
 
 func NewConfig() Config {
 	c := Config{}
+	c.LogLevel = getLogLevel()
+	zerolog.SetGlobalLevel(c.LogLevel)
+
 	c.MongoHost = getEnvVarWithDefault(mgoHostEnvName, "localhost:27017")
 	c.TLSCertPath = getPathVar(tlsCertPathEnvName)
 	c.TLSKeyPath = getPathVar(tlsKeyPathEnvName)
@@ -78,51 +84,51 @@ func NewConfig() Config {
 func getEnvVarWithDefault(name, defaultVal string) string {
 	val, isSet := lookupEnv(name)
 	if !isSet {
-		logger.Infof(fmt.Sprintf("%s env not set, using default", name))
+		log.Info().Msgf("%s env not set, using default", name)
 		val = defaultVal
 	}
-	logger.Infof("Using %s=%s", name, val)
+	log.Info().Msgf("Using %s=%s", name, val)
 	return val
 }
 
 func getIntEnvVarWithDefault(name string, defaultVal int) int {
 	val, isSet := lookupEnv(name)
 	if !isSet {
-		logger.Infof(fmt.Sprintf("%s env not set, using default", name))
+		log.Info().Msgf("%s env not set, using default", name)
 		return defaultVal
 	}
 
 	intVal, err := strconv.Atoi(val)
 	if err != nil {
-		logger.Errorf(fmt.Sprintf("Error converting %s to int, using default. Value of %s: %v", name, name, val))
+		log.Err(err).Msgf("Error converting %s to int, using default. Value of %s: %v", name, name, val)
 		return defaultVal
 	}
 
-	logger.Infof("Using %s=%v", name, intVal)
+	log.Info().Msgf("Using %s=%v", name, intVal)
 	return intVal
 }
 
 func getBoolEnvVarWithDefault(name string, defaultVal bool) bool {
 	val, isSet := lookupEnv(name)
 	if !isSet {
-		logger.Infof(fmt.Sprintf("%s env not set, using default: %v", name, defaultVal))
+		log.Info().Msgf("%s env not set, using default: %v", name, defaultVal)
 		return defaultVal
 	}
 
 	boolVal, err := strconv.ParseBool(val)
 	if err != nil {
-		logger.Errorf(fmt.Sprintf("Error converting %s to bool, using default: %v. Value of %s: %v", name, defaultVal, name, val))
+		log.Err(err).Msgf("Error converting %s to bool, using default: %v. Value of %s: %v", name, defaultVal, name, val)
 		return defaultVal
 	}
 
-	logger.Infof("Using %s=%v", name, boolVal)
+	log.Info().Msgf("Using %s=%v", name, boolVal)
 	return boolVal
 }
 
 func getPathVar(envName string) string {
 	path := getEnvVar(envName)
 	if path != "" && !fileExists(path) {
-		logger.Fatalf("cannot find file defined by: %v=%v", envName, path)
+		log.Fatal().Msgf("cannot find file defined by: %v=%v", envName, path)
 	}
 	return path
 }
@@ -130,7 +136,7 @@ func getPathVar(envName string) string {
 func getEnvVar(name string) string {
 	val, isSet := lookupEnv(name)
 	if isSet {
-		logger.Infof("Using %s=%s", name, val)
+		log.Info().Msgf("Using %s=%s", name, val)
 	}
 	return val
 }
@@ -145,7 +151,7 @@ var fileExists = func(filePath string) bool {
 func (c Config) getPort() string {
 	port := getEnvVarWithDefault(portEnvName, c.getDefaultPort())
 	if portNumber, err := strconv.Atoi(port); err != nil || !isValidPortNumber(portNumber) {
-		logger.Fatalf("invalid port: %v=%v", portEnvName, port)
+		log.Fatal().Msgf("invalid port: %v=%v", portEnvName, port)
 	}
 	return port
 }
@@ -175,14 +181,24 @@ func (c Config) requireAuth() bool {
 func getDeleteDeadPacksTimeEnvVarWithDefault(name, defaultVal string) string {
 	val, isSet := lookupEnv(name)
 	if !isSet {
-		logger.Infof(fmt.Sprintf("%s env not set, using default %v", name, defaultVal))
+		log.Info().Msgf("%s env not set, using default %v", name, defaultVal)
 		return defaultVal
 	}
 	if _, err := time.Parse("15:04", val); err != nil {
-		logger.Errorf(fmt.Sprintf("%s env is invalid, using default %v, error: %v", name, defaultVal, err))
+		log.Err(err).Msgf("%s env is invalid, using default %v", name, defaultVal)
 		return defaultVal
 	}
 
-	logger.Infof("Using %s=%s", name, val)
+	log.Info().Msgf("Using %s=%s", name, val)
 	return val
+}
+
+func getLogLevel() zerolog.Level {
+	ll := strings.ToLower(getEnvVarWithDefault(logLevelEnvName, "info"))
+	l, err := zerolog.ParseLevel(ll)
+	if err != nil {
+		log.Err(err).Msg("Unable to parse log level setting to Debug")
+		return zerolog.InfoLevel
+	}
+	return l
 }

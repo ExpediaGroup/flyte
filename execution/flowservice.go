@@ -17,7 +17,7 @@ limitations under the License.
 package execution
 
 import (
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 )
 
 type flowService struct{}
@@ -26,7 +26,7 @@ func (flowService) HandleEvent(e Event) {
 
 	flows, err := flowRepo.FindByEvent(e)
 	if err != nil {
-		logger.Errorf("Error handling event=%+v: %v", e, err)
+		log.Err(err).Msgf("Error handling event=%+v", e)
 		return
 	}
 
@@ -41,10 +41,10 @@ func (flowService) HandleAction(a Action) {
 
 	flow, err := flowRepo.GetByAction(a)
 	if err != nil {
-		logger.Errorf("Error handling action=%+v: %v", a, err)
+		log.Err(err).Msgf("Error handling action=%+v", a)
 		return
 	} else if flow == nil {
-		logger.Errorf("Error handling action=%+v: flow not found", a)
+		log.Error().Msgf("Error handling action=%+v: flow not found", a)
 		return
 	}
 

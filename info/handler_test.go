@@ -18,7 +18,6 @@ package info
 
 import (
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -61,9 +60,6 @@ func TestV1Links(t *testing.T) {
 }
 
 func TestSwagger_shouldReturnError_whenSwaggerFileCannotBeRead(t *testing.T) {
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	// conveniently, the 'ReadFile' code doesn't work when run in tests (see fix in test above) so an error will be returned...
 
 	req := httptest.NewRequest("GET", "/v1/swagger", strings.NewReader(""))
@@ -72,5 +68,4 @@ func TestSwagger_shouldReturnError_whenSwaggerFileCannotBeRead(t *testing.T) {
 	V1Swagger(responseWriter, req)
 
 	assert.Equal(t, http.StatusInternalServerError, responseWriter.Code)
-	assert.Contains(t, loggertest.GetLogMessages()[0].Message, "cannot read swagger/v1.yml:")
 }

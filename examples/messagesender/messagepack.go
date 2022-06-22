@@ -24,7 +24,7 @@ import (
 	"github.com/ExpediaGroup/flyte-client/client"
 	"github.com/ExpediaGroup/flyte-client/config"
 	"github.com/ExpediaGroup/flyte-client/flyte"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"net/url"
 	"os"
 	"strings"
@@ -66,7 +66,7 @@ func main() {
 func getUrl(rawUrl string) *url.URL {
 	url, err := url.Parse(rawUrl)
 	if err != nil {
-		logger.Fatalf("%s is not a valid url", rawUrl)
+		log.Fatal().Msgf("%s is not a valid url", rawUrl)
 	}
 	return url
 }

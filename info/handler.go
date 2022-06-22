@@ -20,7 +20,7 @@ import (
 	"github.com/ExpediaGroup/flyte/flytepath"
 	"github.com/ExpediaGroup/flyte/httputil"
 	"github.com/ExpediaGroup/flyte/mongo"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
 )
@@ -60,7 +60,7 @@ func V1Swagger(w http.ResponseWriter, _ *http.Request) {
 
 	swaggerFile, err := ioutil.ReadFile(swaggerFileLocation)
 	if err != nil {
-		logger.Errorf("cannot read swagger/v1.yml: %v", err)
+		log.Err(err).Msg("cannot read swagger/v1.yml")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -72,7 +72,7 @@ func V1Swagger(w http.ResponseWriter, _ *http.Request) {
 func Health(w http.ResponseWriter, _ *http.Request) {
 
 	if err := mongo.Health(); err != nil {
-		logger.Errorf("failed health request: %v", err)
+		log.Err(err).Msg("failed health request")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

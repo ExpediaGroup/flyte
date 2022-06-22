@@ -19,15 +19,16 @@ package main
 import (
 	"github.com/ExpediaGroup/flyte/pack"
 	"github.com/ExpediaGroup/flyte/server"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
 func main() {
 
 	c := NewConfig()
+
 	if c.ShouldDeleteDeadPacks {
-		logger.Infof("daily removal of dead packs is scheduled to run at '%s' set with a grace period of '%v' seconds.", c.DeleteDeadPacksTime, c.PackGracePeriodUntilDeadInSeconds)
+		log.Info().Msgf("daily removal of dead packs is scheduled to run at '%s' set with a grace period of '%v' seconds.", c.DeleteDeadPacksTime, c.PackGracePeriodUntilDeadInSeconds)
 
 		pack.ScheduleDailyRemovalOfDeadPacksAt(c.DeleteDeadPacksTime, c.PackGracePeriodUntilDeadInSeconds)
 	}
@@ -38,7 +39,7 @@ func main() {
 		flyteServer.EnableAuth(c.AuthPolicyPath, c.OidcIssuerURL, c.OidcIssuerClientID)
 	}
 
-	logger.Infof("Serving flyteapi on %s with TLS %v", flyteServer.Addr, c.requireTLS())
+	log.Info().Msgf("Serving flyteapi on %s with TLS %v", flyteServer.Addr, c.requireTLS())
 
 	var err error
 	if c.requireTLS() {
@@ -48,6 +49,6 @@ func main() {
 	}
 
 	if err != nil && err != http.ErrServerClosed {
-		logger.Fatalf("flyteapi server failure: %s", err)
+		log.Fatal().Msgf("flyteapi server failure: %s", err)
 	}
 }

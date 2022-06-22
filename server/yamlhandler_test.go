@@ -20,7 +20,6 @@ import (
 	"bytes"
 	"errors"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/husobee/vestigo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -51,8 +50,6 @@ func TestYamlHandler_shouldParseYamlIntoJSON(t *testing.T) {
 }
 
 func TestYamlHandler_shouldReturnBadRequest_whenRequestContainsInvalidYaml(t *testing.T) {
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
 	numInvocations := 0
 	// the yaml handler will decorate this handler
 	downstreamHandler := func(rw http.ResponseWriter, r *http.Request) { numInvocations++ }
@@ -66,10 +63,6 @@ func TestYamlHandler_shouldReturnBadRequest_whenRequestContainsInvalidYaml(t *te
 	require.NoError(t, err)
 
 	assert.Equal(t, numInvocations, 0)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, logMessages[0].Message, "cannot process yaml request:")
 }
 
 func TestConvertYAMLRequestToJSONRequest_shouldError_whenRequestCannotBeRead(t *testing.T) {

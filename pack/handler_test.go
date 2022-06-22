@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
@@ -133,27 +132,15 @@ func TestPostPack_should_fail_with_bad_request(t *testing.T) {
 }
 
 func TestPostPack_ShouldReturn400ForInvalidRequest(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	req := httptest.NewRequest(http.MethodPost, "/v1/packs", strings.NewReader(`--- invalid json ---`))
 	w := httptest.NewRecorder()
 	PostPack(w, req)
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot convert request to pack: invalid character '-' in numeric literal", logMessages[0].Message)
 }
 
 func TestPostPack_ShouldReturn500_WhenRepoFails(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		add: func(pack Pack) error {
@@ -167,10 +154,6 @@ func TestPostPack_ShouldReturn500_WhenRepoFails(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot save packName=Slack, packLabels=map[]: something went wrong", logMessages[0].Message)
 }
 
 func TestGetPacks_ShouldReturnListOfPacksWithLinks_WhenPacksExist(t *testing.T) {
@@ -233,10 +216,6 @@ func TestGetPacks_ShouldReturnEmptyListOfPacksWithLinks_WhenThereAreNoPacks(t *t
 }
 
 func TestGetPacks_ShouldReturn500_WhenRepoFails(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		findAll: func() ([]Pack, error) {
@@ -250,10 +229,6 @@ func TestGetPacks_ShouldReturn500_WhenRepoFails(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot find packs: something went wrong", logMessages[0].Message)
 }
 
 func TestGetPack_ShouldReturnPack(t *testing.T) {
@@ -307,10 +282,6 @@ func TestGetPack_Should404ForNonExistingPack(t *testing.T) {
 }
 
 func TestGetPack_Should500_WhenRepoFails(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
@@ -324,10 +295,6 @@ func TestGetPack_Should500_WhenRepoFails(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot find packId=: something went wrong", logMessages[0].Message)
 }
 
 func TestDeletePack_ShouldDeleteExistingPack(t *testing.T) {
@@ -369,10 +336,6 @@ func TestDeletePack_Should404ForNonExistingPack(t *testing.T) {
 }
 
 func TestDeletePack_Should500_WhenRepoFails(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		remove: func(id string) error {
@@ -386,10 +349,6 @@ func TestDeletePack_Should500_WhenRepoFails(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot delete packId=: something went wrong", logMessages[0].Message)
 }
 
 // --- requests/responses ---

@@ -17,9 +17,6 @@ limitations under the License.
 package pack
 
 import (
-	"fmt"
-	"github.com/HotelsDotCom/go-logger/loggertest"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -51,30 +48,6 @@ func TestRemovePacksOlderThan_ShouldPassInTheExpectedDateToTheRepoFunction(t *te
 
 	// then
 	assert.Equal(t, oneWeekAgo, passedInDate)
-}
-
-func TestRemovePacksOlderThan_ShouldLogOnError(t *testing.T) {
-
-	// given
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	// and the (mock) repo is returning an error
-	var passedInDate time.Time
-	defer resetPackRepo()
-	packRepo = mockPackRepo{
-		removeAllOlderThan: func(date time.Time) (packsRemoved int, err error) {
-			passedInDate = date
-			return 0, errors.New("some error")
-		},
-	}
-
-	// when
-	removePacksOlderThan(oneWeekInSeconds)
-
-	// then
-	expectedMessage := fmt.Sprintf("problem removing dead packs older than '%s'. err: 'some error'.", passedInDate.Format(time.RFC850))
-	assert.Equal(t, expectedMessage, loggertest.GetLogMessages()[0].Message)
 }
 
 func TestGetPastDateFrom_ShouldReturnExpectedPastDateFromTheValueInSecondsPassedIn(t *testing.T) {

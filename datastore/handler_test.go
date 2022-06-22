@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"github.com/ExpediaGroup/flyte/flytepath"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/husobee/vestigo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -98,10 +97,6 @@ func TestGetItems_ResponseWithEmptyItems(t *testing.T) {
 }
 
 func TestGetItems_ServiceError(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetDatastoreRepo()
 	datastoreRepo = mockDatastoreRepo{
 		findAll: func() ([]DataItem, error) {
@@ -115,10 +110,6 @@ func TestGetItems_ServiceError(t *testing.T) {
 
 	response := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, response.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "cannot retrieve data items: something went wrong", logMessages[0].Message)
 }
 
 func TestGetItem(t *testing.T) {
@@ -164,10 +155,6 @@ func TestGetItem_NotFound(t *testing.T) {
 }
 
 func TestGetItem_ServiceError(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetDatastoreRepo()
 	datastoreRepo = mockDatastoreRepo{
 		get: func(string) (*DataItem, error) {
@@ -181,10 +168,6 @@ func TestGetItem_ServiceError(t *testing.T) {
 
 	response := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, response.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot retrieve data item key=: something went wrong", logMessages[0].Message)
 }
 
 func TestDeleteItem(t *testing.T) {
@@ -227,10 +210,6 @@ func TestDeleteNonExistingItemReturnsNotFoundResponse(t *testing.T) {
 }
 
 func TestDeleteItemServiceError(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetDatastoreRepo()
 	datastoreRepo = mockDatastoreRepo{
 		remove: func(string) error {
@@ -245,10 +224,6 @@ func TestDeleteItemServiceError(t *testing.T) {
 
 	response := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, response.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot delete item key=item_to_delete: something went wrong", logMessages[0].Message)
 }
 
 func TestGetDataStoreValue_ShouldReturnJsonForJsonContentTypes(t *testing.T) {
@@ -355,9 +330,6 @@ func TestStoreItem_ShouldUpdateItem(t *testing.T) {
 }
 
 func TestStoreItem_ShouldFailForEmptyDataItem(t *testing.T) {
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	form := testForm()
 	form.fileContent = []byte(``)
 	req, err := newMultipartRequest(http.MethodPut, "/v1/datastore/empty-file", *form)
@@ -366,10 +338,6 @@ func TestStoreItem_ShouldFailForEmptyDataItem(t *testing.T) {
 	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
 
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Error storing data store item: error getting multipart file: file content is empty", logMessages[0].Message)
 }
 
 func TestStoreItem_ShouldUseDefaultFileContentTypeIfMissing(t *testing.T) {
@@ -392,9 +360,6 @@ func TestStoreItem_ShouldUseDefaultFileContentTypeIfMissing(t *testing.T) {
 }
 
 func TestStoreItem_ShouldReturn500WhenUnableToAddToRepo(t *testing.T) {
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetDatastoreRepo()
 	datastoreRepo = mockDatastoreRepo{
 		store: func(dataItem DataItem) (bool, error) { return false, errors.New("something went wrong") },
@@ -406,10 +371,6 @@ func TestStoreItem_ShouldReturn500WhenUnableToAddToRepo(t *testing.T) {
 	resp := serve(req, http.MethodPut, flytepath.DatastoreItemPath, StoreItem)
 
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot store item key=store-error: something went wrong", logMessages[0].Message)
 }
 
 // --- mocks & helpers ---

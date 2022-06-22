@@ -17,7 +17,7 @@ limitations under the License.
 package mongo
 
 import (
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -39,7 +39,7 @@ func ensureIndex(collection, indexName string, indexKey []string, ttl int) {
 
 	err := ensure(collection, index)
 	if err != nil {
-		logger.Errorf("Error ensuring index: '%+v', collection: '%s', error: '%v'", indexKey, collection, err)
+		log.Err(err).Msgf("Error ensuring index: '%+v', collection: '%s'", indexKey, collection)
 	}
 }
 
@@ -65,7 +65,7 @@ func EnsureTTLIndexExists(collectionId, indexName string, indexKey []string, ttl
 func indexExists(collectionId, indexName string) (bool, mgo.Index) {
 	indexes, err := getIndexes(collectionId)
 	if err != nil {
-		logger.Errorf("Error getting indexes for '%s' collection. Error: '%v'", collectionId, err)
+		log.Err(err).Msgf("Error getting indexes for '%s' collection", collectionId)
 		return false, mgo.Index{}
 	}
 	for _, i := range indexes {
@@ -94,7 +94,7 @@ func indexTTLHasChanged(currentTTL time.Duration, ttl int) bool {
 
 func updateTTL(collection, indexName string, ttl int) {
 	if err := update(collection, indexName, ttl); err != nil {
-		logger.Errorf("Error updating TTL for '%s' index. TTL: '%v'. Error: '%+v", indexName, ttl, err)
+		log.Err(err).Msgf("Error updating TTL for '%s' index. TTL: '%v'", indexName, ttl)
 	}
 }
 

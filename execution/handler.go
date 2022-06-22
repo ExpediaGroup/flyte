@@ -18,8 +18,8 @@ package execution
 
 import (
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -30,10 +30,10 @@ func PostEvent(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case PackNotFoundErr:
-			logger.Infof("Pack packId=%s not found", packId)
+			log.Info().Msgf("Pack packId=%s not found", packId)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Error(err)
+			log.Err(err).Send()
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
@@ -44,14 +44,14 @@ func PostEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	event, err := toEvent(*pack, r.Body)
 	if err != nil {
-		logger.Error(err)
+		log.Err(err).Send()
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 
-	logger.Infof("Received Event: EventName=%s Pack=%+v", event.Name, pack)
-	logger.Debugf("Event Contents: Event=%+v", event)
+	log.Info().Msgf("Received Event: EventName=%s Pack=%+v", event.Name, pack)
+	log.Debug().Msgf("Event Contents: Event=%+v", event)
 
 	flowSvc.HandleEvent(*event)
 	w.WriteHeader(http.StatusAccepted)
@@ -64,10 +64,10 @@ func CompleteAction(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case PackNotFoundErr:
-			logger.Infof("Pack packId=%s not found", packId)
+			log.Info().Msgf("Pack packId=%s not found", packId)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Error(err)
+			log.Err(err).Send()
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
@@ -78,29 +78,40 @@ func CompleteAction(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	result, err := toEvent(*pack, r.Body)
 	if err != nil {
-		logger.Error(err)
+		log.Err(err).Send()
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	logger.Infof("Received Event: EventName=%s Pack=%+v", result.Name, pack)
-	logger.Debugf("Event Contents: Event=%+v", result)
+	log.Info().Msgf("Received Event: EventName=%s Pack=%+v", result.Name, pack)
+	log.Debug().Msgf("Event Contents: Event=%+v", result)
 
 	actionId := vestigo.Param(r, "actionId")
 	action, err := pack.CompleteAction(actionId, *result)
 	if err != nil {
 		switch err {
 		case ActionNotFoundErr:
-			logger.Infof("Action actionId=%s packId=%s not found", actionId, pack.Id)
+			log.Info().Msgf("Action actionId=%s packId=%s not found", actionId, pack.Id)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Errorf("Error completing actionId=%s with result=%+v: %v", actionId, result, err)
+			log.Err(err).Msgf("Error completing actionId=%s with result=%+v", actionId, result)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
 	}
 
-	logger.Infof("Action with actionId=%s has been completed, new state=%s", action.Id, action.State.Value)
+	log.Info().
+		Str("ActionId", action.Id).
+		Str("CorrelationId", action.CorrelationId).
+		Str("FlowName", action.FlowName).
+		Str("PackName", action.PackName).
+		Str("ActionName", action.Name).
+		Str("StepId", action.StepId).
+		Str("State", action.State.Value).
+		Str("ResultEventPackId", action.Result.Pack.Id).
+		Str("ResultEvent", action.Result.Name).
+		Bool("ResultEventIsFatal", action.Result.isFatal()).
+		Msg("Action completed")
 
 	flowSvc.HandleEvent(*result)
 	go flowSvc.HandleAction(*action)
@@ -114,10 +125,10 @@ func TakeAction(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case PackNotFoundErr:
-			logger.Infof("Pack packId=%s not found", packId)
+			log.Info().Msgf("Pack packId=%s not found", packId)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Error(err)
+			log.Err(err).Send()
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
@@ -129,7 +140,7 @@ func TakeAction(w http.ResponseWriter, r *http.Request) {
 	action, err := pack.TakeAction(actionName)
 
 	if err != nil {
-		logger.Errorf("Could not take action for packId=%s and actionName=%s: %v", pack.Id, actionName, err)
+		log.Err(err).Msgf("Could not take action for packId=%s and actionName=%s", pack.Id, actionName)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -139,7 +150,7 @@ func TakeAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Infof("Action actionId=%s taken", action.Id)
+	log.Info().Msgf("Action actionId=%s taken", action.Id)
 
 	httputil.WriteResponse(w, r, toActionResponse(r, packId, *action))
 }

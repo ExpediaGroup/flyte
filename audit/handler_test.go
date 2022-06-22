@@ -19,7 +19,6 @@ package audit
 import (
 	"errors"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
@@ -156,10 +155,6 @@ func TestGetFlows_ShouldReturnZeroFlows_WhenThereAreNoFlows(t *testing.T) {
 }
 
 func TestGetFlows_ShouldReturn500_WhenErrorHappens(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetFlowRepo()
 	flowRepo = mockFlowRepo{
 		find: func(filter flowsFilter) ([]Flow, error) {
@@ -173,10 +168,6 @@ func TestGetFlows_ShouldReturn500_WhenErrorHappens(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "expected error", logMessages[0].Message)
 }
 
 func TestGetFlow_ShouldReturnFlowWithActions(t *testing.T) {
@@ -228,10 +219,6 @@ func TestGetFlow_ShouldReturn404ForNonExistingFlow(t *testing.T) {
 }
 
 func TestGetFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetFlowRepo()
 	flowRepo = mockFlowRepo{
 		get: func(correlationId string) (*Flow, error) {
@@ -245,10 +232,6 @@ func TestGetFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Error finding flow correlationId=: expected error", logMessages[0].Message)
 }
 
 // --- mocks & helpers ---
