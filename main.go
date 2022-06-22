@@ -19,11 +19,14 @@ package main
 import (
 	"github.com/ExpediaGroup/flyte/pack"
 	"github.com/ExpediaGroup/flyte/server"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"os"
 )
 
 func main() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
 
 	c := NewConfig()
 
