@@ -18,8 +18,8 @@ package httputil
 
 import (
 	"encoding/json"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/ghodss/yaml"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -35,7 +35,7 @@ func WriteResponse(w http.ResponseWriter, r *http.Request, v interface{}) {
 func writeResponseAsYAML(w http.ResponseWriter, v interface{}) {
 	data, err := yaml.Marshal(v)
 	if err != nil {
-		logger.Errorf("cannot convert to yaml: %v", err)
+		log.Err(err).Msg("cannot convert to yaml")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -46,7 +46,7 @@ func writeResponseAsYAML(w http.ResponseWriter, v interface{}) {
 func writeResponseAsJSON(w http.ResponseWriter, v interface{}) {
 	data, err := json.Marshal(v)
 	if err != nil {
-		logger.Errorf("cannot convert to JSON: %v", err)
+		log.Err(err).Msg("cannot convert to JSON")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -58,7 +58,7 @@ func writeResponse(w http.ResponseWriter, contentType string, data []byte) {
 	w.Header().Set(HeaderContentType, contentType)
 	_, err := w.Write(data)
 	if err != nil {
-		logger.Error(err)
+		log.Err(err).Send()
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

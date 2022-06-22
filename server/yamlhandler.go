@@ -19,8 +19,8 @@ package server
 import (
 	"bytes"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/ghodss/yaml"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
 )
@@ -41,7 +41,7 @@ var yamlHandler = func(h http.HandlerFunc) http.HandlerFunc {
 func yamlToJSONHandler(w http.ResponseWriter, r *http.Request) error {
 	if isYAMLContentType(r) {
 		if err := convertYAMLRequestToJSONRequest(r); err != nil {
-			logger.Errorf("cannot process yaml request: %v", err)
+			log.Err(err).Msg("cannot process yaml request")
 			w.WriteHeader(http.StatusBadRequest)
 			return err
 		}

@@ -19,9 +19,9 @@ package auth
 import (
 	"fmt"
 	"github.com/ExpediaGroup/flyte/collections"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/go-yaml/yaml"
 	"github.com/golang-jwt/jwt"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -79,14 +79,14 @@ func (c policyClaims) fulfilled(tokenClaims jwt.MapClaims, placeholderVals map[s
 			case []interface{}:
 				tClaimStrings, err := collections.ToStringSlice(tClaimVal)
 				if err != nil {
-					logger.Infof("unsupported jwt claims type: %v", tClaimVal, err)
+					log.Info().Err(err).Msgf("unsupported jwt claims type: %v", tClaimVal)
 					continue
 				}
 				if collections.HasMatchingElement(policyClaimVals, tClaimStrings) {
 					return true
 				}
 			default:
-				logger.Infof("jwt claim values of type %T are not supported", tClaimVal)
+				log.Info().Msgf("jwt claim values of type %T are not supported", tClaimVal)
 			}
 		}
 	}

@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/xeipuuv/gojsonschema"
@@ -61,9 +60,6 @@ func TestPostFlow_ShouldAddFlowToRepoForValidRequest(t *testing.T) {
 }
 
 func TestPostFlow_TestValidJsonWithMissingField(t *testing.T) {
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(validJsonWithMissingField))
 	httputil.SetProtocolAndHostIn(req)
 	w := httptest.NewRecorder()
@@ -71,50 +67,27 @@ func TestPostFlow_TestValidJsonWithMissingField(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, "Cannot convert request to flow: (root): name is required", logMessages[0].Message)
-
 }
 
 func TestPostFlow_ShouldReturn500WhenFlowIsEmpty(t *testing.T) {
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(`{}`))
 	w := httptest.NewRecorder()
 	PostFlow(w, req)
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot convert request to flow: (root): name is required", logMessages[0].Message)
 }
 
 func TestPostFlow_ShouldReturn500ForInvalidRequest(t *testing.T) {
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader("{ 'this is invalid json'"))
 	w := httptest.NewRecorder()
 	PostFlow(w, req)
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot convert request to flow: invalid character '\\'' looking for beginning of object key string", logMessages[0].Message)
 }
 
 func TestPostFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetFlowRepo()
 	flowRepo = mockFlowRepo{
 		add: func(flow Flow) error {
@@ -128,10 +101,6 @@ func TestPostFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot add flow to repo flowName=redeploy_flow: something went wrong", logMessages[0].Message)
 }
 
 func TestPostFlow_ShouldErrorIfUnableToSetAbsolutePath(t *testing.T) {
@@ -141,19 +110,12 @@ func TestPostFlow_ShouldErrorIfUnableToSetAbsolutePath(t *testing.T) {
 		return "", errors.New("unable to generate absolute path")
 	}
 
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(redeployFlow))
 	w := httptest.NewRecorder()
 	PostFlow(w, req)
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot convert request to flow: unable to generate absolute path", logMessages[0].Message)
 }
 
 func TestPostFlow_ShouldErrorIfUnableToFindFile(t *testing.T) {
@@ -163,19 +125,12 @@ func TestPostFlow_ShouldErrorIfUnableToFindFile(t *testing.T) {
 		return nil, &os.PathError{Err: fmt.Errorf("file not found")}
 	}
 
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	req := httptest.NewRequest(http.MethodPost, "/v1/flows", strings.NewReader(redeployFlow))
 	w := httptest.NewRecorder()
 	PostFlow(w, req)
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, logMessages[0].Message, "Cannot convert request to flow: file not found ")
 }
 
 func TestGetFlows_ShouldReturnListOfFlowsWithLinks_WhenFlowsExist(t *testing.T) {
@@ -228,10 +183,6 @@ func TestGetFlows_ShouldReturnZeroFlows_WhenThereAreNoFlows(t *testing.T) {
 }
 
 func TestGetFlows_ShouldReturn500_WhenErrorHappens(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetFlowRepo()
 	flowRepo = mockFlowRepo{
 		findAll: func() ([]Flow, error) {
@@ -245,10 +196,6 @@ func TestGetFlows_ShouldReturn500_WhenErrorHappens(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot find flows: something went wrong", logMessages[0].Message)
 }
 
 func TestGetFlow_ShouldReturnLatestVersionOfTheFlow(t *testing.T) {
@@ -293,10 +240,6 @@ func TestGetFlow_ShouldReturn404ForNonExistingFlow(t *testing.T) {
 }
 
 func TestGetFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetFlowRepo()
 	flowRepo = mockFlowRepo{
 		get: func(name string) (*Flow, error) {
@@ -310,10 +253,6 @@ func TestGetFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot get flowName=%s: %vsomething went wrong", logMessages[0].Message)
 }
 
 func TestDeleteFlow_ShouldRemoveExistingFlow(t *testing.T) {
@@ -354,10 +293,6 @@ func TestDeleteFlow_ShouldReturn404ForNonExistingFlow(t *testing.T) {
 }
 
 func TestDeleteFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetFlowRepo()
 	flowRepo = mockFlowRepo{
 		remove: func(name string) error {
@@ -371,10 +306,6 @@ func TestDeleteFlow_ShouldReturn500_WhenErrorHappens(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Cannot delete flowName=flowToDelete: something went wrong", logMessages[0].Message)
 }
 
 // --- mocks & helpers ---

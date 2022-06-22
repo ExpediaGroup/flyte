@@ -18,8 +18,8 @@ package audit
 
 import (
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -29,7 +29,7 @@ func GetFlows(w http.ResponseWriter, r *http.Request) {
 
 	flows, err := flowRepo.Find(toFlowsFilter(r))
 	if err != nil {
-		logger.Error(err)
+		log.Err(err).Send()
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -43,13 +43,13 @@ func GetFlow(w http.ResponseWriter, r *http.Request) {
 	flow, err := flowRepo.Get(correlationId)
 
 	if err != nil {
-		logger.Errorf("Error finding flow correlationId=%s: %v", correlationId, err)
+		log.Err(err).Msgf("Error finding flow correlationId=%s", correlationId)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	if flow == nil {
-		logger.Infof("Flow correlationId=%s not found", correlationId)
+		log.Info().Msgf("Flow correlationId=%s not found", correlationId)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

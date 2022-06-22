@@ -19,7 +19,7 @@ package audit
 import (
 	"github.com/ExpediaGroup/flyte/flytepath"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -65,7 +65,7 @@ func toFlowsFilter(r *http.Request) flowsFilter {
 	s := r.URL.Query().Get("start")
 	if s != "" {
 		if i, err := strconv.Atoi(s); err != nil {
-			logger.Error(err)
+			log.Err(err).Send()
 		} else {
 			start = i
 		}
@@ -75,7 +75,7 @@ func toFlowsFilter(r *http.Request) flowsFilter {
 	l := r.URL.Query().Get("limit")
 	if l != "" {
 		if i, err := strconv.Atoi(l); err != nil {
-			logger.Error(err)
+			log.Err(err).Send()
 		} else {
 			limit = i
 		}

@@ -20,8 +20,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"strings"
 )
@@ -32,7 +32,7 @@ func GetItems(w http.ResponseWriter, r *http.Request) {
 
 	dataItems, err := datastoreRepo.FindAll()
 	if err != nil {
-		logger.Errorf("cannot retrieve data items: %v", err)
+		log.Err(err).Msg("cannot retrieve data items")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -47,10 +47,10 @@ func GetItem(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case dataItemNotFound:
-			logger.Errorf("Data item key=%s not found", key)
+			log.Err(err).Msgf("Data item key=%s not found", key)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Errorf("Cannot retrieve data item key=%s: %v", key, err)
+			log.Err(err).Msgf("Cannot retrieve data item key=%s", key)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
@@ -63,14 +63,14 @@ func GetItem(w http.ResponseWriter, r *http.Request) {
 func StoreItem(w http.ResponseWriter, r *http.Request) {
 	item, err := toDataItem(r)
 	if err != nil {
-		logger.Errorf("Error storing data store item: %v", err)
+		log.Err(err).Msg("Error storing data store item")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	updated, err := datastoreRepo.Store(item)
 	if err != nil {
-		logger.Errorf("Cannot store item key=%s: %v", item.Key, err)
+		log.Err(err).Msgf("Cannot store item key=%s", item.Key)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -88,16 +88,16 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 	if err := datastoreRepo.Remove(key); err != nil {
 		switch err {
 		case dataItemNotFound:
-			logger.Errorf("Data item key=%s not found", key)
+			log.Err(err).Msgf("Data item key=%s not found", key)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Errorf("Cannot delete item key=%s: %v", key, err)
+			log.Err(err).Msgf("Cannot delete item key=%s", key)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
 	}
 
-	logger.Infof("Deleted data item key=%s", key)
+	log.Info().Msgf("Deleted data item key=%s", key)
 	w.WriteHeader(http.StatusNoContent)
 }
 

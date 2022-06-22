@@ -19,7 +19,6 @@ package execution
 import (
 	"errors"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -103,10 +102,6 @@ func TestPostEvent_ShouldReturn404WhenPackDoesNotExist(t *testing.T) {
 }
 
 func TestPostEvent_ShouldReturn500WhenThereIsErrorRetrievingPack(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
@@ -122,17 +117,9 @@ func TestPostEvent_ShouldReturn500WhenThereIsErrorRetrievingPack(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "it is an error", logMessages[0].Message)
 }
 
 func TestPostEvent_ShouldReturn400WhenRequestBodyIsInvalid(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
@@ -149,10 +136,6 @@ func TestPostEvent_ShouldReturn400WhenRequestBodyIsInvalid(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "unexpected EOF", logMessages[0].Message)
 }
 
 func TestCompleteAction_ShouldCompleteActionAndHandleIt(t *testing.T) {
@@ -236,10 +219,6 @@ func TestCompleteAction_ShouldReturn404WhenPackDoesNotExist(t *testing.T) {
 }
 
 func TestCompleteAction_ShouldReturn500WhenThereIsErrorRetrievingPack(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
@@ -256,17 +235,9 @@ func TestCompleteAction_ShouldReturn500WhenThereIsErrorRetrievingPack(t *testing
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "it is an error", logMessages[0].Message)
 }
 
 func TestCompleteAction_ShouldReturn400WhenRequestBodyIsInvalid(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
@@ -283,10 +254,6 @@ func TestCompleteAction_ShouldReturn400WhenRequestBodyIsInvalid(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "unexpected EOF", logMessages[0].Message)
 }
 
 func TestCompleteAction_ShouldReturn404ForNonExistingAction(t *testing.T) {
@@ -322,11 +289,7 @@ func TestCompleteAction_ShouldReturn404ForNonExistingAction(t *testing.T) {
 }
 
 func TestCompleteAction_ShouldReturn500WhenThereIsErrorCompletingAction(t *testing.T) {
-
 	//Given
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
@@ -459,10 +422,6 @@ func TestTakeAction_ShouldReturn404WhenPackDoesNotExist(t *testing.T) {
 }
 
 func TestTakeAction_ShouldReturn500WhenThereIsErrorRetrievingPack(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
@@ -478,18 +437,10 @@ func TestTakeAction_ShouldReturn500WhenThereIsErrorRetrievingPack(t *testing.T) 
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "it is an error", logMessages[0].Message)
 }
 
 func TestTakeAction_ShouldReturn500WhenThereIsErrorTakingAction(t *testing.T) {
-
 	//Given
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer resetPackRepo()
 	packRepo = mockPackRepo{
 		get: func(id string) (*Pack, error) {
@@ -516,14 +467,9 @@ func TestTakeAction_ShouldReturn500WhenThereIsErrorTakingAction(t *testing.T) {
 	//Then
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Could not take action for packId=Slack and actionName=: it's a disaster, run run run", logMessages[0].Message)
 }
 
 func TestTakeAction_ShouldReturn204WhenPackDoesNotHaveNewAction(t *testing.T) {
-
 	//Given
 	defer resetPackRepo()
 	packRepo = mockPackRepo{

@@ -17,11 +17,8 @@ limitations under the License.
 package execution
 
 import (
-	"errors"
 	"fmt"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"sync"
 	"testing"
 	"time"
@@ -72,35 +69,6 @@ func TestHandleEvent_ShouldTriggerHandleEventForAllCandidateFlows(t *testing.T) 
 	assert.Equal(t, expectedEvent, actualEvent)
 }
 
-func TestHandleEvent_ShouldLogErrorWhichHappensWhileSearchingForCandidateFlows(t *testing.T) {
-
-	//Given
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	defer resetFlowRepo()
-	expectedError := errors.New("something went wrong")
-	flowRepo = mockFlowRepo{
-		findByEvent: func(e Event) ([]Flow, error) {
-			return nil, expectedError
-		},
-	}
-
-	defer resetFlowEventHandler()
-	flowEventHandler = func(f *Flow, e Event) {
-		t.Fatal("Should not call event handler")
-	}
-
-	//When
-	flowService{}.HandleEvent(Event{Name: "MessageSent"})
-
-	//Then
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, logMessages[0].Message, "something went wrong")
-	assert.Contains(t, logMessages[0].Message, "Error handling event={Name:MessageSent")
-}
-
 func TestHandleAction_ShouldTriggerHandleEventOnExistingFlowForProvidedAction(t *testing.T) {
 
 	//Given
@@ -131,64 +99,6 @@ func TestHandleAction_ShouldTriggerHandleEventOnExistingFlowForProvidedAction(t 
 	//Then
 	assert.True(t, calledFlow, "Should have called event handler on the flow")
 	assert.Equal(t, expectedAction, actualAction)
-}
-
-func TestHandleAction_ShouldLogErrorWhenFlowIsNotFound(t *testing.T) {
-
-	//Given
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	defer resetFlowRepo()
-	action := Action{CorrelationId: "nonExistingFlow"}
-	flowRepo = mockFlowRepo{
-		getByAction: func(a Action) (*Flow, error) {
-			return nil, nil
-		},
-	}
-
-	defer resetFlowEventHandler()
-	flowEventHandler = func(f *Flow, e Event) {
-		t.Fatal("Should not call event handler")
-	}
-
-	//When
-	flowService{}.HandleAction(action)
-
-	//Then
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, logMessages[0].Message, "flow not found")
-	assert.Contains(t, logMessages[0].Message, "Error handling action=")
-}
-
-func TestHandleAction_ShouldLogErrorWhichHappensWhileSearchingForExistingFlow(t *testing.T) {
-
-	//Given
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
-	defer resetFlowRepo()
-	expectedError := errors.New("something went wrong")
-	flowRepo = mockFlowRepo{
-		getByAction: func(a Action) (*Flow, error) {
-			return nil, expectedError
-		},
-	}
-
-	defer resetFlowEventHandler()
-	flowEventHandler = func(f *Flow, e Event) {
-		t.Fatal("Should not call event handler")
-	}
-
-	//When
-	flowService{}.HandleAction(Action{Id: "ThereWillBeError"})
-
-	//Then
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, logMessages[0].Message, "something went wrong")
-	assert.Contains(t, logMessages[0].Message, "Error handling action={Id:ThereWillBeError")
 }
 
 // --- mocks & helpers ---

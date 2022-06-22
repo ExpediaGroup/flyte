@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"github.com/ExpediaGroup/flyte/flytepath"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
+	"github.com/rs/zerolog/log"
 	"github.com/xeipuuv/gojsonschema"
 	"io/ioutil"
 	"net/http"
@@ -45,19 +45,19 @@ func PostFlow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := validateJsonAgainstSchema(string(bodyBytes)); err != nil {
-		logger.Errorf("Cannot convert request to flow: %v", err)
+		log.Err(err).Msg("Cannot convert request to flow")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	if err := json.Unmarshal(bodyBytes, &flow); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		logger.Errorf("Cannot convert request to flow: %v", err)
+		log.Err(err).Msg("Cannot convert request to flow")
 		return
 	}
 
 	if err := flowRepo.Add(flow); err != nil {
-		logger.Errorf("Cannot add flow to repo flowName=%s: %v", flow.Name, err)
+		log.Err(err).Msgf("Cannot add flow to repo flowName=%s", flow.Name)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -70,7 +70,7 @@ func GetFlows(w http.ResponseWriter, r *http.Request) {
 
 	flows, err := flowRepo.FindAll()
 	if err != nil {
-		logger.Errorf("Cannot find flows: %v", err)
+		log.Err(err).Msg("Cannot find flows")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -85,10 +85,10 @@ func GetFlow(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case FlowNotFoundErr:
-			logger.Infof("Flow flowName=%s not found", flowName)
+			log.Info().Msgf("Flow flowName=%s not found", flowName)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Error("Cannot get flowName=%s: %v", flowName, err)
+			log.Err(err).Msgf("Cannot get flowName=%s", flowName)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
@@ -104,16 +104,16 @@ func DeleteFlow(w http.ResponseWriter, r *http.Request) {
 	if err := flowRepo.Remove(flowName); err != nil {
 		switch err {
 		case FlowNotFoundErr:
-			logger.Infof("Flow flowName=%s not found", flowName)
+			log.Info().Msgf("Flow flowName=%s not found", flowName)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Errorf("Cannot delete flowName=%s: %v", flowName, err)
+			log.Err(err).Msgf("Cannot delete flowName=%s", flowName)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
 	}
 
-	logger.Infof("Flow flowName=%s deleted", flowName)
+	log.Info().Msgf("Flow flowName=%s deleted", flowName)
 	w.WriteHeader(http.StatusNoContent)
 }
 

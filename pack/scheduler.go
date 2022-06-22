@@ -17,8 +17,8 @@ limitations under the License.
 package pack
 
 import (
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/jasonlvhit/gocron"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -37,12 +37,12 @@ func removePacksOlderThan(packGracePeriodInSeconds int) {
 
 	packsRemoved, err := packRepo.RemoveAllOlderThan(date)
 	if err != nil {
-		logger.Errorf("problem removing dead packs older than '%s'. err: '%v'.", date.Format(time.RFC850), err)
+		log.Err(err).Msgf("problem removing dead packs older than '%s'", date.Format(time.RFC850))
 		return
 	}
 
 	if packsRemoved > 0 {
-		logger.Infof("%v dead pack/s older than '%s' removed.", packsRemoved, date.Format(time.RFC850))
+		log.Info().Msgf("%v dead pack/s older than '%s' removed.", packsRemoved, date.Format(time.RFC850))
 	}
 }
 

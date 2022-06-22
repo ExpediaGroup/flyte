@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"github.com/ExpediaGroup/flyte/flytepath"
 	"github.com/ExpediaGroup/flyte/httputil"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/husobee/vestigo"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"regexp"
 	"time"
@@ -36,13 +36,13 @@ func PostPack(w http.ResponseWriter, r *http.Request) {
 	pack := &Pack{}
 
 	if err := json.NewDecoder(r.Body).Decode(pack); err != nil {
-		logger.Errorf("Cannot convert request to pack: %v", err)
+		log.Err(err).Msg("Cannot convert request to pack")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	if err := validateLinks(pack); err != nil {
-		logger.Errorf("invalid links found: %v", err)
+		log.Err(err).Msg("invalid links found")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -51,12 +51,12 @@ func PostPack(w http.ResponseWriter, r *http.Request) {
 	pack.LastSeen = time.Now().UTC()
 
 	if err := packRepo.Add(*pack); err != nil {
-		logger.Errorf("Cannot save packName=%s, packLabels=%+v: %v", pack.Name, pack.Labels, err)
+		log.Err(err).Msgf("Cannot save packName=%s, packLabels=%+v", pack.Name, pack.Labels)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	logger.Infof("Pack registered: PackId=%s", pack.Id)
+	log.Info().Msgf("Pack registered: PackId=%s", pack.Id)
 	w.Header().Set("Location", httputil.UriBuilder(r).Path(flytepath.PacksPath, pack.Id).Build())
 	w.WriteHeader(http.StatusCreated)
 
@@ -67,7 +67,7 @@ func GetPacks(w http.ResponseWriter, r *http.Request) {
 
 	packs, err := packRepo.FindAll()
 	if err != nil {
-		logger.Errorf("Cannot find packs: %v", err)
+		log.Err(err).Msg("Cannot find packs")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -83,10 +83,10 @@ func GetPack(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case PackNotFoundErr:
-			logger.Infof("Pack packId=%s not found", packId)
+			log.Info().Msgf("Pack packId=%s not found", packId)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Errorf("Cannot find packId=%s: %v", packId, err)
+			log.Err(err).Msgf("Cannot find packId=%s", packId)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
@@ -102,16 +102,16 @@ func DeletePack(w http.ResponseWriter, r *http.Request) {
 	if err := packRepo.Remove(packId); err != nil {
 		switch err {
 		case PackNotFoundErr:
-			logger.Infof("Pack packId=%s not found", packId)
+			log.Info().Msgf("Pack packId=%s not found", packId)
 			w.WriteHeader(http.StatusNotFound)
 		default:
-			logger.Errorf("Cannot delete packId=%s: %v", packId, err)
+			log.Err(err).Msgf("Cannot delete packId=%s", packId)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
 	}
 
-	logger.Infof("Pack PackId=%s deleted", packId)
+	log.Info().Msgf("Pack PackId=%s deleted", packId)
 	w.WriteHeader(http.StatusNoContent)
 }
 

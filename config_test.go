@@ -17,7 +17,6 @@ limitations under the License.
 package main
 
 import (
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -132,9 +131,6 @@ func TestConfigShouldSetDefaultTTL(t *testing.T) {
 }
 
 func TestConfigShouldSetDefaultTTLAndLogOnStringToIntConversionError(t *testing.T) {
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
 	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
 	fileExists = func(string) bool { return true }
 
@@ -147,10 +143,6 @@ func TestConfigShouldSetDefaultTTLAndLogOnStringToIntConversionError(t *testing.
 
 	// default flyte data ttl
 	assert.Equal(t, 31557600, c.FlyteTTL)
-	logMessages := loggertest.GetLogMessages()
-	assert.Equal(t, "Error converting FLYTE_TTL_IN_SECONDS to int, using default. "+
-		"Value of FLYTE_TTL_IN_SECONDS: this-string-cannot-be-converted-to-int!!!", logMessages[0].Message)
-
 }
 
 func TestConfigShouldEnableTLSOnlyIfBothKeyAndCertProvided(t *testing.T) {
@@ -227,89 +219,6 @@ func TestConfigShouldNotEnableAuthIfOIDCIssuerConfigIdNotProvided(t *testing.T) 
 	assert.False(t, c.requireAuth())
 }
 
-func TestConfigShouldLogFatalIfPortInvalid(t *testing.T) {
-	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
-	fileExists = func(string) bool { return true }
-
-	// set port as invalid value
-	flyteEnvVars := newflyteEnvVars()
-	flyteEnvVars[portEnvName] = "1111111"
-	defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
-	lookupEnv = flyteEnvVars.lookupEnv
-
-	loggertest.Init(loggertest.LogLevelInfo)
-	defer loggertest.Reset()
-
-	defer func() {
-		if r := recover(); r != nil {
-			logMessages := loggertest.GetLogMessages()
-			assert.Equal(t, "invalid port: FLYTE_PORT=1111111", logMessages[len(logMessages)-1].Message)
-			assert.Equal(t, loggertest.LogLevelFatal, logMessages[len(logMessages)-1].Level)
-		} else {
-			t.Fatal("expected panic")
-		}
-	}()
-
-	NewConfig()
-}
-
-func TestConfigShouldLogFatalIfTLSCertPathInvalid(t *testing.T) {
-	flyteEnvVars := newflyteEnvVars()
-
-	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
-	fileExists = func(path string) bool {
-		// i.e. tls key exists, but not the tls cert
-		return path == flyteEnvVars[tlsKeyPathEnvName]
-	}
-
-	defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
-	lookupEnv = flyteEnvVars.lookupEnv
-
-	loggertest.Init(loggertest.LogLevelInfo)
-	defer loggertest.Reset()
-
-	defer func() {
-		if r := recover(); r != nil {
-			logMessages := loggertest.GetLogMessages()
-			assert.Equal(t, "cannot find file defined by: FLYTE_TLS_CERT_PATH=/path/to/tls/cert", logMessages[len(logMessages)-1].Message)
-			assert.Equal(t, loggertest.LogLevelFatal, logMessages[len(logMessages)-1].Level)
-		} else {
-			t.Fatal("expected panic")
-		}
-	}()
-
-	NewConfig()
-}
-
-func TestConfigShouldLogFatalIfTLSKeyPathInvalid(t *testing.T) {
-	flyteEnvVars := newflyteEnvVars()
-
-	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
-	fileExists = func(path string) bool {
-		// i.e. tls cert exists, but not the tls key
-		return path == flyteEnvVars[tlsCertPathEnvName]
-	}
-
-	defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
-	lookupEnv = flyteEnvVars.lookupEnv
-
-	loggertest.Init(loggertest.LogLevelInfo)
-	defer loggertest.Reset()
-
-	// we haven't stubbed "fileExists" to return true, so it will actually test if our key exists (it doesn't)
-	defer func() {
-		if r := recover(); r != nil {
-			logMessages := loggertest.GetLogMessages()
-			assert.Equal(t, "cannot find file defined by: FLYTE_TLS_KEY_PATH=/path/to/tls/key", logMessages[len(logMessages)-1].Message)
-			assert.Equal(t, loggertest.LogLevelFatal, logMessages[len(logMessages)-1].Level)
-		} else {
-			t.Fatal("expected panic")
-		}
-	}()
-
-	NewConfig()
-}
-
 func TestConfigShouldSetDefaultForShouldDeleteDeadPacksIfNotSetAsEnvVar(t *testing.T) {
 	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
 	fileExists = func(string) bool { return true }
@@ -325,9 +234,6 @@ func TestConfigShouldSetDefaultForShouldDeleteDeadPacksIfNotSetAsEnvVar(t *testi
 }
 
 func TestConfigShouldSetDefaultAndLogErrorForShouldDeleteDeadPacksIfEnvVarValueSetIsNotBoolean(t *testing.T) {
-	loggertest.Init(loggertest.LogLevelError)
-	defer loggertest.Reset()
-
 	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
 	fileExists = func(string) bool { return true }
 
@@ -339,7 +245,6 @@ func TestConfigShouldSetDefaultAndLogErrorForShouldDeleteDeadPacksIfEnvVarValueS
 
 	c := NewConfig()
 	assert.Equal(t, false, c.ShouldDeleteDeadPacks)
-	assert.Equal(t, "Error converting FLYTE_SHOULD_DELETE_DEAD_PACKS to bool, using default: false. Value of FLYTE_SHOULD_DELETE_DEAD_PACKS: 6372gyd", loggertest.GetLogMessages()[0].Message)
 }
 
 func TestConfigShouldSetDefaultDeleteDeadPacksTimeIfNotSetAsEnvVar(t *testing.T) {
@@ -368,22 +273,19 @@ var invalidTimes = []struct {
 }
 
 func TestConfigShouldSetDefaultDeleteDeadPacksTimeAndLogErrorIfTimeIsInInvalidFormat(t *testing.T) {
+	defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
+	fileExists = func(string) bool { return true }
+
+	defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
+
 	for _, tt := range invalidTimes {
-		loggertest.Init(loggertest.LogLevelError)
-		defer loggertest.Reset()
-
-		defer func(oldFileExists func(string) bool) { fileExists = oldFileExists }(fileExists)
-		fileExists = func(string) bool { return true }
-
 		// change deleteDeadPacksTimeEnvName in env vars
 		flyteEnvVars := newflyteEnvVars()
 		flyteEnvVars[deleteDeadPacksTimeEnvName] = tt.invalidValue
-		defer func(oldGetEnv func(string) (string, bool)) { lookupEnv = oldGetEnv }(lookupEnv)
 		lookupEnv = flyteEnvVars.lookupEnv
 
 		c := NewConfig()
 		assert.Equal(t, defaultDeleteDeadPacksTime, c.DeleteDeadPacksTime)
-		assert.Equal(t, tt.errorMsg, loggertest.GetLogMessages()[0].Message)
 	}
 }
 

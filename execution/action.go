@@ -20,7 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ExpediaGroup/flyte/json"
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -56,7 +56,7 @@ func (a *Action) take() error {
 	}
 	err = auditRepo.Update(*a)
 	if err != nil {
-		logger.Errorf("Error updating audit for action=%+v: %v", *a, err)
+		log.Err(err).Msgf("Error updating audit for action=%+v", *a)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (a *Action) finish(e Event) error {
 	}
 	err = auditRepo.Update(*a)
 	if err != nil {
-		logger.Errorf("Error updating audit for action=%+v: %v", *a, err)
+		log.Err(err).Msgf("Error updating audit for action=%+v", *a)
 	}
 	return nil
 }

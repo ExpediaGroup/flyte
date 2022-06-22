@@ -20,11 +20,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/HotelsDotCom/go-logger"
 	"github.com/coreos/go-oidc"
 	"github.com/golang-jwt/jwt"
 	"github.com/golang-jwt/jwt/request"
 	"github.com/husobee/vestigo"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"time"
 )
@@ -91,7 +91,7 @@ func authHandlerFunc(h http.Handler, c policyClaims, v *oidc.IDTokenVerifier) ht
 
 			token, err := request.AuthorizationHeaderExtractor.ExtractToken(req)
 			if err != nil {
-				logger.Infof("could not authorize: %v", err)
+				log.Info().Msgf("could not authorize: %v", err)
 				w.Header().Set("WWW-Authenticate", `Bearer realm="token"`)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
@@ -99,7 +99,7 @@ func authHandlerFunc(h http.Handler, c policyClaims, v *oidc.IDTokenVerifier) ht
 
 			idToken, err := v.Verify(req.Context(), token)
 			if err != nil {
-				logger.Infof("could not authorize: %v", err)
+				log.Info().Msgf("could not authorize: %v", err)
 				w.Header().Set("WWW-Authenticate", `Bearer realm="token", error="invalid_token"`)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
@@ -107,14 +107,14 @@ func authHandlerFunc(h http.Handler, c policyClaims, v *oidc.IDTokenVerifier) ht
 
 			var claims jwt.MapClaims
 			if err := idToken.Claims(&claims); err != nil {
-				logger.Infof("failed to parse claims: %v", err)
+				log.Info().Msgf("failed to parse claims: %v", err)
 				w.Header().Set("WWW-Authenticate", `Bearer realm="token", error="invalid_token"`)
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 
 			if !c.fulfilled(claims, getPathParams(req)) {
-				logger.Info("token claims do not satisfy required claims")
+				log.Info().Msg("token claims do not satisfy required claims")
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}

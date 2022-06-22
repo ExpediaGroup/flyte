@@ -18,9 +18,7 @@ package execution
 
 import (
 	"errors"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -97,35 +95,6 @@ func TestFlowHandleEvent_ShouldCreateActionWhichIncludesFlowName(t *testing.T) {
 
 	assert.Len(t, flow.actions, 1)
 	assert.Equal(t, Action{Id: stepA.Id, StepId: stepA.Id, FlowName: flow.Name}, flow.actions[stepA.Id])
-}
-
-func TestFlowHandleEvent_ShouldLogCreatedActions(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelInfo)
-
-	defer resetStepExecutor()
-	setupStepExecutorWithAction(nil)
-
-	defer resetActionRepo()
-	actionRepo = mockActionRepo{
-		add: func(a Action) error {
-			return nil
-		},
-	}
-	defer resetAuditRepo()
-	auditRepo = mockAuditRepo{
-		add: func(a Action) error {
-			return nil
-		},
-	}
-	flow := newFlowT(newStepT("stepA", "eventOK", "packOK"))
-
-	flow.HandleEvent(Event{Name: "eventOK", Pack: Pack{Name: "packOK"}})
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Action has been created actionId=stepA", logMessages[0].Message)
 }
 
 func TestFlowHandleEvent_ShouldSkipStepWhenEventNameDoesNotMatch(t *testing.T) {
@@ -235,11 +204,7 @@ func TestFlowHandleEvent_ShouldProduceNothingWhenStepExecutesToNil(t *testing.T)
 	assert.True(t, len(flow.actions) == 0)
 }
 
-func TestFlowHandleEvent_ShouldLogErrorAndContinueWhenStepExecutionReturnsError(t *testing.T) {
-
-	defer loggertest.Reset()
-	loggertest.Init(loggertest.LogLevelError)
-
+func TestFlowHandleEvent_ShouldContinueWhenStepExecutionReturnsError(t *testing.T) {
 	defer resetStepExecutor()
 	var stepResolverExecs []Step
 	stepExecutor = func(s Step, e Event, parentCtx map[string]string) (*Action, error) {
@@ -257,10 +222,6 @@ func TestFlowHandleEvent_ShouldLogErrorAndContinueWhenStepExecutionReturnsError(
 	flow := newFlowT(errorStep, candidateStep)
 
 	flow.HandleEvent(Event{Name: "eventOK", Pack: Pack{Name: "packOK"}})
-
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, "Error handling flow= step=returnError: are you for real", logMessages[0].Message)
 
 	assert.Len(t, stepResolverExecs, 2)
 }

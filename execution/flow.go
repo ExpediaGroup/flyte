@@ -17,7 +17,7 @@ limitations under the License.
 package execution
 
 import (
-	"github.com/HotelsDotCom/go-logger"
+	"github.com/rs/zerolog/log"
 )
 
 type Flow struct {
@@ -42,16 +42,16 @@ func flowEventHandlerFn(f *Flow, e Event) {
 
 		action, err := step.Execute(e, f.context)
 		if err != nil {
-			logger.Errorf("Error handling flow=%s step=%s: %v", f.UUID, step.Id, err)
+			log.Err(err).Msgf("Error handling flow=%s step=%s", f.UUID, step.Id)
 			continue
 		}
 
 		if action != nil {
 			if err := f.addAction(step.Id, *action); err != nil {
-				logger.Errorf("Error saving action=%+v: %v", action, err)
+				log.Err(err).Msgf("Error saving action=%+v", action)
 			} else {
-				logger.Infof("Action has been created actionId=%s", action.Id)
-				logger.Debugf("action=%+v", action)
+				log.Info().Msgf("Action has been created actionId=%s", action.Id)
+				log.Debug().Msgf("action=%+v", action)
 			}
 		}
 	}
@@ -67,7 +67,7 @@ func (f *Flow) addAction(stepId string, a Action) error {
 		return err
 	}
 	if err := auditRepo.Add(a); err != nil {
-		logger.Errorf("Error saving audit for action=%+v: %v", a, err)
+		log.Err(err).Msgf("Error saving audit for action=%+v", a)
 	}
 	f.actions[stepId] = a
 	return nil

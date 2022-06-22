@@ -19,7 +19,6 @@ package httputil
 import (
 	"encoding/json"
 	"errors"
-	"github.com/HotelsDotCom/go-logger/loggertest"
 	"github.com/ghodss/yaml"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -65,8 +64,6 @@ func TestWriteResponse_shouldWriteYamlResponse_whenRequestHeaderAcceptIsYaml(t *
 }
 
 func TestWriteResponse_shouldProduce500Response_whenUnableToMarshalJson(t *testing.T) {
-	loggertest.Init(loggertest.LogLevelError)
-	defer loggertest.Reset()
 	w := httptest.NewRecorder()
 
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -75,14 +72,9 @@ func TestWriteResponse_shouldProduce500Response_whenUnableToMarshalJson(t *testi
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, logMessages[0].Message, "cannot convert to JSON:")
 }
 
 func TestWriteResponse_shouldProduce500Response_whenUnableToMarshalYaml(t *testing.T) {
-	loggertest.Init(loggertest.LogLevelError)
-	defer loggertest.Reset()
 	w := httptest.NewRecorder()
 
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -92,24 +84,15 @@ func TestWriteResponse_shouldProduce500Response_whenUnableToMarshalYaml(t *testi
 
 	resp := w.Result()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Contains(t, logMessages[0].Message, "cannot convert to yaml:")
 }
 
 func TestWriteResponse_shouldProduce500Response_whenUnableToWriteData(t *testing.T) {
-	loggertest.Init(loggertest.LogLevelError)
-	defer loggertest.Reset()
-
 	expectedError := errors.New("some error")
 	w := &mockResponseRecorder{expectedError: expectedError}
 	r := httptest.NewRequest(http.MethodGet, "/", nil)
 	WriteResponse(w, r, "doesn't matter")
 
 	assert.Equal(t, http.StatusInternalServerError, w.code)
-	logMessages := loggertest.GetLogMessages()
-	require.Len(t, logMessages, 1)
-	assert.Equal(t, expectedError.Error(), logMessages[0].Message)
 }
 
 // -- mock functions & variables
