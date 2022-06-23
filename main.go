@@ -17,19 +17,27 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"github.com/ExpediaGroup/flyte/pack"
 	"github.com/ExpediaGroup/flyte/server"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
-	indexName := os.Getenv("LOG_INDEX_NAME")
-	log.Logger = log.With().Str("index", indexName).Logger().Output(os.Stdout)
-	zerolog.TimeFieldFormat = "2006-01-02T15:04:05.999999"
-	zerolog.MessageFieldName = "log"
+	out := zerolog.ConsoleWriter{
+		NoColor: true,
+		Out: os.Stdout,
+		TimeFormat: "2006-01-02T15:04:05.999",
+	}
+	out.PartsOrder = []string{"level", "time", "message"}
+	out.FormatLevel = func(i interface{}) string {
+		return strings.ToUpper(fmt.Sprintf("[%s]", i))
+	}
+	log.Logger = log.Output(out)
 
 	c := NewConfig()
 
