@@ -28,6 +28,7 @@ import (
 func main() {
 	log.Logger = log.Output(os.Stdout)
 	zerolog.TimeFieldFormat = "2006-01-02T15:04:05.999"
+	zerolog.MessageFieldName = "log"
 
 	c := NewConfig()
 
