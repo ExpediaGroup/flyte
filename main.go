@@ -19,6 +19,7 @@ package main
 import (
 	"github.com/ExpediaGroup/flyte/pack"
 	"github.com/ExpediaGroup/flyte/server"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"net/http"
 	"os"
@@ -26,6 +27,7 @@ import (
 
 func main() {
 	log.Logger = log.Output(os.Stdout)
+	zerolog.TimeFieldFormat = "2006-01-02T15:04:05.999"
 
 	c := NewConfig()
 
