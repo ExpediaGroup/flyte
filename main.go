@@ -26,8 +26,9 @@ import (
 )
 
 func main() {
-	log.Logger = log.Output(os.Stdout)
-	zerolog.TimeFieldFormat = "2006-01-02T15:04:05.999"
+	indexName := os.Getenv("LOG_INDEX_NAME")
+	log.Logger = log.With().Str("index", indexName).Logger().Output(os.Stdout)
+	zerolog.TimeFieldFormat = "2006-01-02T15:04:05.999999"
 	zerolog.MessageFieldName = "log"
 
 	c := NewConfig()
